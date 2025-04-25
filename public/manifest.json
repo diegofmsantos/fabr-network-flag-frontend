@@ -1,0 +1,23 @@
+{
+  "name": "FABR-Network",
+  "short_name": "FABR",
+  "description": "O banco de dados do futebol americano do Brasil",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "fullscreen",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "id": "fabr-network-v1",
+  "icons": [
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

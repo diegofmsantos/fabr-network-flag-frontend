@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
+.slick-prev,
+.slick-next {
+  @apply w-12 h-12 !important;
+  @apply bg-black/80 !important;
+  @apply hover:bg-black !important;
+  @apply rounded-full !important;
+  @apply flex items-center justify-center !important;
+  @apply z-10 !important;
+  @apply hidden !important; 
+  @apply absolute !important;
+  @apply top-[200px] !important;
+}
+
+/* Cria uma media query customizada para 860px */
+@media (min-width: 860px) {
+  .slick-prev,
+  .slick-next {
+    @apply block !important; 
+  }
+
+  .slick-prev {
+    @apply -left-16 !important;
+  }
+
+  .slick-next {
+    @apply -right-16 !important;
+  }
+
+  .slick-slider {
+    @apply mx-16 !important;
+  }
+}
+
+.slick-prev:before,
+.slick-next:before {
+  @apply text-white !important;
+  @apply opacity-100 !important;
+  @apply text-2xl !important;
+  content: "←" !important;
+}
+
+.slick-next:before {
+  content: "→" !important;
+}
+
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
+body {
+  padding: var(--sat) var(--sar) var(--sab) var(--sal);
+  background-color: #ECECEC;
+  min-height: 100vh;
+  min-height: -webkit-fill-available
+}
+
+/* Específico para iOS */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: -webkit-fill-available
+  }
+}
