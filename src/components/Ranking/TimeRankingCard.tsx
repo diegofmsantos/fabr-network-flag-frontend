@@ -1,6 +1,7 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { statMappings } from '@/utils/statMappings'
 
 interface TeamCardProps {
     id: number
@@ -38,75 +39,70 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
     }
 
     const formatValue = (value: string | number, title: string): string => {
-        // Primeiro, garanta que estamos trabalhando com um valor numérico 
         let numValue: number;
-        
+
         if (typeof value === 'string') {
-            // Remova qualquer formatação existente antes de converter para número
             numValue = parseFloat(value.replace(/\./g, '').replace(/,/g, '.'));
         } else {
             numValue = value;
         }
-    
+
         if (isNaN(numValue)) return value.toString();
-    
-        // Lista de títulos e identificadores específicos para formatação percentual
+
         const percentageIdentifiers = [
-            'PASSES(%)', 'FG(%)', 'XP(%)',        // Títulos específicos de cabeçalho
-            'PASSES(%):', 'FG(%):', 'XP(%):'      // Variações com dois pontos
+            'PASSES(%)', 'FG(%)', 'XP(%)',
+            'PASSES(%):', 'FG(%):', 'XP(%):'
         ];
-        
-        // Verifica se o título contém identificadores de porcentagem
-        const isPercentage = 
-            percentageIdentifiers.some(pt => 
+
+        const isPercentage =
+            percentageIdentifiers.some(pt =>
                 title.toUpperCase().includes(pt)) ||
             title.includes('(%)');
-            
-        // Formata médias com uma casa decimal
+
         if (title.includes('(AVG)') || title.includes('MÉDIA') || title.includes('MEDIA')) {
-            return numValue.toFixed(0).replace('.', ',');
+            return numValue.toFixed(1).replace('.', ',');
         }
-        
-        // Formata porcentagens
+
         if (isPercentage) {
             return `${Math.round(numValue)}%`;
         }
-    
-        // Para valores normais, usa a formatação brasileira sem limite
+
         return Math.round(numValue).toLocaleString('pt-BR');
     }
 
     const getViewMoreUrl = (category: string, title: string): string => {
-        const statMappings: { [key: string]: string } = {
-            'Fumbles': 'fumble-de-passador',
-            'Jardas(AVG)': 'jardas-avg',
-            'Touchdowns': 'touchdowns',
-            'FG(%)': 'field-goals',
-            'XP(%)': 'extra-points'
+        // Normalizar a categoria para remover acentos e caracteres especiais
+        const categoryLower = normalizeForFilePath(category.toLowerCase());
+    
+        const normalizedTitle = title.toUpperCase().replace(/\s+/g, ' ').trim();
+    
+        for (const [urlParam, mapping] of Object.entries(statMappings)) {
+            if (urlParam.startsWith(categoryLower) &&
+                mapping.title.toUpperCase() === normalizedTitle) {
+                return `/ranking/times/stats?stat=${urlParam}`;
+            }
         }
-        const normalizedCategory = normalizeForFilePath(category);
-        const statKey = statMappings[title] || normalizeForFilePath(title);
-        return `/ranking/times/stats?stat=${normalizedCategory}-${statKey}`;
+    
+        const statKey = normalizeForFilePath(title);
+        return `/ranking/times/stats?stat=${categoryLower}-${statKey}`;
     }
 
     const sortedTeams = validTeams
-    .sort((a, b) => {
-        // Remova TODOS os separadores de milhares antes da conversão
-        let valueA = parseFloat(a.value.replace(/\./g, '').replace(/,/g, '.'));
-        let valueB = parseFloat(b.value.replace(/\./g, '').replace(/,/g, '.'));
+        .sort((a, b) => {
+            let valueA = parseFloat(a.value.replace(/\./g, '').replace(/,/g, '.'));
+            let valueB = parseFloat(b.value.replace(/\./g, '').replace(/,/g, '.'));
 
-        if (isNaN(valueA) || isNaN(valueB)) {
-            // Se algum valor não for número, compare por string
-            return a.name.localeCompare(b.name);
-        }
+            if (isNaN(valueA) || isNaN(valueB)) {
+                return a.name.localeCompare(b.name);
+            }
 
-        if (valueB === valueA) return a.name.localeCompare(b.name);
-        return valueB - valueA;
-    })
-    .map((team, index) => ({
-        ...team,
-        isFirst: index === 0
-    }));
+            if (valueB === valueA) return a.name.localeCompare(b.name);
+            return valueB - valueA;
+        })
+        .map((team, index) => ({
+            ...team,
+            isFirst: index === 0
+        }));
 
     if (sortedTeams.length === 0) return null;
 

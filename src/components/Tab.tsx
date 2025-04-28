@@ -15,15 +15,16 @@ export const Tab: React.FC<TabProps> = ({ className = '' }) => {
   const pathname = usePathname()
   const isRankingRoute = pathname.startsWith('/ranking')
   const isNoticiasRoute = pathname.startsWith('/noticias')
+  const isMercadoRoute = pathname.startsWith('/mercado')
   const [isAboutOpen, setIsAboutOpen] = useState(false)
 
   return (
     <>
       <div className={`fixed bottom-0 w-full bg-[#272731] shadow-md border-t flex justify-around items-center py-2 z-50 ${className} xl:hidden`}>
         <Link href="/">
-          <div className={`flex flex-col items-center ${!isRankingRoute && !isNoticiasRoute ? "text-[#63E300]" : "text-gray-400"}`}>
+          <div className={`flex flex-col items-center ${!isRankingRoute && !isNoticiasRoute && !isMercadoRoute ? "text-[#63E300]" : "text-gray-400"}`}>
             <Image
-              src={!isRankingRoute && !isNoticiasRoute ? "/assets/logo-capacete-verde.png" : "/assets/logo-capacete-branco.png"}
+              src={!isRankingRoute && !isNoticiasRoute && !isMercadoRoute ? "/assets/logo-capacete-verde.png" : "/assets/logo-capacete-branco.png"}
               alt="capacete"
               width={25}
               height={25}
@@ -41,6 +42,18 @@ export const Tab: React.FC<TabProps> = ({ className = '' }) => {
               height={25}
             />
             <span className="text-sm">Ranking</span>
+          </div>
+        </Link>
+
+        <Link href="/mercado">
+          <div className={`flex flex-col items-center ${isMercadoRoute ? "text-[#63E300]" : "text-gray-400"}`}>
+            <Image
+              src={isMercadoRoute ? "/assets/transfer.png" : "/assets/transfer.png"}
+              alt="mercado"
+              width={25}
+              height={25}
+            />
+            <span className="text-sm">Mercado</span>
           </div>
         </Link>
 

@@ -1,3 +1,4 @@
+import { statMappings } from "@/utils/statMappings"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -15,21 +16,20 @@ interface PlayerCardProps {
 interface RankingCardProps {
   title: string
   category: string
+  stat?: string
   players: PlayerCardProps[]
 }
 
-export const RankingCard: React.FC<RankingCardProps> = ({ title, category, players }) => {
-  const normalizeForFilePath = (input: string): string => {
-    // Verifica se input existe e é uma string
-    if (!input) return '';
+export const RankingCard: React.FC<RankingCardProps> = ({ title, category, players, stat }) => {
 
+  const normalizeForFilePath = (input: string): string => {
     return input
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9-]/g, "");
-  }
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9-]/g, "");
+}
 
   const getShirtPath = (team: string, camisa: string): string => {
     const normalizedTeam = normalizeForFilePath(team);
@@ -65,28 +65,23 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
     return numValue.toLocaleString('pt-BR');
   }
 
-  // Função para mapear a categoria correta para a URL
-  const getCategoryUrlParam = (categoryTitle: string): string => {
-    // Mapeamento de categorias para seus prefixos de URL
-    const categoryMap: Record<string, string> = {
-      'PASSE': 'passe',
-      'CORRIDA': 'corrida',
-      'RECEPÇÃO': 'recepcao',
-      'RETORNO': 'retorno',
-      'DEFESA': 'defesa',
-      'CHUTE': 'chute',
-      'PUNT': 'punt'
-    };
-
-    return categoryMap[category] || normalizeForFilePath(category) || 'passe';
-  }
-
-  // Constrói a URL com o prefixo da categoria correto
-  const getStatsUrl = (categoryTitle: string, statTitle: string): string => {
-    const categoryParam = getCategoryUrlParam(categoryTitle);
-    const statParam = normalizeForFilePath(statTitle);
-
-    return `/ranking/stats?stat=${categoryParam}-${statParam}`;
+  const getStatsUrl = (): string => {
+    // Se temos a propriedade stat (chave da estatística)
+    if (stat) {
+      // Procurar no mapeamento existente pelo urlParam correspondente à chave da estatística
+      for (const [urlParam, mapping] of Object.entries(statMappings)) {
+        if (mapping.key === stat) {
+          return `/ranking/stats?stat=${urlParam}`;
+        }
+      }
+    }
+    
+    // Categoria em minúsculo para URL para fallback
+    const categoryLower = category ? category.toLowerCase() : '';
+    
+    // Fallback para normalização do título
+    const normalizedTitle = normalizeForFilePath(title);
+    return `/ranking/stats?stat=${categoryLower}-${normalizedTitle}`;
   }
 
   return (
@@ -105,7 +100,7 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
               style={{ backgroundColor: player.isFirst ? player.teamColor : undefined }}
             >
               <Link
-                href={`/ranking/stats?stat=${getCategoryUrlParam(category)}-${normalizeForFilePath(title)}`}
+                href={getStatsUrl()}
                 className="w-full"
               >
                 {player.isFirst ? (
@@ -160,7 +155,7 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
       </ul>
       {players.length > 0 && (
         <Link
-          href={`/ranking/stats?stat=${getCategoryUrlParam(category)}-${normalizeForFilePath(title)}`}
+          href={getStatsUrl()}
           className="block text-center border border-gray-400 bg-white text-[17px] text-black font-bold py-1 mt-1 rounded-md hover:bg-[#C1C2C3] xl:w-[450px]"
         >
           Ver Mais

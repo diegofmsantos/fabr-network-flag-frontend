@@ -9,16 +9,14 @@ import 'slick-carousel/slick/slick-theme.css'
 import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/statMappings'
 import { NoStats } from '../ui/NoStats'
 
-type StatisticKey =
+export type StatKey =
   | keyof Jogador['estatisticas']['passe']
   | keyof Jogador['estatisticas']['corrida']
   | keyof Jogador['estatisticas']['recepcao']
   | keyof Jogador['estatisticas']['retorno']
   | keyof Jogador['estatisticas']['defesa']
   | keyof Jogador['estatisticas']['kicker']
-  | keyof Jogador['estatisticas']['punter'];
-
-type CalculatedStatKey =
+  | keyof Jogador['estatisticas']['punter']
   | 'passes_percentual'
   | 'jardas_media'
   | 'jardas_corridas_media'
@@ -27,8 +25,6 @@ type CalculatedStatKey =
   | 'extra_points'
   | 'field_goals'
   | 'jardas_punt_media';
-
-export type StatKey = StatisticKey | CalculatedStatKey
 
 interface RankingGroupProps {
   title: string;
@@ -62,34 +58,37 @@ const SLIDER_SETTINGS = {
 
 export const RankingGroup: React.FC<RankingGroupProps> = ({ title, stats, players }) => {
   const [times, setTimes] = useState<Time[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchTimes = async () => {
       try {
+        setLoading(true)
         const timesData = await getTimes()
         setTimes(timesData)
       } catch (error) {
         console.error('Error fetching times:', error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchTimes()
   }, [])
 
-
   const normalizeValue = (value: string | number | null, statKey: StatKey): string => {
     if (value === null) return 'N/A'
 
     // Manter formato original para FGs
-    if (['fg_11_20', 'fg_21_30', 'fg_31_40', 'fg_41_50'].includes(statKey)) return String(value)
+    if (['fg_11_20', 'fg_21_30', 'fg_31_40', 'fg_41_50'].includes(statKey as string)) return String(value)
 
     if (typeof value === 'string') return value
 
     const percentageStats = ['passes_percentual', 'extra_points', 'field_goals']
     const averageStats = ['jardas_media', 'jardas_corridas_media', 'jardas_recebidas_media', 'jardas_retornadas_media', 'jardas_punt_media']
 
-    if (percentageStats.includes(statKey)) {
+    if (percentageStats.includes(statKey as string)) {
       return `${Math.round(value)}%`;
-    } else if (averageStats.includes(statKey)) {
+    } else if (averageStats.includes(statKey as string)) {
       return value.toFixed(1);
     }
     return Math.round(value).toString();
@@ -106,10 +105,32 @@ export const RankingGroup: React.FC<RankingGroupProps> = ({ title, stats, player
   const normalizeForFilePath = (input: string): string =>
     input
       .toLowerCase()
-      .replace(/\s+/g, '-')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9-]/g, '')
+      .replace(/\s+/g, "-")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9-]/g, "")
+
+  // Verifique se há jogadores válidos para pelo menos uma estatística
+  const hasValidPlayers = stats.some(stat => {
+    const validPlayers = players
+      .filter(player => shouldIncludePlayer(player, stat.key, title))
+      .length > 0;
+    return validPlayers;
+  });
+
+  if (loading) {
+    return <div className="mb-6 pl-4 py-8">Carregando estatísticas...</div>;
+  }
+
+  // Se não há jogadores válidos para nenhuma estatística, mostra mensagem
+  if (!hasValidPlayers) {
+    return (
+      <div className="mb-6 pl-4 py-8">
+        <h2 className="text-4xl pl-2 font-extrabold italic mb-4 leading-[30px] tracking-[-2px]">{title}</h2>
+        <NoStats />
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6 pl-4 py-8 overflow-x-hidden overflow-y-hidden mx-auto xl:px-12 xl:overflow-x xl:overflow-y">

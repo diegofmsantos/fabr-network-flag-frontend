@@ -124,6 +124,7 @@ export const calculateStatValue = (player: Jogador, mapping: StatConfig): StatRe
         return { value, tier }
     } catch (error) {
         console.error('Error calculating stat value:', error)
+        
         return { value: null, tier: 3 }
     }
 }

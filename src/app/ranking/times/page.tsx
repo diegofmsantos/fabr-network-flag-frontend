@@ -9,58 +9,7 @@ import { RankingLayout } from '@/components/Ranking/RankingLayout'
 import { TeamRankingGroup } from '@/components/Ranking/TimeRankingGroup'
 import { TeamStatCardsGrid, prepareTeamStatsForCards } from '@/components/TeamStatCardsGrid'
 import { StatCategoryButtons } from '@/components/ui/StatCategoryButtons'
-
-// Type for the aggregated team stats
-interface TeamStats {
-    timeId: number
-    passe: {
-        jardas_de_passe: number
-        passes_completos: number
-        passes_tentados: number
-        td_passados: number
-        interceptacoes_sofridas: number
-        sacks_sofridos: number
-        fumble_de_passador: number
-    }
-    corrida: {
-        jardas_corridas: number
-        corridas: number
-        tds_corridos: number
-        fumble_de_corredor: number
-    }
-    recepcao: {
-        jardas_recebidas: number
-        recepcoes: number
-        tds_recebidos: number
-        alvo: number
-    }
-    retorno: {
-        jardas_retornadas: number
-        retornos: number
-        td_retornados: number
-    }
-    defesa: {
-        tackles_totais: number
-        tackles_for_loss: number
-        sacks_forcado: number
-        fumble_forcado: number
-        interceptacao_forcada: number
-        passe_desviado: number
-        safety: number
-        td_defensivo: number
-    }
-    kicker: {
-        xp_bons: number
-        tentativas_de_xp: number
-        fg_bons: number
-        tentativas_de_fg: number
-        fg_mais_longo: number
-    }
-    punter: {
-        punts: number
-        jardas_de_punt: number
-    }
-}
+import { TeamStats } from '@/types/Stats'
 
 export default function TeamRankingPage() {
     const [players, setPlayers] = useState<Jogador[]>([])

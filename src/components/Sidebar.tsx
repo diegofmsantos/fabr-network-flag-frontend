@@ -19,6 +19,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
             setActiveItem('ranking');
         } else if (pathname?.includes('/noticia')) {
             setActiveItem('noticias');
+        } else if (pathname?.includes('/mercado')) {
+            setActiveItem('mercado');
         } else {
             setActiveItem('equipes');
         }
@@ -57,6 +59,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                         transition-colors duration-300 hover:bg-[#373740] ${activeItem === 'ranking' ? 'bg-[#373740] text-[#63E300]' : 'text-white'}`}
                 >
                     Rankings
+                </Link>
+
+                <Link
+                    href="/mercado"
+                    className={`text-xl uppercase font-extrabold italic tracking-[-1px] py-3 px-6 rounded-lg flex items-center 
+                        transition-colors duration-300 hover:bg-[#373740] ${activeItem === 'mercado' ? 'bg-[#373740] text-[#63E300]' : 'text-white'}`}
+                >
+                    Mercado
                 </Link>
 
                 <Link

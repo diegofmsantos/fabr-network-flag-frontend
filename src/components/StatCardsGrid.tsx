@@ -5,7 +5,6 @@ import { Time } from '@/types/time';
 import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/statMappings';
 import { RankingCard } from '@/components/Ranking/RankingCard';
 
-// Define the prop types clearly to avoid type errors
 interface PlayerCardProps {
   id: number;
   name: string;
@@ -20,6 +19,7 @@ interface PlayerCardProps {
 interface StatCardProps {
   title: string;
   category: string;
+  key: string
   players: PlayerCardProps[];
 }
 
@@ -28,7 +28,6 @@ interface StatCardsGridProps {
   category: string;
 }
 
-// Function to prepare player stats for display in cards
 export const prepareStatsForCards = (
   players: Jogador[],
   times: Time[],
@@ -36,7 +35,7 @@ export const prepareStatsForCards = (
   categoryTitle: string
 ): StatCardProps[] => {
   return currentStats.map(stat => {
-    // Filter players for this stat
+
     const filteredPlayers = players
       .filter(player => shouldIncludePlayer(player, stat.key, categoryTitle))
       .sort((a, b) => {
@@ -46,7 +45,7 @@ export const prepareStatsForCards = (
       })
       .slice(0, 5);
 
-    // Normalize function for file paths
+
     const normalizeForFilePath = (input: string): string => {
       if (!input) return '';
 
@@ -58,7 +57,6 @@ export const prepareStatsForCards = (
         .replace(/[^a-z0-9-]/g, '');
     };
 
-    // Format players for card display
     const formattedPlayers = filteredPlayers.map((player, index) => {
       const teamInfo = times.find(t => t.id === player.timeId) || {};
       const value = calculateStat(player, stat.key);
@@ -78,20 +76,21 @@ export const prepareStatsForCards = (
     return {
       title: stat.title,
       category: categoryTitle,
+      key: stat.key,
       players: formattedPlayers
     };
   });
 };
 
-// The StatCardsGrid component
-export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats }) => {
+export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats, category, }) => {
   return (
     <div className="hidden lg:grid grid-cols-2 gap-6">
       {stats.map((stat, index) => (
         <div key={index}>
           <RankingCard
             title={stat.title}
-            category={stat.category}
+            category={category}
+            stat={stat.key}
             players={stat.players}
           />
         </div>

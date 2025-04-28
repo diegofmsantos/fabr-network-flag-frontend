@@ -55,7 +55,7 @@ export const statsExplanations = {
         tiers: [
             "Tier 1: >= 1.8 (100% da média)",
             "Tier 2: >= 1.3 e < 1.8 (75% da média)",
-            "Tier 3: < 1.3 (50% ou menos da média)"
+            "Tier 3: < 1.3 (50% ou menos da média)" 
         ],
         totalPlayers: "54 field goals tentados/30 jogadores = 1.8"
     },

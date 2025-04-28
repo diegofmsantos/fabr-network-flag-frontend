@@ -1,11 +1,13 @@
+// src/components/Ranking/TeamRankingGroup.tsx
 import React, { useState, useEffect } from 'react'
 import Slider from 'react-slick'
 import { Time } from '@/types/time'
 import { getTimes } from '@/api/api'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import { TeamRankingCard } from './TimeRankingCard'
 import { NoStats } from '../ui/NoStats'
+import { getStatMapping } from '@/utils/statMappings'
+import { TeamRankingCard } from './TimeRankingCard'
 
 interface TeamRankingGroupProps {
     title: string
@@ -113,7 +115,6 @@ export const TeamRankingGroup: React.FC<TeamRankingGroupProps> = ({ title, stats
                 !['passes_percentual', 'jardas_media', 'jardas_corridas_media', 
                 'jardas_recebidas_media', 'jardas_retornadas_media', 'extra_points', 
                 'field_goals', 'jardas_punt_media'].includes(key)) {
-                console.warn(`Estatística não encontrada: ${key} em ${category} para time ID ${teamStat.timeId}`);
                 return null;
             }
 
@@ -205,6 +206,7 @@ export const TeamRankingGroup: React.FC<TeamRankingGroupProps> = ({ title, stats
             <h2 className="text-4xl pl-2 font-extrabold italic mb-4 leading-[30px] tracking-[-2px] lg:pl-16 xl:pl-20">{title}</h2>
             <Slider {...SLIDER_SETTINGS}>
                 {stats.map((stat, index) => {
+                    // Importante: Remover restrições extras para PUNT e CHUTE
                     // Processar times para esta estatística
                     const rankedTeams = teamStats
                         .map(teamStat => ({

@@ -76,3 +76,18 @@ export const getJogadores = async (temporada: string = '2024'): Promise<Jogador[
     throw new Error('Falha ao buscar jogadores')
   }
 }
+
+export const getTransferenciasFromJson = async (
+  temporadaOrigem: string,
+  temporadaDestino: string
+) => {
+  try {
+    const response = await api.get('/transferencias-json', {
+      params: { temporadaOrigem, temporadaDestino }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar transferências:', error);
+    throw new Error('Falha ao buscar transferências');
+  }
+};
