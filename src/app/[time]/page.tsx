@@ -17,6 +17,7 @@ import ShareButton from "@/components/ui/buttonShare"
 import { createSlug } from "@/utils/formatUrl"
 import Link from "next/link"
 import { useTeam } from "@/hooks/queries"
+import { TimeNaoEncontrado } from "@/components/ui/TimeNaoEncontrado"
 
 type Setor = "ATAQUE" | "DEFESA" | "SPECIAL"
 
@@ -31,9 +32,15 @@ export default function Page() {
     if (currentPath.includes('%20')) {
       const decodedPath = decodeURIComponent(currentPath)
       const correctSlug = createSlug(decodedPath)
-      router.replace(`/${correctSlug}`)
+      
+      // Preservar todos os parâmetros da URL atual
+      const params = new URLSearchParams(searchParams.toString())
+      const queryString = params.toString() ? `?${params.toString()}` : ''
+      
+      // Agora substitui mantendo os parâmetros originais
+      router.replace(`/${correctSlug}${queryString}`)
     }
-  }, [params.time, router])
+  }, [params.time, router, searchParams])
 
   const timeName = Array.isArray(params.time) ? params.time[0] : params.time
   const decodedTimeName = timeName ? decodeURIComponent(timeName).replace(/-/g, ' ') : ''
@@ -106,8 +113,20 @@ export default function Page() {
   }
 
   if (loadingTeam) return <Loading />
-  if (error) return <div>Erro ao carregar o time</div>
-  if (!currentTeam) return <Loading />
+  if (error) return (
+    <TimeNaoEncontrado 
+      timeNome={decodedTimeName}
+      temporadaAtual={temporada} 
+      temporadaDisponivel={temporada === '2024' ? '2025' : '2024'} 
+    />
+  )
+  if (!currentTeam) return (
+    <TimeNaoEncontrado 
+      timeNome={decodedTimeName}
+      temporadaAtual={temporada} 
+      temporadaDisponivel={temporada === '2024' ? '2025' : '2024'} 
+    />
+  )
 
   const capacetePath = `/assets/times/capacetes/${currentTeam.capacete || "default-capacete.png"}`
   return (
@@ -125,7 +144,10 @@ export default function Page() {
           style={{ backgroundColor: currentTeam.cor || "#000" }}
         >
           <Link
-            href="/"
+            href={{
+              pathname: "/",
+              query: { temporada: temporada }
+            }}
             className="absolute top-2 left-3 rounded-xl text-xs text-white py-1 px-2 lg:left-32 xl:left-[420px] 2xl:left-[570px]"
           >
             {currentTeam.sigla || "N/A"}
