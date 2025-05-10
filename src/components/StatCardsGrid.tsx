@@ -19,7 +19,7 @@ interface PlayerCardProps {
 interface StatCardProps {
   title: string;
   category: string;
-  key: string
+  key: string;
   players: PlayerCardProps[];
 }
 
@@ -34,8 +34,13 @@ export const prepareStatsForCards = (
   currentStats: Array<{ key: StatKey; title: string }>,
   categoryTitle: string
 ): StatCardProps[] => {
-  return currentStats.map(stat => {
+  // Filtra estatísticas que podem não ter jogadores válidos
+  const statsWithPlayers = currentStats.filter(stat => {
+    const hasPlayers = players.some(player => shouldIncludePlayer(player, stat.key, categoryTitle));
+    return hasPlayers;
+  });
 
+  return statsWithPlayers.map(stat => {
     const filteredPlayers = players
       .filter(player => shouldIncludePlayer(player, stat.key, categoryTitle))
       .sort((a, b) => {
@@ -44,7 +49,6 @@ export const prepareStatsForCards = (
         return compareValues(aValue, bValue);
       })
       .slice(0, 5);
-
 
     const normalizeForFilePath = (input: string): string => {
       if (!input) return '';
@@ -82,7 +86,12 @@ export const prepareStatsForCards = (
   });
 };
 
-export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats, category, }) => {
+export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats, category }) => {
+  // Não exibe nada se não houver estatísticas
+  if (!stats || stats.length === 0) {
+    return <div className="lg:py-6 text-center text-gray-500">Nenhuma estatística disponível para esta categoria.</div>;
+  }
+
   return (
     <div className="hidden lg:grid grid-cols-2 gap-6">
       {stats.map((stat, index) => (

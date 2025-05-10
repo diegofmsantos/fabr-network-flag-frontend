@@ -50,8 +50,8 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
         if (isNaN(numValue)) return value.toString();
 
         const percentageIdentifiers = [
-            'PASSES(%)', 'FG(%)', 'XP(%)',
-            'PASSES(%):', 'FG(%):', 'XP(%):'
+            'PASSES(%)', 'PASSES COMP(%)',
+            'PASSES(%):', 'PASSES COMP(%):'
         ];
 
         const isPercentage =
@@ -112,7 +112,6 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
             <ul className="flex flex-col text-white h-full">
                 {sortedTeams.map((team, index) => {
                     const teamLogoPath = `/assets/times/logos/${normalizeForFilePath(team.name)}.png`;
-                    const capacetePath = `/assets/times/capacetes/capacete-${normalizeForFilePath(team.name)}.png`;
 
                     return (
                         <li
@@ -135,9 +134,10 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
                                                 <h4 className="font-extrabold italic leading-4 text-xl uppercase">{team.name}</h4>
                                                 <Image
                                                     src={teamLogoPath}
-                                                    width={60}
-                                                    height={60}
+                                                    width={100}
+                                                    height={100}
                                                     alt={`Logo do time ${team.name}`}
+                                                    className="w-24 h-24"
                                                     onError={(e) => {
                                                         console.error(`Error loading team logo for: ${team.name}`);
                                                         const target = e.target as HTMLImageElement;
@@ -149,19 +149,19 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
                                                 </span>
                                             </div>
                                         </div>
-                                        <div className="relative w-[200px] h-[200px]">
+                                        <div className="relative w-[200px] h-[200px] flex items-center justify-center">
                                             <Image
-                                                src={capacetePath}
-                                                fill
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                                alt={`Capacete do ${team.name}`}
+                                                src={teamLogoPath}
+                                                width={160}
+                                                height={160}
+                                                alt={`Logo do ${team.name}`}
                                                 className="object-contain"
                                                 priority
                                                 quality={100}
                                                 onError={(e) => {
-                                                    console.error(`Error loading capacete for: ${team.name}`);
+                                                    console.error(`Error loading logo for: ${team.name}`);
                                                     const target = e.target as HTMLImageElement;
-                                                    target.src = '/assets/times/capacetes/capacete-default.png';
+                                                    target.src = '/assets/times/logos/default-logo.png';
                                                 }}
                                             />
                                         </div>

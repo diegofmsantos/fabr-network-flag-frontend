@@ -4,21 +4,14 @@ export class StatsFormatter {
   static format(value: number | string | null, config: StatConfig): string {
     if (value === null) return 'N/A'
 
-    // Para FGs e estatísticas no formato X/Y
+    // Para valores no formato X/Y (se existirem no flag football)
     if (typeof value === 'string' && value.includes('/')) {
       return value; // Retorna o formato X/Y original
     }
 
-    // Para médias
-    if (config.isCalculated && config.key.includes('media')) {
-      return typeof value === 'number' ? value.toFixed(1).replace('.', ',') : 'N/A'
-    }
-
     // Para percentuais
     if (config.isCalculated && (
-      config.key.includes('percentual') ||
-      config.key === 'field_goals' ||
-      config.key === 'extra_points'
+      config.key.includes('percentual')
     )) {
       return typeof value === 'number' ? `${Math.round(value)}%` : 'N/A'
     }
@@ -28,13 +21,13 @@ export class StatsFormatter {
   }
 }
 
- export const formatValue = (value: string | number, title: string): string => {
-  // Se o valor já for uma string formatada (por exemplo, já tiver um símbolo de %)
+export const formatValue = (value: string | number, title: string): string => {
+  // Se o valor já for uma string formatada
   if (typeof value === 'string' && !isNaN(Number(value.replace(/[^0-9.,]/g, '')))) {
     // Verifica se é uma estatística de porcentagem
     const isPercentage = 
       title.includes('(%)') || 
-      ['PASSES(%)', 'FG(%)', 'XP(%)'].includes(title);
+      ['PASSES(%)', 'PASSES COMP(%)'].includes(title);
     
     if (isPercentage) {
       // Extrai o número, formata-o e adiciona o símbolo de %
@@ -50,7 +43,7 @@ export class StatsFormatter {
     // Verifica se é uma estatística de porcentagem
     const isPercentage = 
       title.includes('(%)') || 
-      ['PASSES(%)', 'FG(%)', 'XP(%)'].includes(title);
+      ['PASSES(%)', 'PASSES COMP(%)'].includes(title);
     
     if (isPercentage) {
       return `${Math.round(numValue)}%`;

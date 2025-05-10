@@ -10,13 +10,8 @@ export const StatCategoryButtons: React.FC<StatCategoryButtonsProps> = ({
   onSelectCategory
 }) => {
   const categories = [
-    { key: 'passe', label: 'PASSE' },
-    { key: 'corrida', label: 'CORRIDA' },
-    { key: 'recepcao', label: 'RECEPÇÃO' },
-    { key: 'retorno', label: 'RETORNO' },
+    { key: 'ataque', label: 'ATAQUE' },
     { key: 'defesa', label: 'DEFESA' },
-    { key: 'chute', label: 'CHUTE' },
-    { key: 'punt', label: 'PUNT' }
   ];
 
   return (

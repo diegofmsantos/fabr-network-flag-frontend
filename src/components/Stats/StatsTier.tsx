@@ -19,7 +19,7 @@ interface StatsTierProps {
   title: string
   players: PlayerStats[]
   backgroundColor?: string
-  statsType: 'PASSE' | 'CORRIDA' | 'RECEPÇÃO' | 'RETORNO' | 'DEFESA' | 'CHUTE' | 'PUNT'
+  statsType: 'ATAQUE' | 'DEFESA'
   isLastTier?: boolean
 }
 
@@ -35,7 +35,7 @@ const StatsTier: React.FC<StatsTierProps> = ({ title, players, backgroundColor =
     const normalizedTeam = normalizeForFilePath(team);
     return team && team !== "time-desconhecido" && camisa
       ? `/assets/times/camisas/${normalizedTeam}/${camisa}`
-      : "/assets/times/camisas/camisa-default.png"
+      : "/assets/times/camisas/camisa-teste-flag.png"
   }
 
   const formatNumber = (value: string | number): string => {
@@ -62,7 +62,7 @@ const StatsTier: React.FC<StatsTierProps> = ({ title, players, backgroundColor =
   return (
     <div className="mb-8 max-w-[1200px] mx-auto">
       <Link
-        href={"/ranking"}
+        href={"/ranking?temporada=2025"}
         className='fixed top-8 left-5 rounded-full text-xs text-[#63E300] p-2 w-8 h-8 flex justify-center items-center bg-gray-400/40 z-50 xl:left-96 2xl:left-[500px]'>
         <FontAwesomeIcon icon={faAngleLeft} />
       </Link>
@@ -83,7 +83,7 @@ const StatsTier: React.FC<StatsTierProps> = ({ title, players, backgroundColor =
               style={{ backgroundColor: index === 0 ? teamInfo.cor : undefined }}
             >
               <Link
-                href={`/${normalizeForFilePath(teamInfo.nome)}/${player.id}`}
+                href={`/${normalizeForFilePath(teamInfo.nome)}/${player.id}?temporada=2025`}
                 className="w-full"
               >
                 {index === 0 ? (

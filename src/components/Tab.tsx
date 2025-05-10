@@ -45,30 +45,6 @@ export const Tab: React.FC<TabProps> = ({ className = '' }) => {
           </div>
         </Link>
 
-        <Link href="/mercado">
-          <div className={`flex flex-col items-center ${isMercadoRoute ? "text-[#63E300]" : "text-gray-400"}`}>
-            <Image
-              src={isMercadoRoute ? "/assets/transfer.png" : "/assets/transfer.png"}
-              alt="mercado"
-              width={25}
-              height={25}
-            />
-            <span className="text-sm">Mercado</span>
-          </div>
-        </Link>
-
-        <Link href="/noticias">
-          <div className={`flex flex-col items-center ${isNoticiasRoute ? "text-[#63E300]" : "text-gray-400"}`}>
-            <Image
-              src={isNoticiasRoute ? "/assets/news2.png" : "/assets/news.png"}
-              alt="noticias"
-              width={25}
-              height={25}
-            />
-            <span className="text-sm">Notícias</span>
-          </div>
-        </Link>
-
         <button
           onClick={() => setIsAboutOpen(true)}
           className="flex flex-col items-center text-gray-400 hover:text-[#63E300] transition-colors"

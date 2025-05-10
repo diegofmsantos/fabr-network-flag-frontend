@@ -19,13 +19,13 @@ import Link from "next/link"
 import { useTeam } from "@/hooks/queries"
 import { TimeNaoEncontrado } from "@/components/ui/TimeNaoEncontrado"
 
-type Setor = "ATAQUE" | "DEFESA" | "SPECIAL"
+type Setor = "ATAQUE" | "DEFESA"
 
 export default function Page() {
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const temporada = searchParams.get('temporada') || '2024'
+  const temporada = searchParams.get('temporada') || '2025'
 
   useEffect(() => {
     const currentPath = params.time?.toString() || ''
@@ -117,18 +117,19 @@ export default function Page() {
     <TimeNaoEncontrado 
       timeNome={decodedTimeName}
       temporadaAtual={temporada} 
-      temporadaDisponivel={temporada === '2024' ? '2025' : '2024'} 
+      temporadaDisponivel={temporada === '2025' ? '2024' : '2025'} 
     />
   )
   if (!currentTeam) return (
     <TimeNaoEncontrado 
       timeNome={decodedTimeName}
       temporadaAtual={temporada} 
-      temporadaDisponivel={temporada === '2024' ? '2025' : '2024'} 
+      temporadaDisponivel={temporada === '2025' ? '2024' : '2025'} 
     />
   )
 
-  const capacetePath = `/assets/times/capacetes/${currentTeam.capacete || "default-capacete.png"}`
+  // Removida referência ao capacete
+
   return (
     <div className="pt-[79px] xl:pt-0 pb-14 bg-[#ECECEC] xl:ml-24 2xl:ml-40">
       <TeamNameHeader teamName={currentTeam?.nome} />
@@ -159,19 +160,19 @@ export default function Page() {
               {currentTeam.nome?.toLocaleUpperCase() || "Time Indefinido"}
             </div>
 
-            {currentTeam.capacete && (
-              <div className="w-40 h-40 rotate-[15deg] -mt-6">
-                <Image
-                  src={capacetePath}
-                  alt="capacete do time"
-                  width={160}
-                  height={160}
-                  quality={100}
-                  style={{ width: '160px', height: '160px', objectFit: 'contain' }}
-                  priority
-                />
-              </div>
-            )}
+            {/* Capacete removido */}
+            
+            <div className="w-40 h-40 -mt-6">
+              <Image
+                src={`/assets/times/logos/${currentTeam.logo || "default-logo.png"}`}
+                alt="logo do time"
+                width={160}
+                height={160}
+                quality={100}
+                style={{ width: '160px', height: '160px', objectFit: 'contain' }}
+                priority
+              />
+            </div>
           </motion.div>
 
           <motion.div className="flex justify-between gap-8 mt-4 md:mt-8" style={{ opacity }}>
@@ -204,14 +205,8 @@ export default function Page() {
           exit={{ opacity: 0, x: -50 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="sticky w-full top-[55px] lg:top-10 z-40 bg-[#ECECEC] xl:w-[650px] xl:m-auto 2xl:w-[840px] 2xl:pl-10">
-            <section className="w-full max-w-[800px] flex items-center justify-between gap-5 py-5 px-4 md:px-6 lg:m-auto xl:ml-14 2xl:ml-0">
-              <ButtonSetor label="ATAQUE" borderColor={currentTeam.cor || "#000"} isSelected={selectedSetor === "ATAQUE"} onClick={() => handleSetorChange("ATAQUE")} />
-              <ButtonSetor label="DEFESA" borderColor={currentTeam.cor || "#000"} isSelected={selectedSetor === "DEFESA"} onClick={() => handleSetorChange("DEFESA")} />
-              <ButtonSetor label="SPECIAL" borderColor={currentTeam.cor || "#000"} isSelected={selectedSetor === "SPECIAL"} onClick={() => handleSetorChange("SPECIAL")} />
-            </section>
-          </div>
-          <div className="xl:border min-h-screen lg:ml-24 xl:w-[650px] xl:m-auto 2xl:w-[800px] 2xl:pl-5">
+       
+          <div className="xl:border min-h-screen lg:ml-24 xl:w-[650px] xl:m-auto 2xl:w-[800px] 2xl:pl-5 2xl:mt-4">
             <Jogador currentTeam={currentTeam} selectedSetor={selectedSetor} />
           </div>
         </motion.div>

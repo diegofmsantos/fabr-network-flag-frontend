@@ -61,21 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                     Rankings
                 </Link>
 
-                <Link
-                    href="/mercado"
-                    className={`text-xl uppercase font-extrabold italic tracking-[-1px] py-3 px-6 rounded-lg flex items-center 
-                        transition-colors duration-300 hover:bg-[#373740] ${activeItem === 'mercado' ? 'bg-[#373740] text-[#63E300]' : 'text-white'}`}
-                >
-                    Mercado
-                </Link>
-
-                <Link
-                    href="/noticias"
-                    className={`text-xl uppercase font-extrabold italic tracking-[-1px] py-3 px-6 rounded-lg flex items-center 
-                        transition-colors duration-300 hover:bg-[#373740] ${activeItem === 'noticias' ? 'bg-[#373740] text-[#63E300]' : 'text-white'}`}
-                >
-                    Notícias
-                </Link>
+               
             </nav>
 
             {/* Footer com direitos autorais e/ou social media (opcional) */}

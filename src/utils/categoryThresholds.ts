@@ -1,4 +1,4 @@
-export type CategoryKey = 'passe' | 'corrida' | 'recepcao' | 'retorno' | 'defesa' | 'kicker' | 'punter'
+export type CategoryKey = 'ataque' | 'defesa'
 
 interface TierThreshold {
     min: number
@@ -12,40 +12,15 @@ interface CategoryThreshold {
 }
 
 export const CATEGORY_THRESHOLDS: Record<CategoryKey, CategoryThreshold> = {
-    passe: {
-        tier1: 40.9,
-        tier2: { min: 30.6, max: 40.9 },
-        tier3: 30.6
-    },
-    corrida: {
-        tier1: 10.2,
-        tier2: { min: 7.6, max: 10.2 },
-        tier3: 7.6
-    },
-    recepcao: {
-        tier1: 7.5,
-        tier2: { min: 5.6, max: 7.5 },
-        tier3: 5.6
-    },
-    retorno: {
-        tier1: 2.9,
-        tier2: { min: 2.1, max: 2.9 },
-        tier3: 2.1
+    ataque: {
+        tier1: 10,  // 10+ atividades ofensivas (passes tentados, corridas, recepções)
+        tier2: { min: 5, max: 10 },  // 5-10 atividades
+        tier3: 5  // menos de 5 atividades
     },
     defesa: {
-        tier1: 4.8,
-        tier2: { min: 3.6, max: 4.8 },
-        tier3: 3.6
-    },
-    kicker: {
-        tier1: 1.8,
-        tier2: { min: 1.3, max: 1.8 },
-        tier3: 1.3
-    },
-    punter: {
-        tier1: 5.0,
-        tier2: { min: 3.75, max: 5.0 },
-        tier3: 3.75
+        tier1: 4,  // 4+ ações defensivas (flags retiradas, sacks, interceptações, etc.)
+        tier2: { min: 2, max: 4 },  // 2-4 ações
+        tier3: 2  // menos de 2 ações
     }
 }
 

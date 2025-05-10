@@ -9,7 +9,6 @@ import { getStatMapping } from '@/utils/statMappings'
 import { TeamStatsList } from '@/components/Stats/TeamStatsList'
 import { teamStatGroups } from '@/utils/statGroups'
 
-// Função para obter o grupo da estatística atual
 const getStatGroup = (statParam: string): string => {
     for (const group of teamStatGroups) {
         if (group.stats.some(stat => stat.urlParam === statParam)) {

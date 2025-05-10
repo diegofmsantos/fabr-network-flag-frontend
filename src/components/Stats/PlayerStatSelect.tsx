@@ -8,7 +8,6 @@ interface PlayerStatSelectProps {
     currentStat: string
 }
 
-// Função para obter o grupo da estatística atual
 const getStatGroup = (statParam: string): string => {
     for (const group of statGroups) {
         const stat = group.stats.find(s => s.urlParam === statParam)
@@ -16,17 +15,17 @@ const getStatGroup = (statParam: string): string => {
             return group.title
         }
     }
-    return 'Passando'
+    return 'Passando' 
 }
 
 export const PlayerStatSelect: React.FC<PlayerStatSelectProps> = ({ currentStat }) => {
     const router = useRouter()
     const currentGroup = getStatGroup(currentStat)
-    const [selectedStat, setSelectedStat] = useState(currentStat)
+    const [selectedStat, setSelectedStat] = useState(currentStat || 'passe-tentados') // Valor padrão atualizado
 
     const handleStatChange = (newStat: string) => {
         setSelectedStat(newStat)
-        router.push(`/ranking/stats?stat=${newStat}`)
+        router.push(`/ranking/stats?stat=${newStat}&temporada=2025`)
     }
 
     return (

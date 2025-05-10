@@ -3,14 +3,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { Time } from '@/types/time'
 import { Jogador } from '@/types/jogador'
-import { Noticia } from '@/types/noticia'
 import { api } from '@/libs/axios'
 import { createSlug, findPlayerBySlug, getPlayerSlug, getTeamSlug } from '@/utils/formatUrl'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { queryKeys } from './queryKeys'
 
 // Funções de fetch
-const fetchTimes = async (temporada: string = '2024'): Promise<Time[]> => {
+const fetchTimes = async (temporada: string = '2025'): Promise<Time[]> => {
     console.log(`Buscando times da temporada: ${temporada}`);
     try {
         const { data } = await api.get<Time[]>(`/times?temporada=${temporada}`)
@@ -22,7 +21,7 @@ const fetchTimes = async (temporada: string = '2024'): Promise<Time[]> => {
     }
 }
 
-const fetchJogadores = async (temporada: string = '2024'): Promise<Jogador[]> => {
+const fetchJogadores = async (temporada: string = '2025'): Promise<Jogador[]> => {
     console.log(`Buscando jogadores da temporada: ${temporada}`);
     try {
         const { data } = await api.get<Jogador[]>(`/jogadores?temporada=${temporada}`)
@@ -34,28 +33,15 @@ const fetchJogadores = async (temporada: string = '2024'): Promise<Jogador[]> =>
     }
 }
 
-const fetchNoticias = async (): Promise<Noticia[]> => {
-    const { data } = await api.get<Noticia[]>('/materias')
-    return data
-}
-
-// Função helper para notícias relacionadas
-function shuffleAndFilterNews(allNews: Noticia[], currentNewsId: number, limit: number = 6) {
-    return allNews
-        .filter(news => news.id !== currentNewsId)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, limit)
-}
-
 // Hook para obter a temporada dos parâmetros da URL
 export function useTemporada(explicitTemporada?: string) {
     const searchParams = useSearchParams();
-    let temporada = explicitTemporada || searchParams?.get('temporada') || '2024';
+    let temporada = explicitTemporada || searchParams?.get('temporada') || '2025';
 
     // Validar que temporada é '2024' ou '2025'
     if (temporada !== '2024' && temporada !== '2025') {
-        console.warn(`Temporada inválida: ${temporada}, usando 2024`);
-        temporada = '2024'; // Default seguro
+        console.warn(`Temporada inválida: ${temporada}, usando 2025`);
+        temporada = '2025'; // Default seguro para flag football
     }
 
     console.log('useTemporada atual:', temporada);
@@ -85,16 +71,7 @@ export function useTimes(temporada?: string) {
     })
 }
 
-export function useNoticias() {
-    return useQuery({
-        queryKey: queryKeys.noticias,
-        queryFn: fetchNoticias,
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 30,
-    })
-}
-
-// Trecho adaptado para o arquivo queries.ts
+// Hook para obter um time específico
 export function useTeam(teamName: string | undefined, explicitTemporada?: string) {
     const temporada = useTemporada(explicitTemporada);
     const router = useRouter();
@@ -133,88 +110,6 @@ export function useTeam(teamName: string | undefined, explicitTemporada?: string
             }
 
             console.log(`Time ${teamName} não encontrado diretamente na temporada ${temporada}, buscando correspondências...`);
-
-            // Mapeamento especial para casos conhecidos
-            // Caso de 2024 -> 2025
-            if (temporada === '2025' && teamSlug === 'Parana-HP') {
-                // Busca diretamente o time Calvary Cavaliers na temporada 2025
-                timeEncontrado = times.find(t =>
-                    getTeamSlug(t.nome || '') === 'Calvary-Cavaliers'
-                );
-
-                if (timeEncontrado) {
-                    console.log(`Time 'Paraná HP' encontrado como '${timeEncontrado.nome}' em 2025`);
-
-                    // Redirecionar para o novo nome
-                    const params = new URLSearchParams(searchParams?.toString() || '');
-                    // Garantir que o parâmetro de temporada seja mantido
-                    if (!params.has('temporada') && temporada) {
-                        params.set('temporada', temporada);
-                    }
-                    const novaURL = `/${getTeamSlug(timeEncontrado.nome || '')}?${params.toString()}`;
-
-                    console.log(`Redirecionando para o novo nome do time: ${novaURL}`);
-                    setTimeout(() => {
-                        router.replace(novaURL, { scroll: false });
-                    }, 0);
-
-                    return timeEncontrado;
-                }
-            }
-
-            // Caso de 2025 -> 2024 para o Calvary Cavaliers
-            if (temporada === '2024' && teamSlug === 'Calvary-Cavaliers') {
-                // Busca diretamente o time Paraná HP na temporada 2024
-                timeEncontrado = times.find(t =>
-                    getTeamSlug(t.nome || '') === 'Parana-HP'
-                );
-
-                if (timeEncontrado) {
-                    console.log(`Time 'Calvary Cavaliers' encontrado como '${timeEncontrado.nome}' em 2024`);
-
-                    // Redirecionar para o nome antigo
-                    const params = new URLSearchParams(searchParams?.toString() || '');
-                    // Garantir que o parâmetro de temporada seja mantido
-                    if (!params.has('temporada') && temporada) {
-                        params.set('temporada', temporada);
-                    }
-                    const novaURL = `/${getTeamSlug(timeEncontrado.nome || '')}?${params.toString()}`;
-
-                    console.log(`Redirecionando para o nome antigo do time: ${novaURL}`);
-                    setTimeout(() => {
-                        router.replace(novaURL, { scroll: false });
-                    }, 0);
-
-                    return timeEncontrado;
-                }
-            }
-
-            // Caso de 2025 -> 2024 para o Locomotiva FA
-            if (temporada === '2024' && teamSlug === 'Locomotiva-FA') {
-                // Busca diretamente o time América Locomotiva na temporada 2024
-                timeEncontrado = times.find(t =>
-                    getTeamSlug(t.nome || '') === 'America-Locomotiva'
-                );
-
-                if (timeEncontrado) {
-                    console.log(`Time 'Locomotiva FA' encontrado como '${timeEncontrado.nome}' em 2024`);
-
-                    // Redirecionar para o nome antigo
-                    const params = new URLSearchParams(searchParams?.toString() || '');
-                    // Garantir que o parâmetro de temporada seja mantido
-                    if (!params.has('temporada') && temporada) {
-                        params.set('temporada', temporada);
-                    }
-                    const novaURL = `/${getTeamSlug(timeEncontrado.nome || '')}?${params.toString()}`;
-
-                    console.log(`Redirecionando para o nome antigo do time: ${novaURL}`);
-                    setTimeout(() => {
-                        router.replace(novaURL, { scroll: false });
-                    }, 0);
-
-                    return timeEncontrado;
-                }
-            }
 
             // Se não encontrou com os mapeamentos específicos, busca por cidade e estado
             if (temporada === '2025') {
@@ -264,8 +159,42 @@ export function useTeam(teamName: string | undefined, explicitTemporada?: string
                 try {
                     const timesFuturos = await fetchTimes('2025');
 
-                    // Resto da lógica de busca em 2025
-                    // [...]
+                    // Procura o time pelo slug na temporada 2025
+                    const timeFuturo = timesFuturos.find(t =>
+                        getTeamSlug(t.nome || '') === teamSlug
+                    );
+
+                    if (timeFuturo) {
+                        console.log(`Time encontrado na temporada 2025 como: ${timeFuturo.nome}`);
+
+                        // Busca o time correspondente na temporada 2024 por cidade e estado
+                        const possiveisCorrespondencias = times.filter(t =>
+                            t.cidade === timeFuturo.cidade &&
+                            t.bandeira_estado === timeFuturo.bandeira_estado
+                        );
+
+                        if (possiveisCorrespondencias.length > 0) {
+                            timeEncontrado = possiveisCorrespondencias[0];
+                            console.log(`Time correspondente encontrado em 2024: ${timeEncontrado.nome}`);
+
+                            // Atualiza a URL se o nome do time mudou
+                            if (pathname && getTeamSlug(timeEncontrado.nome || '') !== teamSlug) {
+                                const params = new URLSearchParams(searchParams?.toString() || '');
+                                // Garantir que o parâmetro de temporada seja mantido
+                                if (!params.has('temporada') && temporada) {
+                                    params.set('temporada', temporada);
+                                }
+                                const novaURL = `/${getTeamSlug(timeEncontrado.nome || '')}?${params.toString()}`;
+
+                                console.log(`Redirecionando para o nome antigo do time: ${novaURL}`);
+                                setTimeout(() => {
+                                    router.replace(novaURL, { scroll: false });
+                                }, 0);
+                            }
+
+                            return timeEncontrado;
+                        }
+                    }
                 } catch (error) {
                     console.error("Erro ao buscar times futuros:", error);
                 }
@@ -391,19 +320,8 @@ export function usePlayerDetails(
     });
 }
 
-export function useNoticiaDetalhes(noticiaId: number) {
-    const { data: noticias = [], isLoading } = useNoticias()
-
-    return {
-        noticia: noticias.find(n => n.id === noticiaId),
-        noticiasRelacionadas: isLoading ? [] : shuffleAndFilterNews(noticias, noticiaId),
-        isLoading,
-        noticias
-    }
-}
-
 // Função de prefetch melhorada
-export const prefetchQueries = async (queryClient: any, temporada: string = '2024') => {
+export const prefetchQueries = async (queryClient: any, temporada: string = '2025') => {
     console.log(`Pré-carregando dados para temporada: ${temporada}`);
 
     await Promise.all([
@@ -414,11 +332,7 @@ export const prefetchQueries = async (queryClient: any, temporada: string = '202
         queryClient.prefetchQuery({
             queryKey: queryKeys.jogadores(temporada),
             queryFn: () => fetchJogadores(temporada),
-        }),
-        queryClient.prefetchQuery({
-            queryKey: queryKeys.noticias,
-            queryFn: fetchNoticias,
-        }),
+        })
     ]);
 
     console.log(`Dados pré-carregados com sucesso para temporada: ${temporada}`);

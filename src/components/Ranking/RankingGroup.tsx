@@ -9,22 +9,26 @@ import 'slick-carousel/slick/slick-theme.css'
 import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/statMappings'
 import { NoStats } from '../ui/NoStats'
 
+// Atualizado para refletir a nova estrutura de estatísticas do flag football
 export type StatKey =
-  | keyof Jogador['estatisticas']['passe']
-  | keyof Jogador['estatisticas']['corrida']
-  | keyof Jogador['estatisticas']['recepcao']
-  | keyof Jogador['estatisticas']['retorno']
-  | keyof Jogador['estatisticas']['defesa']
-  | keyof Jogador['estatisticas']['kicker']
-  | keyof Jogador['estatisticas']['punter']
-  | 'passes_percentual'
-  | 'jardas_media'
-  | 'jardas_corridas_media'
-  | 'jardas_recebidas_media'
-  | 'jardas_retornadas_media'
-  | 'extra_points'
-  | 'field_goals'
-  | 'jardas_punt_media';
+  | 'passes_completos'
+  | 'passes_tentados'
+  | 'td_passado'
+  | 'interceptacoes_sofridas'
+  | 'sacks_sofridos'
+  | 'corrida'
+  | 'tds_corridos'
+  | 'recepcao'
+  | 'alvo'
+  | 'td_recebido'
+  | 'sack'
+  | 'pressao'
+  | 'flag_retirada'
+  | 'flag_perdida'
+  | 'interceptacao_forcada'
+  | 'passe_desviado'
+  | 'td_defensivo'
+  | 'passes_percentual';  // Estatística calculada
 
 interface RankingGroupProps {
   title: string;
@@ -64,7 +68,8 @@ export const RankingGroup: React.FC<RankingGroupProps> = ({ title, stats, player
     const fetchTimes = async () => {
       try {
         setLoading(true)
-        const timesData = await getTimes()
+        // Atualizado para usar 2025 como temporada padrão
+        const timesData = await getTimes('2025')
         setTimes(timesData)
       } catch (error) {
         console.error('Error fetching times:', error)
@@ -78,19 +83,15 @@ export const RankingGroup: React.FC<RankingGroupProps> = ({ title, stats, player
   const normalizeValue = (value: string | number | null, statKey: StatKey): string => {
     if (value === null) return 'N/A'
 
-    // Manter formato original para FGs
-    if (['fg_11_20', 'fg_21_30', 'fg_31_40', 'fg_41_50'].includes(statKey as string)) return String(value)
-
     if (typeof value === 'string') return value
 
-    const percentageStats = ['passes_percentual', 'extra_points', 'field_goals']
-    const averageStats = ['jardas_media', 'jardas_corridas_media', 'jardas_recebidas_media', 'jardas_retornadas_media', 'jardas_punt_media']
+    // Lista simplificada de estatísticas especiais para flag football
+    const percentageStats = ['passes_percentual']
 
     if (percentageStats.includes(statKey as string)) {
       return `${Math.round(value)}%`;
-    } else if (averageStats.includes(statKey as string)) {
-      return value.toFixed(1);
     }
+    
     return Math.round(value).toString();
   }
 
@@ -162,6 +163,7 @@ export const RankingGroup: React.FC<RankingGroupProps> = ({ title, stats, player
               <RankingCard
                 title={stat.title}
                 category={title}
+                stat={stat.key}
                 players={filteredPlayers.map((player, playerIndex) => {
                   const teamInfo = getTeamInfo(player.timeId);
                   const value = calculateStat(player, stat.key);

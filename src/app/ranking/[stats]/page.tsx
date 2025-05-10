@@ -66,14 +66,10 @@ const StatsPage: React.FC = () => {
   ) => {
     const getStatsType = (category: CategoryKey): StatType => {
       // Mapeia as categorias em minúsculo para o formato correto
+      // Atualizado para incluir apenas as categorias de flag football
       const categoryMapping: Record<string, StatType> = {
-        'passe': 'PASSE',
-        'corrida': 'CORRIDA',
-        'recepcao': 'RECEPÇÃO',
-        'retorno': 'RETORNO',
-        'defesa': 'DEFESA',
-        'kicker': 'CHUTE',
-        'punter': 'PUNT'
+        'ataque': 'ATAQUE',
+        'defesa': 'DEFESA'
       };
 
       // Verifica primeiro pelo statParam para casos especiais
@@ -84,7 +80,7 @@ const StatsPage: React.FC = () => {
       }
 
       // Se não encontrou pelo statParam, usa a categoria direta
-      return categoryMapping[category] || 'PASSE'
+      return categoryMapping[category] || 'ATAQUE'
     }
 
     return (
@@ -103,8 +99,6 @@ const StatsPage: React.FC = () => {
 
   return (
     <StatsLayout initialFilter="jogadores" statType={statParam}>
-      {/* Conteúdo existente da página */}
-
       <div className="bg-[#ECECEC] min-h-screen pt-8 pb-14 px-2 lg:max-w-[800px] lg:min-w-[800px] lg:m-auto">
         <div className="">
           <PlayerStatSelect currentStat={statParam} />

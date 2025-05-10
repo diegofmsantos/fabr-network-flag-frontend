@@ -27,7 +27,7 @@ export default function Page() {
     const params = useParams()
     const router = useRouter()
     const searchParams = useSearchParams()
-    const temporada = searchParams.get('temporada') || '2024'
+    const temporada = searchParams.get('temporada') || '2025'
     const [selectedTemporada, setSelectedTemporada] = useState(temporada);
     const queryClient = useQueryClient();
 
@@ -98,7 +98,7 @@ export default function Page() {
     const getCamisaPath = (jogador: Jogador, currentTeam: Time): string => {
         // Se não temos dados suficientes, retorna uma imagem padrão
         if (!currentTeam?.nome || !jogador?.camisa) {
-            return '/assets/times/camisas/camisa-default.png';
+            return '/assets/times/camisas/camisa-teste-flag.png';
         }
 
         // Normaliza o nome do time para o formato usado nas pastas
@@ -135,77 +135,33 @@ export default function Page() {
         return '0';
     };
 
-    const calcularExperiencia = (anoInicio: number) => {
-        if (!anoInicio) return 0;
-        const anoAtual = new Date().getFullYear();
-        return anoAtual - anoInicio;
-    };
-
-    const experienciaAnos = calcularExperiencia(currentJogador.experiencia);
-
     // Caminhos para assets
     const logoPath = getLogoPath(currentTime);
 
     // Objetos seguros para estatísticas
-    const passe = currentJogador.estatisticas?.passe || {};
-    const passeSafe = {
-        passes_completos: passe.passes_completos || 0,
-        passes_tentados: passe.passes_tentados || 0,
-        jardas_de_passe: passe.jardas_de_passe || 0,
-        td_passados: passe.td_passados || 0,
-        interceptacoes_sofridas: passe.interceptacoes_sofridas || 0,
-        sacks_sofridos: passe.sacks_sofridos || 0,
-        fumble_de_passador: passe.fumble_de_passador || 0
-    };
-
-    const corrida = currentJogador.estatisticas?.corrida || {};
-    const corridaSafe = {
-        corridas: corrida.corridas || 0,
-        jardas_corridas: corrida.jardas_corridas || 0,
-        tds_corridos: corrida.tds_corridos || 0,
-        fumble_de_corredor: corrida.fumble_de_corredor || 0
-    };
-
-    const recepcao = currentJogador.estatisticas?.recepcao || {};
-    const recepcaoSafe = {
-        recepcoes: recepcao.recepcoes || 0,
-        alvo: recepcao.alvo || 0,
-        jardas_recebidas: recepcao.jardas_recebidas || 0,
-        tds_recebidos: recepcao.tds_recebidos || 0
-    };
-
-    const retorno = currentJogador.estatisticas?.retorno || {};
-    const retornoSafe = {
-        retornos: retorno.retornos || 0,
-        jardas_retornadas: retorno.jardas_retornadas || 0,
-        td_retornados: retorno.td_retornados || 0
+    const ataque = currentJogador.estatisticas?.ataque || {};
+    const ataqueSafe = {
+        passes_completos: ataque.passes_completos || 0,
+        passes_tentados: ataque.passes_tentados || 0,
+        td_passado: ataque.td_passado || 0,
+        interceptacoes_sofridas: ataque.interceptacoes_sofridas || 0,
+        sacks_sofridos: ataque.sacks_sofridos || 0,
+        corrida: ataque.corrida || 0,
+        tds_corridos: ataque.tds_corridos || 0,
+        recepcao: ataque.recepcao || 0,
+        alvo: ataque.alvo || 0,
+        td_recebido: ataque.td_recebido || 0
     };
 
     const defesa = currentJogador.estatisticas?.defesa || {};
     const defesaSafe = {
-        tackles_totais: defesa.tackles_totais || 0,
-        tackles_for_loss: defesa.tackles_for_loss || 0,
-        sacks_forcado: defesa.sacks_forcado || 0,
-        fumble_forcado: defesa.fumble_forcado || 0,
-        interceptacao_forcada: defesa.interceptacao_forcada || 0,
+        sack: defesa.sack || 0,
+        pressao: defesa.pressao || 0,
+        flag_retirada: defesa.flag_retirada || 0,
+        flag_perdida: defesa.flag_perdida || 0,
         passe_desviado: defesa.passe_desviado || 0,
-        safety: defesa.safety || 0,
+        interceptacao_forcada: defesa.interceptacao_forcada || 0,
         td_defensivo: defesa.td_defensivo || 0
-    };
-
-    const kicker = currentJogador.estatisticas?.kicker || {};
-    const kickerSafe = {
-        xp_bons: kicker.xp_bons || 0,
-        tentativas_de_xp: kicker.tentativas_de_xp || 0,
-        fg_bons: kicker.fg_bons || 0,
-        tentativas_de_fg: kicker.tentativas_de_fg || 0,
-        fg_mais_longo: kicker.fg_mais_longo || 0
-    };
-
-    const punter = currentJogador.estatisticas?.punter || {};
-    const punterSafe = {
-        punts: punter.punts || 0,
-        jardas_de_punt: punter.jardas_de_punt || 0
     };
 
     return (
@@ -245,27 +201,6 @@ export default function Page() {
                                     min-[425px]:text-[30px] md:text-[40px] lg:text-5xl xl:text-4xl'>
                                         {(currentJogador.nome || '').toLocaleUpperCase()}
                                     </div>
-                                    <div className='flex items-center gap-2'>
-                                        <div className='text-[34px] text-[#D9D9D9] text-center px-2 font-extrabold italic tracking-[-3px] md:text-4xl'>
-                                            {currentJogador.posicao || ''}
-                                        </div>
-                                        <div className="w-8">
-                                            {currentJogador.nacionalidade && (
-                                                <Image
-                                                    src={`/assets/bandeiras/${currentJogador.nacionalidade}`}
-                                                    alt='logo-bandeira'
-                                                    width={40}
-                                                    height={40}
-                                                    quality={100}
-                                                    className="w-auto h-auto"
-                                                    onError={(e) => {
-                                                        console.warn(`Erro ao carregar bandeira: ${currentJogador.nacionalidade}`);
-                                                        (e.target as HTMLImageElement).style.display = 'none';
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
                                     <div className='-mt-5'>
                                         <Image
                                             src={logoPath}
@@ -290,7 +225,6 @@ export default function Page() {
                                         quality={100}
                                         className="w-48 h-60 ml-auto"
                                         priority
-
                                     />
                                 </div>
                             </div>
@@ -359,20 +293,6 @@ export default function Page() {
                                     </div>
                                 </div>
                             </div>
-                            <div className='border-b border-bg-[#D9D9D9] flex-1 justify-start'>
-                                <div className="text-sm md:text-lg">TIME FORMADOR</div>
-                                <div className='flex items-center'>
-                                    <div className="text-xl font-extrabold italic">
-                                        {(currentJogador.timeFormador || '').toLocaleUpperCase()}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='border-b border-bg-[#D9D9D9] flex justify-start'>
-                                <div className='flex-1 justify-start'>
-                                    <div className="text-sm md:text-lg">EXPERIÊNCIA</div>
-                                    <div className="text-xl font-extrabold italic md:text-lg">{experienciaAnos} ANO{experienciaAnos > 1 ? 'S' : ''}</div>
-                                </div>
-                            </div>
                             <div className='flex justify-start'>
                                 <div className='flex-1 justify-start'>
                                     <div className="text-sm md:text-lg">INSTAGRAM</div>
@@ -386,167 +306,65 @@ export default function Page() {
                         </div>
                     </div>
 
-                    {currentJogador.estatisticas?.passe &&
+                    {currentJogador.estatisticas?.ataque &&
                         (
-                            passeSafe.passes_completos > 0 ||
-                            passeSafe.jardas_de_passe > 0 ||
-                            passeSafe.td_passados > 0 ||
-                            passeSafe.interceptacoes_sofridas > 0 ||
-                            passeSafe.sacks_sofridos > 0 ||
-                            passeSafe.fumble_de_passador > 0
+                            ataqueSafe.passes_completos > 0 ||
+                            ataqueSafe.passes_tentados > 0 ||
+                            ataqueSafe.td_passado > 0 ||
+                            ataqueSafe.interceptacoes_sofridas > 0 ||
+                            ataqueSafe.sacks_sofridos > 0 ||
+                            ataqueSafe.corrida > 0 ||
+                            ataqueSafe.tds_corridos > 0 ||
+                            ataqueSafe.recepcao > 0 ||
+                            ataqueSafe.alvo > 0 ||
+                            ataqueSafe.td_recebido > 0
                         ) && (
                             <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
                                 <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (PASSE)
+                                    style={{ backgroundColor: currentTime?.cor }}>STATS (ATAQUE)
                                 </div>
                                 <div className="bg-white flex flex-col justify-start gap-4 p-4 rounded-lg lg:p-6">
                                     <Stats
                                         label1='PASSES(COMP/TENT)'
-                                        label2={`${passeSafe.passes_completos}/${passeSafe.passes_tentados}`}
+                                        label2={`${ataqueSafe.passes_completos}/${ataqueSafe.passes_tentados}`}
                                         label3='PASSES(%)'
-                                        label4={passeSafe.passes_tentados > 0
-                                            ? ((passeSafe.passes_completos / passeSafe.passes_tentados) * 100)
+                                        label4={ataqueSafe.passes_tentados > 0
+                                            ? ((ataqueSafe.passes_completos / ataqueSafe.passes_tentados) * 100)
                                                 .toFixed(0).replace('.', ',') + '%'
                                             : '0%'}
                                     />
                                     <Stats
-                                        label1='JARDAS (TOTAIS)'
-                                        label2={formatNumber(passeSafe.jardas_de_passe)}
-                                        label3='JARDAS (AVG)'
-                                        label4={passeSafe.passes_tentados > 0
-                                            ? (passeSafe.jardas_de_passe / passeSafe.passes_tentados)
-                                                .toFixed(1).replace('.', ',')
-                                            : '0,0'}
-                                    />
-                                    <Stats
-                                        label1='TOUCHDOWNS'
-                                        label2={passeSafe.td_passados}
+                                        label1='TOUCHDOWNS(PASSE)'
+                                        label2={ataqueSafe.td_passado}
                                         label3='INTERCEPTAÇÕES'
-                                        label4={passeSafe.interceptacoes_sofridas}
+                                        label4={ataqueSafe.interceptacoes_sofridas}
                                     />
-                                    <Stats
-                                        label1='SACKS'
-                                        label2={passeSafe.sacks_sofridos}
-                                        label3='FUMBLES'
-                                        label4={passeSafe.fumble_de_passador}
-                                        noBorder
-                                    />
-                                </div>
-                            </div>
-                        )
-                    }
-
-                    {currentJogador.estatisticas?.corrida &&
-                        (
-                            corridaSafe.corridas > 0 ||
-                            corridaSafe.jardas_corridas > 0 ||
-                            corridaSafe.tds_corridos > 0 ||
-                            corridaSafe.fumble_de_corredor > 0
-                        ) && (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div
-                                    className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}
-                                >
-                                    STATS (CORRIDA)
-                                </div>
-                                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
                                     <Stats
                                         label1='CORRIDAS'
-                                        label2={`${corridaSafe.corridas}`}
-                                        label3='JARDAS (TOTAIS)'
-                                        label4={`${corridaSafe.jardas_corridas}`}
+                                        label2={ataqueSafe.corrida}
+                                        label3='TDs CORRIDOS'
+                                        label4={ataqueSafe.tds_corridos}
                                     />
                                     <Stats
-                                        label1='JARDAS (AVG)'
-                                        label2={corridaSafe.corridas > 0
-                                            ? (corridaSafe.jardas_corridas / corridaSafe.corridas)
-                                                .toFixed(1).replace('.', ',')
-                                            : '0,0'}
-                                        label3='TOUCHDOWNS'
-                                        label4={corridaSafe.tds_corridos}
-                                    />
-                                    <Stats
-                                        label1='FUMBLES'
-                                        label2={corridaSafe.fumble_de_corredor}
+                                        label1='RECEPÇÕES/ALVO'
+                                        label2={`${ataqueSafe.recepcao}/${ataqueSafe.alvo}`}
+                                        label3='TDs RECEBIDOS'
+                                        label4={ataqueSafe.td_recebido}
                                         noBorder
                                     />
                                 </div>
                             </div>
                         )
                     }
-
-                    {currentJogador.estatisticas?.recepcao &&
-                        (
-                            recepcaoSafe.jardas_recebidas > 0 ||
-                            recepcaoSafe.recepcoes > 0 ||
-                            recepcaoSafe.alvo > 0
-                        ) && (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (RECEPÇÃO)
-                                </div>
-                                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
-                                    <Stats
-                                        label1='RECEPÇÕES'
-                                        label2={`${recepcaoSafe.recepcoes}/${recepcaoSafe.alvo}`}
-                                        label3='JARDAS (TOTAIS)'
-                                        label4={`${recepcaoSafe.jardas_recebidas}`}
-                                    />
-                                    <Stats
-                                        label1='JARDAS (AVG)'
-                                        label2={recepcaoSafe.alvo > 0
-                                            ? (recepcaoSafe.jardas_recebidas / recepcaoSafe.alvo)
-                                                .toFixed(1).replace('.', ',')
-                                            : '0,0'}
-                                        label3='TOUCHDOWNS'
-                                        label4={recepcaoSafe.tds_recebidos}
-                                        noBorder
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                    {currentJogador.estatisticas?.retorno &&
-                        (
-                            retornoSafe.retornos > 0 ||
-                            retornoSafe.jardas_retornadas > 0 ||
-                            retornoSafe.td_retornados > 0
-                        ) && (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (RETORNO)
-                                </div>
-                                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
-                                    <Stats
-                                        label1='RETORNOS'
-                                        label2={retornoSafe.retornos}
-                                        label3='JARDAS (TOTAIS)'
-                                        label4={retornoSafe.jardas_retornadas}
-                                    />
-                                    <Stats
-                                        label1='JARDAS (AVG)'
-                                        label2={retornoSafe.retornos > 0
-                                            ? (retornoSafe.jardas_retornadas / retornoSafe.retornos)
-                                                .toFixed(1).replace('.', ',')
-                                            : '0,0'}
-                                        label3='TOUCHDOWNS'
-                                        label4={retornoSafe.td_retornados}
-                                        noBorder
-                                    />
-                                </div>
-                            </div>
-                        )}
 
                     {currentJogador.estatisticas?.defesa &&
                         (
-                            defesaSafe.tackles_totais > 0 ||
-                            defesaSafe.tackles_for_loss > 0 ||
-                            defesaSafe.sacks_forcado > 0 ||
-                            defesaSafe.fumble_forcado > 0 ||
+                            defesaSafe.flag_retirada > 0 ||
+                            defesaSafe.flag_perdida > 0 ||
+                            defesaSafe.sack > 0 ||
+                            defesaSafe.pressao > 0 ||
                             defesaSafe.interceptacao_forcada > 0 ||
                             defesaSafe.passe_desviado > 0 ||
-                            defesaSafe.safety > 0 ||
                             defesaSafe.td_defensivo > 0
                         ) &&
                         (
@@ -555,16 +373,16 @@ export default function Page() {
                                     style={{ backgroundColor: currentTime?.cor }}>STATS (DEFESA)</div>
                                 <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
                                     <Stats
-                                        label1='TACKELS (TOTAIS)'
-                                        label2={defesaSafe.tackles_totais}
-                                        label3='TACKLES (FOR LOSS)'
-                                        label4={defesaSafe.tackles_for_loss}
+                                        label1='FLAG RETIRADA'
+                                        label2={defesaSafe.flag_retirada}
+                                        label3='FLAG PERDIDA'
+                                        label4={defesaSafe.flag_perdida}
                                     />
                                     <Stats
                                         label1='SACKS'
-                                        label2={defesaSafe.sacks_forcado}
-                                        label3='FUMBLES FORÇADOS'
-                                        label4={defesaSafe.fumble_forcado}
+                                        label2={defesaSafe.sack}
+                                        label3='PRESSÃO'
+                                        label4={defesaSafe.pressao}
                                     />
                                     <Stats
                                         label1='INTERCEPTAÇÕES'
@@ -573,75 +391,8 @@ export default function Page() {
                                         label4={defesaSafe.passe_desviado}
                                     />
                                     <Stats
-                                        label1='SAFETY'
-                                        label2={defesaSafe.safety}
-                                        label3='TOUCHDOWNS'
-                                        label4={defesaSafe.td_defensivo}
-                                        noBorder
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                    {currentJogador.estatisticas?.kicker &&
-                        (
-                            kickerSafe.xp_bons > 0 ||
-                            kickerSafe.tentativas_de_xp > 0 ||
-                            kickerSafe.fg_bons > 0 ||
-                            kickerSafe.tentativas_de_fg > 0 ||
-                            kickerSafe.fg_mais_longo > 0
-                        ) && (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (KICKER)
-                                </div>
-                                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
-                                    <Stats
-                                        label1='EXTRA-POINTS'
-                                        label2={`${kickerSafe.xp_bons}/${kickerSafe.tentativas_de_xp}`}
-                                        label3='EXTRA-POINTS (%)'
-                                        label4={kickerSafe.tentativas_de_xp > 0
-                                            ? ((kickerSafe.xp_bons / kickerSafe.tentativas_de_xp) * 100)
-                                                .toFixed(0).replace('.', ',') + '%'
-                                            : '0%'}
-                                    />
-                                    <Stats
-                                        label1='FIELD GOALS'
-                                        label2={`${kickerSafe.fg_bons}/${kickerSafe.tentativas_de_fg}`}
-                                        label3='FIELD GOALS (%)'
-                                        label4={kickerSafe.tentativas_de_fg > 0
-                                            ? ((kickerSafe.fg_bons / kickerSafe.tentativas_de_fg) * 100)
-                                                .toFixed(0).replace('.', ',') + '%'
-                                            : '0%'}
-                                    />
-                                    <Stats
-                                        label1='MAIS LONGO'
-                                        label2={kickerSafe.fg_mais_longo || "-"}
-                                    />
-                                </div>
-                            </div>
-                        )}
-
-                    {currentJogador.estatisticas?.punter &&
-                        (
-                            punterSafe.punts > 0 ||
-                            punterSafe.jardas_de_punt > 0
-                        ) && (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (PUNTER)</div>
-                                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
-                                    <Stats
-                                        label1='PUNTS'
-                                        label2={punterSafe.punts}
-                                        label3='JARDAS (TOTAIS)'
-                                        label4={punterSafe.jardas_de_punt}
-                                    />
-                                    <Stats
-                                        label1='JARDAS (AVG)'
-                                        label2={punterSafe.punts > 0
-                                            ? (punterSafe.jardas_de_punt / punterSafe.punts).toFixed(1).replace('.', ',')
-                                            : '0,0'}
+                                        label1='TOUCHDOWNS'
+                                        label2={defesaSafe.td_defensivo}
                                         noBorder
                                     />
                                 </div>

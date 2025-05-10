@@ -8,11 +8,15 @@ import { useTimes } from '@/hooks/queries'
 import { Loading } from "./ui/Loading"
 import { useSearchParams, useRouter } from "next/navigation"
 
-export const Lista = () => {
+interface ListaProps {
+  temporadaDefault?: string;
+}
+
+export const Lista = ({ temporadaDefault = '2025' }: ListaProps) => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [lastClicked, setLastClicked] = useState<string | null>(null)
-    const [selectedTemporada, setSelectedTemporada] = useState(searchParams?.get('temporada') || '2024')
+    const [selectedTemporada, setSelectedTemporada] = useState(searchParams?.get('temporada') || temporadaDefault)
     const { data: times, isLoading, error } = useTimes(selectedTemporada)
 
     const itemVariants = {
@@ -34,10 +38,10 @@ export const Lista = () => {
             console.log(`Parâmetro de temporada detectado: ${tempParam}`)
             setSelectedTemporada(tempParam)
         } else {
-            console.log('Nenhum parâmetro de temporada, usando padrão: 2024')
-            setSelectedTemporada('2024')
+            console.log(`Nenhum parâmetro de temporada, usando padrão: ${temporadaDefault}`)
+            setSelectedTemporada(temporadaDefault)
         }
-    }, [searchParams])
+    }, [searchParams, temporadaDefault])
 
     const handleClick = (teamName: string) => {
         localStorage.setItem('lastClickedTeam', teamName)
@@ -52,8 +56,8 @@ export const Lista = () => {
         setSelectedTemporada(novaTemporada)
 
         // Manipular a URL manualmente
-        if (novaTemporada === '2024') {
-            console.log('Removendo parâmetro de temporada da URL (2024 é padrão)')
+        if (novaTemporada === temporadaDefault) {
+            console.log(`Removendo parâmetro de temporada da URL (${temporadaDefault} é padrão)`)
             router.replace('/', { scroll: false })
         } else {
             console.log(`Adicionando temporada=${novaTemporada} à URL`)
@@ -130,27 +134,16 @@ export const Lista = () => {
                                 ></div>
                                 <div className="relative text-center font-extrabold italic z-10 min-[320px]:text-[28px] min-[400px]:text-[31px] md:text-[40px] xl:text-[45px]">
                                     <div className="tracking-[-3px]">{item.sigla ?? "N/A"}</div>
-                                    <div className="flex flex-col -mt-4 justify-center items-center gap-2 min-h-28 p-2 min-[400px]:-mt-5">
-                                        <Image
-                                            src={`/assets/times/capacetes/${item.capacete}`}
-                                            alt="Capacete"
-                                            width={90}
-                                            height={90}
-                                            quality={100}
-                                            priority
-                                            className="w-24 h-14 rotate-12 md:h-16 md:mt-2"
-                                            style={{ imageRendering: 'crisp-edges', WebkitFontSmoothing: 'antialiased', objectFit: 'contain' }}
-                                        />
-
+                                    <div className="flex flex-col justify-center items-center gap-2 min-h-28 p-2 min-[400px]:-mt-3">
                                         <Image
                                             src={`/assets/times/logos/${item.logo}`}
                                             alt="Logo"
-                                            width={35}
-                                            height={35}
+                                            width={80}
+                                            height={80}
                                             quality={100}
                                             priority
-                                            className="md:w-14"
-                                            style={{ imageRendering: 'crisp-edges', WebkitFontSmoothing: 'antialiased' }}
+                                            className="w-20 h-20 md:w-24 md:h-24"
+                                            style={{ imageRendering: 'crisp-edges', WebkitFontSmoothing: 'antialiased', objectFit: 'contain' }}
                                         />
                                     </div>
                                 </div>

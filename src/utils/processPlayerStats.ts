@@ -32,9 +32,9 @@ export const processPlayerStats = (
   const normalizeForFilePath = (input: string): string => {
     return input
       .toLowerCase()
-      .replace(/\\s+/g, "-")
+      .replace(/\s+/g, "-")
       .normalize("NFD")
-      .replace(/[\\u0300-\\u036f]/g, "")
+      .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^a-z0-9-]/g, "");
   };
 
@@ -57,6 +57,15 @@ export const processPlayerStats = (
       })
       .slice(0, 5);
 
+    // Se não houver jogadores para esta estatística, cria um card vazio
+    if (filteredPlayers.length === 0) {
+      return {
+        title: stat.title,
+        category: categoryTitle,
+        players: []
+      };
+    }
+
     return {
       title: stat.title,
       category: categoryTitle,
@@ -64,27 +73,20 @@ export const processPlayerStats = (
         const teamInfo = getTeamInfo(player.timeId);
         const value = calculateStat(player, stat.key);
 
-        // Normaliza o valor para exibição
+        // Normaliza o valor para exibição (adaptado para flag football)
         const normalizeValue = (value: string | number | null, statKey: StatKey): string => {
           if (value === null) return "N/A";
           
           if (typeof value === "string") return value;
           
-          const percentageStats = ["passes_percentual", "extra_points", "field_goals"];
-          const averageStats = [
-            "jardas_media",
-            "jardas_corridas_media",
-            "jardas_recebidas_media",
-            "jardas_retornadas_media",
-            "jardas_punt_media",
-          ];
+          // Para flag football, apenas percentuais de passes são relevantes
+          const percentageStats = ["passes_percentual"];
           
           if (percentageStats.includes(statKey)) {
             return `${Math.round(value)}%`;
-          } else if (averageStats.includes(statKey)) {
-            return value.toFixed(1);
           }
           
+          // Para todos os outros valores (números inteiros)
           return Math.round(value).toString();
         };
 
@@ -100,5 +102,5 @@ export const processPlayerStats = (
         };
       }),
     };
-  });
+  }).filter(stat => stat.players.length > 0); // Filtra cards sem jogadores
 };

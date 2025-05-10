@@ -29,13 +29,13 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9-]/g, "");
-}
+  }
 
   const getShirtPath = (team: string, camisa: string): string => {
     const normalizedTeam = normalizeForFilePath(team);
     return team && team !== "time-desconhecido" && camisa
       ? `/assets/times/camisas/${normalizedTeam}/${camisa}`
-      : "/assets/times/camisas/camisa-default.png"
+      : "/assets/times/camisas/camisa-teste-flag.png"
   }
 
   const formatValue = (value: string | number, title: string): string => {
@@ -55,7 +55,7 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
     // Verifica se é uma estatística que deve mostrar porcentagem
     const isPercentage =
       title.includes('(%)') ||
-      ['PASSES(%)', 'FG(%)', 'XP(%)'].includes(title);
+      ['PASSES(%)', 'PASSES COMP(%)'].includes(title);
 
     if (isPercentage) {
       return `${Math.round(numValue)}%`;

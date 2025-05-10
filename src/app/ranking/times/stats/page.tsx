@@ -7,8 +7,53 @@ import { useStats } from '@/hooks/useStats'
 import { useTeamInfo } from '@/hooks/useTeamInfo'
 import { getStatMapping } from '@/utils/statMappings'
 import { TeamStatsList } from '@/components/Stats/TeamStatsList'
-import { statGroups } from '@/utils/statGroups'
 import { StatsLayout } from '@/components/Stats/StatsLayout'
+
+// Definindo os grupos de estatísticas relevantes para flag football
+const statGroups = [
+  {
+    title: "Passando",
+    groupLabel: "passe",
+    stats: [
+      { title: "Passes Tentados", urlParam: "passe-tentados" },
+      { title: "Passes Completos", urlParam: "passe-completos" },
+      { title: "Percentual de Passe", urlParam: "passe-percentual" },
+      { title: "Touchdowns de Passe", urlParam: "passe-td" },
+      { title: "Interceptações Sofridas", urlParam: "passe-int" },
+      { title: "Sacks Sofridos", urlParam: "passe-sacks" },
+    ]
+  },
+  {
+    title: "Correndo",
+    groupLabel: "corrida",
+    stats: [
+      { title: "Corridas", urlParam: "corrida-total" },
+      { title: "Touchdowns Correndo", urlParam: "corrida-td" },
+    ]
+  },
+  {
+    title: "Recebendo",
+    groupLabel: "recepcao",
+    stats: [
+      { title: "Recepções", urlParam: "recepcao-total" },
+      { title: "Alvos", urlParam: "recepcao-alvo" },
+      { title: "Touchdowns Recebidos", urlParam: "recepcao-td" },
+    ]
+  },
+  {
+    title: "Defesa",
+    groupLabel: "defesa",
+    stats: [
+      { title: "Flag Retirada", urlParam: "defesa-flag-retirada" },
+      { title: "Flag Perdida", urlParam: "defesa-flag-perdida" },
+      { title: "Sacks", urlParam: "defesa-sack" },
+      { title: "Pressão", urlParam: "defesa-pressao" },
+      { title: "Interceptações", urlParam: "defesa-interceptacao" },
+      { title: "Passes Desviados", urlParam: "defesa-desvio" },
+      { title: "Touchdowns", urlParam: "defesa-td" },
+    ]
+  }
+];
 
 // Função getStatGroup permanece a mesma
 const getStatGroup = (statParam: string): string => {
@@ -56,8 +101,8 @@ TeamStatSelect.displayName = 'TeamStatSelect'
 // Componente de conteúdo separado
 function TeamStatsContent() {
     const searchParams = useSearchParams()
-    const statParam = searchParams.get('stat') || 'passe-jardas'
-    const { players, times, loading } = useStats()
+    const statParam = searchParams.get('stat') || 'passe-tentados' 
+    const { players, times, loading } = useStats() 
     const getTeamInfo = useTeamInfo(times)
     const statMapping = getStatMapping(statParam)
 

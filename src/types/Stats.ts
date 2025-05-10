@@ -1,65 +1,31 @@
 export interface StatsBase {
-  passe: PasseStats
-  corrida: CorridaStats
-  recepcao: RecepcaoStats
-  retorno: RetornoStats
+  passe: AtaqueStats
   defesa: DefesaStats
-  kicker: KickerStats
-  punter: PunterStats
+
 }
 
-export interface PasseStats {
-  passes_completos: number
-  passes_tentados: number
-  jardas_de_passe: number
-  td_passados: number
-  interceptacoes_sofridas: number
-  sacks_sofridos: number
-  fumble_de_passador: number
+export interface AtaqueStats {
+  passes_completos?: number
+  passes_tentados?: number
+  td_passado?: number
+  interceptacoes_sofridas?: number
+  sacks_sofridos?: number
+  corrida?: number
+  tds_corridos?: number
+  recepcao?: number
+  alvo?: number
+  td_recebido?: number
 }
 
-export interface CorridaStats {
-  corridas: number
-  jardas_corridas: number
-  tds_corridos: number
-  fumble_de_corredor: number
-}
-
-export interface RecepcaoStats {
-  recepcoes: number
-  alvo: number
-  jardas_recebidas: number
-  tds_recebidos: number
-}
-
-export interface RetornoStats {
-  retornos: number
-  jardas_retornadas: number
-  td_retornados: number
-}
 
 export interface DefesaStats {
-  tackles_totais: number
-  tackles_for_loss: number
-  sacks_forcado: number
-  fumble_forcado: number
-  interceptacao_forcada: number
-  passe_desviado: number
-  safety: number
-  td_defensivo: number
-}
-
-export interface KickerStats {
-  xp_bons: number
-  tentativas_de_xp: number
-  fg_bons: number
-  tentativas_de_fg: number
-  fg_mais_longo: number
-}
-
-export interface PunterStats {
-  punts: number
-  jardas_de_punt: number
+  sack?: number
+  pressao?: number
+  flag_retirada?: number
+  flag_perdida?: number
+  interceptacao_forcada?: number
+  passe_desviado?: number
+  td_defensivo?: number
 }
 
 export interface StatGroup {
@@ -77,62 +43,38 @@ export interface CalculatedStats {
   jardas_recebidas_media: number | null
   jardas_retornadas_media: number | null
   jardas_punt_media: number | null
-
   passes_percentual: number | null
-  field_goals: string | null
-  extra_points: string | null
 
 }
 
-export type StatType = 'PASSE' | 'CORRIDA' | 'RECEPÇÃO' | 'RETORNO' | 'DEFESA' | 'CHUTE' | 'PUNT'
+export type StatType = 'ATAQUE' | 'DEFESA'
 
 export interface TeamStats {
-    timeId: number
-    passe: {
-        jardas_de_passe: number
-        passes_completos: number
-        passes_tentados: number
-        td_passados: number
-        interceptacoes_sofridas: number
-        sacks_sofridos: number
-        fumble_de_passador: number
-    }
-    corrida: {
-        jardas_corridas: number
-        corridas: number
-        tds_corridos: number
-        fumble_de_corredor: number
-    }
-    recepcao: {
-        jardas_recebidas: number
-        recepcoes: number
-        tds_recebidos: number
-        alvo: number
-    }
-    retorno: {
-        jardas_retornadas: number
-        retornos: number
-        td_retornados: number
-    }
-    defesa: {
-        tackles_totais: number
-        tackles_for_loss: number
-        sacks_forcado: number
-        fumble_forcado: number
-        interceptacao_forcada: number
-        passe_desviado: number
-        safety: number
-        td_defensivo: number
-    }
-    kicker: {
-        xp_bons: number
-        tentativas_de_xp: number
-        fg_bons: number
-        tentativas_de_fg: number
-        fg_mais_longo: number
-    }
-    punter: {
-        punts: number
-        jardas_de_punt: number
-    }
+  timeId: number
+  ataque: {
+    passes_completos?: number
+    passes_tentados?: number
+    td_passado?: number
+    interceptacoes_sofridas?: number
+    sacks_sofridos?: number
+    corrida?: number
+    tds_corridos?: number
+    recepcao?: number
+    alvo?: number
+    td_recebido?: number
+  }
+  defesa: {
+    sack: number
+    pressao: number
+    flag_retirada: number
+    flag_perdida: number
+    tackles_totais: number
+    tackles_for_loss: number
+    sacks_forcado: number
+    fumble_forcado: number
+    interceptacao_forcada: number
+    passe_desviado: number
+    safety: number
+    td_defensivo: number
+  }
 }

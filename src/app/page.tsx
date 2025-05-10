@@ -5,17 +5,17 @@ import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query
 import { queryKeys } from '@/hooks/queryKeys'
 
 export const metadata: Metadata = {
-  title: "Times",
+  title: "Flag Football Brasil",
 }
 
 export default async function Page() {
   const queryClient = new QueryClient()
 
-  // Pré-carrega os dados no servidor
+  // Pré-carrega os dados no servidor com temporada 2025
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.times('2024'),
+    queryKey: queryKeys.times('2025'),
     queryFn: async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/times?temporada=2024`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/times?temporada=2025`)
       if (!response.ok) {
         throw new Error('Erro ao buscar times')
       }
@@ -30,7 +30,7 @@ export default async function Page() {
         lg:ml-32 xl:ml-64 xl:pt-10 2xl:ml-96">
           ESCOLHA SEU TIME
         </h1>
-        <Lista />
+        <Lista temporadaDefault="2025" />
       </div>
     </HydrationBoundary>
   )

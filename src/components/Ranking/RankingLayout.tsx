@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { RankingFilters } from '../FilterButton'
 import { SelectFilter } from '../SelectFilter'
-import { useJogadores, useTimes } from '@/hooks/queries' // Importe os hooks necessários
-import { ButtonSetor } from '../ui/buttonSetor'
+import { useJogadores, useTimes } from '@/hooks/queries'
 
 interface RankingLayoutProps {
     children: React.ReactNode
@@ -15,13 +14,11 @@ interface RankingLayoutProps {
 export function RankingLayout({ children, initialFilter }: RankingLayoutProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [season, setSeason] = useState(searchParams.get('temporada') || '2024')
+    const [season, setSeason] = useState(searchParams.get('temporada') || '2025')
 
-    // Use a temporada nos hooks de busca
     const { data: jogadores, refetch: refetchJogadores } = useJogadores(season)
     const { data: times, refetch: refetchTimes } = useTimes(season)
 
-    // Efeito para refetch quando a temporada muda
     useEffect(() => {
         refetchJogadores()
         refetchTimes()
@@ -29,9 +26,9 @@ export function RankingLayout({ children, initialFilter }: RankingLayoutProps) {
 
     const handleFilterChange = (filter: 'jogadores' | 'times') => {
         if (filter === 'jogadores') {
-            router.push('/ranking')
+            router.push(`/ranking?temporada=${season}`)
         } else {
-            router.push('/ranking/times')
+            router.push(`/ranking/times?temporada=${season}`)
         }
     }
 
