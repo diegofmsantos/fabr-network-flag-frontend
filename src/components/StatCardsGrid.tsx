@@ -34,13 +34,9 @@ export const prepareStatsForCards = (
   currentStats: Array<{ key: StatKey; title: string }>,
   categoryTitle: string
 ): StatCardProps[] => {
-  // Filtra estatísticas que podem não ter jogadores válidos
-  const statsWithPlayers = currentStats.filter(stat => {
-    const hasPlayers = players.some(player => shouldIncludePlayer(player, stat.key, categoryTitle));
-    return hasPlayers;
-  });
+ 
 
-  return statsWithPlayers.map(stat => {
+   return currentStats.map(stat => {
     const filteredPlayers = players
       .filter(player => shouldIncludePlayer(player, stat.key, categoryTitle))
       .sort((a, b) => {
@@ -77,19 +73,23 @@ export const prepareStatsForCards = (
       };
     });
 
-    return {
+     return {
       title: stat.title,
       category: categoryTitle,
       key: stat.key,
-      players: formattedPlayers
+      players: formattedPlayers  // Pode ser vazio
     };
   });
 };
 
 export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats, category }) => {
   // Não exibe nada se não houver estatísticas
-  if (!stats || stats.length === 0) {
-    return <div className="lg:py-6 text-center text-gray-500">Nenhuma estatística disponível para esta categoria.</div>;
+ if (!stats || stats.length === 0) {
+    return (
+      <div className="lg:py-6 text-center text-gray-500">
+        Nenhuma estatística disponível para esta categoria.
+      </div>
+    );
   }
 
   return (
@@ -100,7 +100,8 @@ export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats, category })
             title={stat.title}
             category={category}
             stat={stat.key}
-            players={stat.players}
+            players={stat.players.length > 0 ? stat.players : []}
+            showEmptyMessage={stat.players.length === 0}
           />
         </div>
       ))}

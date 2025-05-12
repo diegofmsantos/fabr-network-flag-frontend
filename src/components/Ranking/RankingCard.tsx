@@ -18,17 +18,18 @@ interface RankingCardProps {
   category: string
   stat?: string
   players: PlayerCardProps[]
+  showEmptyMessage?: boolean;
 }
 
 export const RankingCard: React.FC<RankingCardProps> = ({ title, category, players, stat }) => {
 
   const normalizeForFilePath = (input: string): string => {
     return input
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9-]/g, "");
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9-]/g, "");
   }
 
   const getShirtPath = (team: string, camisa: string): string => {
@@ -75,13 +76,24 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
         }
       }
     }
-    
+
     // Categoria em minúsculo para URL para fallback
     const categoryLower = category ? category.toLowerCase() : '';
-    
+
     // Fallback para normalização do título
     const normalizedTitle = normalizeForFilePath(title);
     return `/ranking/stats?stat=${categoryLower}-${normalizedTitle}`;
+  }
+
+  if (!players || players.length === 0) {
+    return (
+      <div className="ranking-card-container px-3">
+        <h3 className="inline-block text-sm font-bold mb-2 bg-black text-white p-2 rounded-xl">{title}</h3>
+        <div className="bg-white p-4 rounded-md text-center text-gray-500">
+          Sem dados disponíveis para esta estatística
+        </div>
+      </div>
+    );
   }
 
   return (

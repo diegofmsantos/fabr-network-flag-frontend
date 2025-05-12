@@ -18,6 +18,7 @@ import { createSlug } from "@/utils/formatUrl"
 import Link from "next/link"
 import { useTeam } from "@/hooks/queries"
 import { TimeNaoEncontrado } from "@/components/ui/TimeNaoEncontrado"
+import { BarChart2 } from "lucide-react"
 
 type Setor = "ATAQUE" | "DEFESA"
 
@@ -32,11 +33,11 @@ export default function Page() {
     if (currentPath.includes('%20')) {
       const decodedPath = decodeURIComponent(currentPath)
       const correctSlug = createSlug(decodedPath)
-      
+
       // Preservar todos os parâmetros da URL atual
       const params = new URLSearchParams(searchParams.toString())
       const queryString = params.toString() ? `?${params.toString()}` : ''
-      
+
       // Agora substitui mantendo os parâmetros originais
       router.replace(`/${correctSlug}${queryString}`)
     }
@@ -114,21 +115,19 @@ export default function Page() {
 
   if (loadingTeam) return <Loading />
   if (error) return (
-    <TimeNaoEncontrado 
+    <TimeNaoEncontrado
       timeNome={decodedTimeName}
-      temporadaAtual={temporada} 
-      temporadaDisponivel={temporada === '2025' ? '2024' : '2025'} 
+      temporadaAtual={temporada}
+      temporadaDisponivel={temporada === '2025' ? '2024' : '2025'}
     />
   )
   if (!currentTeam) return (
-    <TimeNaoEncontrado 
+    <TimeNaoEncontrado
       timeNome={decodedTimeName}
-      temporadaAtual={temporada} 
-      temporadaDisponivel={temporada === '2025' ? '2024' : '2025'} 
+      temporadaAtual={temporada}
+      temporadaDisponivel={temporada === '2025' ? '2024' : '2025'}
     />
   )
-
-  // Removida referência ao capacete
 
   return (
     <div className="pt-[79px] xl:pt-0 pb-14 bg-[#ECECEC] xl:ml-24 2xl:ml-40">
@@ -140,6 +139,12 @@ export default function Page() {
           buttonStyle="absolute"
           className="lg:right-32 xl:right-[420px] 2xl:right-[570px]"
         />
+        <Link
+          href={`/comparar-times?time1=${currentTeam.id}&temporada=${temporada}`}
+          className="absolute top-3 right-16 rounded-lg text-xs text-white p-2 flex justify-center items-center lg:right-48 xl:right-[450px] 2xl:right-[600px]"
+        >
+          <BarChart2 className="w-6 h-6" />
+        </Link>
         <motion.div
           className="max-w-[800px] p-4 mx-auto w-full h-full flex flex-col justify-center items-center rounded-b-xl xl:w-[650px] 2xl:w-[800px] "
           style={{ backgroundColor: currentTeam.cor || "#000" }}
@@ -161,7 +166,7 @@ export default function Page() {
             </div>
 
             {/* Capacete removido */}
-            
+
             <div className="w-40 h-40 -mt-6">
               <Image
                 src={`/assets/times/logos/${currentTeam.logo || "default-logo.png"}`}
@@ -205,7 +210,7 @@ export default function Page() {
           exit={{ opacity: 0, x: -50 }}
           transition={{ duration: 0.5 }}
         >
-       
+
           <div className="xl:border min-h-screen lg:ml-24 xl:w-[650px] xl:m-auto 2xl:w-[800px] 2xl:pl-5 2xl:mt-4">
             <Jogador currentTeam={currentTeam} selectedSetor={selectedSetor} />
           </div>

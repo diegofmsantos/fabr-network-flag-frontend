@@ -13,18 +13,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
     const pathname = usePathname();
     const [activeItem, setActiveItem] = useState('');
 
-    useEffect(() => {
-        // Verifica a rota atual e define o item ativo
-        if (pathname?.includes('/ranking')) {
-            setActiveItem('ranking');
-        } else if (pathname?.includes('/noticia')) {
-            setActiveItem('noticias');
-        } else if (pathname?.includes('/mercado')) {
-            setActiveItem('mercado');
-        } else {
-            setActiveItem('equipes');
-        }
-    }, [pathname]);
+   useEffect(() => {
+  // Verifica a rota atual e define o item ativo
+  if (pathname?.includes('/ranking')) {
+    setActiveItem('ranking');
+  } else if (pathname?.includes('/noticia')) {
+    setActiveItem('noticias');
+  } else if (pathname?.includes('/mercado')) {
+    setActiveItem('mercado');
+  } else if (pathname?.includes('/comparar-times')) {
+    setActiveItem('comparar');
+  } else {
+    setActiveItem('equipes');
+  }
+}, [pathname]);
 
     return (
         <aside className={`hidden xl:flex flex-col w-80 bg-[#272731] fixed left-32 top-28 bottom-28 rounded-lg z-40 xl:w-72 xl:left-16 2xl:w-96 2xl:left-32 ${className}`}>
@@ -60,8 +62,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                 >
                     Rankings
                 </Link>
+                <Link
+                    href="/comparar-times"
+                    className={`text-xl uppercase font-extrabold italic tracking-[-1px] py-3 px-6 rounded-lg flex items-center 
+        transition-colors duration-300 hover:bg-[#373740] ${activeItem === 'comparar' ? 'bg-[#373740] text-[#63E300]' : 'text-white'}`}
+                >
+                    Comparar Times
+                </Link>
 
-               
             </nav>
 
             {/* Footer com direitos autorais e/ou social media (opcional) */}

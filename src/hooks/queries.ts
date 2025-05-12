@@ -56,6 +56,7 @@ export function useJogadores(temporada?: string) {
         queryKey: queryKeys.jogadores(currentTemporada),
         queryFn: () => fetchJogadores(currentTemporada),
         staleTime: 1000 * 60 * 5,
+        refetchInterval: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
     })
 }
@@ -67,6 +68,7 @@ export function useTimes(temporada?: string) {
         queryKey: queryKeys.times(currentTemporada),
         queryFn: () => fetchTimes(currentTemporada),
         staleTime: 1000 * 60 * 5,
+        refetchInterval: 1000 * 60 * 10,
         gcTime: 1000 * 60 * 30,
     })
 }

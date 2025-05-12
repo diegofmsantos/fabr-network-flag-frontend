@@ -29,6 +29,17 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
         return !isNaN(value) && value > 0;
     });
 
+     if (validTeams.length === 0) {
+    return (
+      <div className="ranking-card-container px-3">
+        <h3 className="inline-block text-sm font-bold mb-2 bg-black text-white p-2 rounded-xl">{title}</h3>
+        <div className="bg-white p-4 rounded-md text-center text-gray-500">
+          Sem dados disponíveis para esta estatística
+        </div>
+      </div>
+    );
+  }
+
     const normalizeForFilePath = (input: string): string => {
         return input
             .toLowerCase()
