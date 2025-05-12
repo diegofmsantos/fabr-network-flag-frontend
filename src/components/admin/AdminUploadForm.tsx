@@ -1,4 +1,3 @@
-// /src/components/admin/AdminUploadForm.tsx
 import React, { useState } from 'react';
 import { Upload, FileText, Check, AlertTriangle } from 'lucide-react';
 
@@ -12,6 +11,9 @@ const AdminUploadForm = () => {
     data_jogo: '',
     tipo: 'times' // times, jogadores, estatisticas, reprocessar
   });
+  
+  // Base URL da API - ajuste para o endereço correto do seu backend
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -27,15 +29,16 @@ const AdminUploadForm = () => {
     }));
   };
   
-  const getUploadEndpoint = () => {
-    switch (formData.tipo) {
-      case 'times': return '/api/importar-times';
-      case 'jogadores': return '/api/importar-jogadores';
-      case 'estatisticas': return '/api/atualizar-estatisticas';
-      case 'reprocessar': return '/api/reprocessar-jogo';
-      default: return '/api/importar-times';
-    }
-  };
+ const getUploadEndpoint = () => {
+  // Remova o /api/ duplicado aqui
+  switch (formData.tipo) {
+    case 'times': return `${API_BASE_URL}/importar-times`; // Note a remoção de /api/
+    case 'jogadores': return `${API_BASE_URL}/importar-jogadores`;
+    case 'estatisticas': return `${API_BASE_URL}/atualizar-estatisticas`;
+    case 'reprocessar': return `${API_BASE_URL}/reprocessar-jogo`;
+    default: return `${API_BASE_URL}/importar-times`;
+  }
+};
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,22 +73,42 @@ const AdminUploadForm = () => {
         formDataObj.append('data_jogo', formData.data_jogo);
       }
       
+      // Log do endpoint que está sendo chamado
+      console.log('Enviando para:', getUploadEndpoint());
+      
       const response = await fetch(getUploadEndpoint(), {
         method: 'POST',
-        body: formDataObj
+        body: formDataObj,
       });
       
-      const data = await response.json();
+      console.log('Status da resposta:', response.status);
+      console.log('Headers da resposta:', response.headers);
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao fazer upload');
+      // Verifique o tipo de conteúdo da resposta
+      const contentType = response.headers.get('content-type');
+      console.log('Tipo de conteúdo:', contentType);
+      
+      let responseData;
+      if (contentType && contentType.includes('application/json')) {
+        // Se for JSON, faça o parse normalmente
+        responseData = await response.json();
+      } else {
+        // Se não for JSON, trate como texto e mostre o erro
+        const text = await response.text();
+        console.error('Resposta não-JSON recebida:', text.substring(0, 500) + '...');
+        throw new Error('Resposta do servidor não é um JSON válido');
       }
       
-      setResult(data);
+      if (!response.ok) {
+        throw new Error(responseData.error || `Erro ao fazer upload: ${response.status}`);
+      }
+      
+      setResult(responseData);
       setSelectedFile(null);
       // Resetar o input de arquivo
       const fileInput = document.getElementById('file-input') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
+      
     } catch (err: any) {
       setError(err.message || 'Erro ao fazer upload');
       console.error('Erro:', err);
