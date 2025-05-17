@@ -14,7 +14,9 @@ export interface StatResult {
     tier: number
 }
 
-type AtaqueStats = Jogador['estatisticas']['ataque']
+type PasseStats = Jogador['estatisticas']['passe'],
+type CorridaStats = Jogador['estatisticas']['corrida']
+type RecepcaoStats = Jogador['estatisticas']['recepcao']
 type DefesaStats = Jogador['estatisticas']['defesa']
 
 // Função para calcular o total de estatísticas defensivas
@@ -34,11 +36,11 @@ const checkCategoryMinimum = (category: CategoryKey, stats: any): boolean => {
     if (!thresholds) return true; // Se não houver threshold, permitir
     
     switch (category) {
-        case 'ataque':
+        case 'passe':
             // Para flag football, considerar qualquer atividade ofensiva
-            const hasPasseActivity = (stats as AtaqueStats).passes_tentados > 0 || 
-                                   (stats as AtaqueStats).corrida > 0 || 
-                                   (stats as AtaqueStats).recepcao > 0;
+            const hasPasseActivity = (stats as PasseStats).passes_tentados > 0 || 
+                                   (stats as CorridaStats).corrida > 0 || 
+                                   (stats as RecepcaoStats).recepcao > 0;
             return hasPasseActivity;
         case 'defesa':
             return calculateDefenseTotal(stats as DefesaStats) >= thresholds.tier3;

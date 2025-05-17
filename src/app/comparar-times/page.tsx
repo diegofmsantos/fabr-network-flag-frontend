@@ -1,15 +1,13 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTimes } from '@/hooks/queries';
-import { useTeamComparison } from '@/hooks/useTeamComparison';
-import { Loading } from '@/components/ui/Loading';
-import { SelectFilter } from '@/components/SelectFilter';
-import { normalizeForFilePath } from '@/utils/formatUrl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, RefreshCw, BarChart2 } from 'lucide-react';
+import { normalizeForFilePath } from '@/utils/formatUrl';
 import {
   BarChart,
   Bar,
@@ -20,40 +18,39 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import { SelectFilter } from '@/components/SelectFilter';
 
 export default function CompararTimesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [temporada, setTemporada] = useState(searchParams?.get('temporada') || '2025');
   
+  // Estados para controlar a seleção de times e dados de comparação
+  const [selectedTeams, setSelectedTeams] = useState<{time1Id?: number, time2Id?: number}>({});
+  const [comparisonData, setComparisonData] = useState<any>(null);
+  const [loadingComparison, setLoadingComparison] = useState(false);
+  
   // Buscar lista de times
   const { data: times = [], isLoading: loadingTimes } = useTimes(temporada);
   
-  // Hook de comparação
-  const { 
-    data: comparisonData,
-    isLoading: loadingComparison,
-    selectedTeams,
-    selectTeam,
-    teamsSelected,
-    swapTeams
-  } = useTeamComparison();
-
-  // Estado para controlar a aba ativa
+  // Estado para controlar a aba ativa (estatísticas ou gráficos)
   const [activeTab, setActiveTab] = useState<'estatisticas' | 'graficos'>('estatisticas');
-
-  // Inicializar seleção com base nos parâmetros da URL
+  
+  // Efeito para inicializar a seleção com base nos parâmetros da URL
   useEffect(() => {
     const time1Id = searchParams?.get('time1');
     const time2Id = searchParams?.get('time2');
     
     if (time1Id) selectTeam('time1Id', Number(time1Id));
     if (time2Id) selectTeam('time2Id', Number(time2Id));
-  }, [searchParams, selectTeam]);
+  }, [searchParams]);
 
-  // Atualizar URL quando times forem selecionados
+  // Efeito para carregar dados quando os times forem selecionados
   useEffect(() => {
     if (selectedTeams.time1Id && selectedTeams.time2Id) {
+      loadComparisonData();
+      
+      // Atualizar URL quando times forem selecionados
       const params = new URLSearchParams();
       params.set('time1', String(selectedTeams.time1Id));
       params.set('time2', String(selectedTeams.time2Id));
@@ -61,7 +58,49 @@ export default function CompararTimesPage() {
       
       router.replace(`/comparar-times?${params.toString()}`, { scroll: false });
     }
-  }, [selectedTeams, temporada, router]);
+  }, [selectedTeams, temporada]);
+  
+  // Função para carregar dados de comparação
+  const loadComparisonData = async () => {
+    if (!selectedTeams.time1Id || !selectedTeams.time2Id) return;
+    
+    try {
+      setLoadingComparison(true);
+      
+      // URL da API
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api';
+      const url = `${apiBaseUrl}/comparar-times?time1Id=${selectedTeams.time1Id}&time2Id=${selectedTeams.time2Id}&temporada=${temporada}`;
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`Erro ao carregar comparação: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setComparisonData(data);
+    } catch (error) {
+      console.error('Erro ao carregar dados de comparação:', error);
+    } finally {
+      setLoadingComparison(false);
+    }
+  };
+  
+  // Função para selecionar um time
+  const selectTeam = (position: 'time1Id' | 'time2Id', teamId: number) => {
+    setSelectedTeams(prev => ({
+      ...prev,
+      [position]: teamId
+    }));
+  };
+  
+  // Função para trocar os times de posição
+  const swapTeams = () => {
+    setSelectedTeams(prev => ({
+      time1Id: prev.time2Id,
+      time2Id: prev.time1Id
+    }));
+  };
   
   // Função para lidar com mudança de temporada
   const handleTemporadaChange = (novaTemporada: string) => {
@@ -73,7 +112,10 @@ export default function CompararTimesPage() {
     
     router.replace(`/comparar-times?${params.toString()}`, { scroll: false });
   };
-
+  
+  // Verificar se os times estão selecionados
+  const teamsSelected = !!(selectedTeams.time1Id && selectedTeams.time2Id);
+  
   // Preparar dados para gráficos quando houver dados de comparação
   const prepareChartData = () => {
     if (!comparisonData) return { ataqueData: [], defesaData: [] };
@@ -81,6 +123,7 @@ export default function CompararTimesPage() {
     const time1 = comparisonData.teams.time1;
     const time2 = comparisonData.teams.time2;
 
+    // Dados para o gráfico de ataque com a nova estrutura
     const ataqueData = [
       {
         name: "Passes Completos",
@@ -109,6 +152,7 @@ export default function CompararTimesPage() {
       }
     ];
 
+    // Dados para o gráfico de defesa com a nova estrutura
     const defesaData = [
       {
         name: "Flag Retirada",
@@ -139,10 +183,16 @@ export default function CompararTimesPage() {
 
     return { ataqueData, defesaData };
   };
+  
+  const { ataqueData, defesaData } = comparisonData ? prepareChartData() : { ataqueData: [], defesaData: [] };
 
-  const { ataqueData, defesaData } = prepareChartData();
-
-  if (loadingTimes) return <Loading />;
+  if (loadingTimes) {
+    return (
+      <div className="min-h-screen bg-[#ECECEC] pt-24 px-4 pb-16 flex justify-center items-center">
+        <div className="w-12 h-12 border-t-2 border-blue-500 border-solid rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#ECECEC] pt-24 px-4 pb-16 max-w-[1200px] mx-auto xl:pt-10 xl:ml-[600px]">
@@ -228,7 +278,8 @@ export default function CompararTimesPage() {
       {/* Loading durante a comparação */}
       {loadingComparison && teamsSelected && (
         <div className="mt-8 text-center">
-          <Loading />
+          <div className="w-12 h-12 border-t-2 border-blue-500 border-solid rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Carregando comparação...</p>
         </div>
       )}
 
@@ -438,7 +489,7 @@ export default function CompararTimesPage() {
                 </div>
               </div>
               
-              {/* Gráfico Radar para comparação geral (opcional) */}
+              {/* Resumo Comparativo */}
               <div className="mt-6 bg-white p-4 rounded-lg shadow-md">
                 <h3 className="text-lg font-bold mb-4">Resumo Comparativo</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
