@@ -7,26 +7,48 @@ import { ArrowLeft, Save, AlertCircle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface JogadorStats {
-  ataque?: {
+  passe?: {
     passes_completos?: number;
     passes_tentados?: number;
-    td_passado?: number;
-    interceptacoes_sofridas?: number;
+    passes_incompletos?: number;
+    jds_passe?: number;
+    tds_passe?: number;
+    passe_xp1?: number;
+    passe_xp2?: number;
+    int_sofridas?: number;
     sacks_sofridos?: number;
-    corrida?: number;
+    pressao_pct?: string;
+  };
+  corrida?: {
+    corridas?: number;
+    jds_corridas?: number;
     tds_corridos?: number;
-    recepcao?: number;
-    alvo?: number;
-    td_recebido?: number;
+    corrida_xp1?: number;
+    corrida_xp2?: number;
+  };
+  recepcao?: {
+    recepcoes?: number;
+    alvos?: number;
+    drops?: number;
+    jds_recepcao?: number;
+    jds_yac?: number;
+    tds_recepcao?: number;
+    recepcao_xp1?: number;
+    recepcao_xp2?: number;
   };
   defesa?: {
-    sack?: number;
-    pressao?: number;
-    flag_retirada?: number;
-    flag_perdida?: number;
-    passe_desviado?: number;
-    interceptacao_forcada?: number;
-    td_defensivo?: number;
+    tck?: number;
+    tfl?: number;
+    pressao_pct?: string;
+    sacks?: number;
+    tip?: number;
+    int?: number;
+    tds_defesa?: number;
+    defesa_xp2?: number;
+    sft?: number;
+    sft_1?: number;
+    blk?: number;
+    jds_defesa?: number;
   };
 }
 
@@ -47,6 +69,8 @@ interface JogadorTimeData {
     nome: string;
     sigla: string;
     cor: string;
+    regiao?: string;
+    sexo?: string;
   };
 }
 
@@ -57,7 +81,9 @@ export default function EditarJogadorPage() {
   
   const [jogadorTime, setJogadorTime] = useState<JogadorTimeData | null>(null);
   const [estatisticas, setEstatisticas] = useState<JogadorStats>({
-    ataque: {},
+    passe: {},
+    corrida: {},
+    recepcao: {},
     defesa: {}
   });
   const [loading, setLoading] = useState(true);
@@ -82,7 +108,15 @@ export default function EditarJogadorPage() {
         
         const data = await response.json();
         setJogadorTime(data);
-        setEstatisticas(data.estatisticas || { ataque: {}, defesa: {} });
+        
+        // Garante que as estatísticas seguem a nova estrutura
+        const novasEstatisticas = data.estatisticas || {};
+        if (!novasEstatisticas.passe) novasEstatisticas.passe = {};
+        if (!novasEstatisticas.corrida) novasEstatisticas.corrida = {};
+        if (!novasEstatisticas.recepcao) novasEstatisticas.recepcao = {};
+        if (!novasEstatisticas.defesa) novasEstatisticas.defesa = {};
+        
+        setEstatisticas(novasEstatisticas);
       } catch (err: any) {
         setError(err.message || 'Erro ao buscar dados do jogador');
         console.error('Erro:', err);
@@ -94,14 +128,16 @@ export default function EditarJogadorPage() {
     fetchJogador();
   }, [jogadorId, temporada]);
 
-  const handleStatChange = (category: 'ataque' | 'defesa', stat: string, value: string) => {
-    const numValue = value === '' ? 0 : parseInt(value, 10);
+  const handleStatChange = (category: 'passe' | 'corrida' | 'recepcao' | 'defesa', stat: string, value: string) => {
+    // Lidar com campos de percentual como string e números como números
+    const isPctField = stat.includes('pressao_pct');
+    const statValue = isPctField ? value : (value === '' ? 0 : parseInt(value, 10));
     
     setEstatisticas(prev => ({
       ...prev,
       [category]: {
         ...(prev[category] || {}),
-        [stat]: isNaN(numValue) ? 0 : numValue
+        [stat]: isPctField ? statValue : (isNaN(statValue as number) ? 0 : statValue)
       }
     }));
   };
@@ -195,6 +231,8 @@ export default function EditarJogadorPage() {
             </h1>
             <p className="text-lg opacity-90">{jogadorTime.time.nome} ({jogadorTime.time.sigla})</p>
             <p className="opacity-80">Temporada: {jogadorTime.temporada}</p>
+            {jogadorTime.time.regiao && <p className="opacity-80">Região: {jogadorTime.time.regiao}</p>}
+            {jogadorTime.time.sexo && <p className="opacity-80">Categoria: {jogadorTime.time.sexo}</p>}
           </div>
           
           {error && (
@@ -212,20 +250,48 @@ export default function EditarJogadorPage() {
           )}
           
           <div className="p-6 space-y-6">
+            {/* ESTATÍSTICAS DE PASSE */}
             <div>
-              <h2 className="text-xl font-bold mb-4">Estatísticas de Ataque</h2>
+              <h2 className="text-xl font-bold mb-4">Estatísticas de Passe</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
                   { key: 'passes_completos', label: 'Passes Completos' },
                   { key: 'passes_tentados', label: 'Passes Tentados' },
-                  { key: 'td_passado', label: 'Touchdowns de Passe' },
-                  { key: 'interceptacoes_sofridas', label: 'Interceptações Sofridas' },
+                  { key: 'passes_incompletos', label: 'Passes Incompletos' },
+                  { key: 'jds_passe', label: 'Jardas de Passe' },
+                  { key: 'tds_passe', label: 'Touchdowns de Passe' },
+                  { key: 'passe_xp1', label: 'XP1 de Passe' },
+                  { key: 'passe_xp2', label: 'XP2 de Passe' },
+                  { key: 'int_sofridas', label: 'Interceptações Sofridas' },
                   { key: 'sacks_sofridos', label: 'Sacks Sofridos' },
-                  { key: 'corrida', label: 'Corridas' },
-                  { key: 'tds_corridos', label: 'Touchdowns Corridos' },
-                  { key: 'recepcao', label: 'Recepções' },
-                  { key: 'alvo', label: 'Alvos' },
-                  { key: 'td_recebido', label: 'Touchdowns Recebidos' }
+                  { key: 'pressao_pct', label: 'Percentual de Pressão' }
+                ].map(stat => (
+                  <div key={stat.key} className="flex flex-col">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {stat.label}
+                    </label>
+                    <input
+                      type={stat.key === 'pressao_pct' ? 'text' : 'number'}
+                      min={stat.key === 'pressao_pct' ? undefined : "0"}
+                      value={(estatisticas.passe && estatisticas.passe[stat.key as keyof typeof estatisticas.passe]) || (stat.key === 'pressao_pct' ? '' : 0)}
+                      onChange={(e) => handleStatChange('passe', stat.key, e.target.value)}
+                      className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ESTATÍSTICAS DE CORRIDA */}
+            <div>
+              <h2 className="text-xl font-bold mb-4">Estatísticas de Corrida</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { key: 'corridas', label: 'Corridas' },
+                  { key: 'jds_corridas', label: 'Jardas de Corrida' },
+                  { key: 'tds_corridos', label: 'Touchdowns de Corrida' },
+                  { key: 'corrida_xp1', label: 'XP1 de Corrida' },
+                  { key: 'corrida_xp2', label: 'XP2 de Corrida' }
                 ].map(stat => (
                   <div key={stat.key} className="flex flex-col">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -234,8 +300,38 @@ export default function EditarJogadorPage() {
                     <input
                       type="number"
                       min="0"
-                      value={(estatisticas.ataque && estatisticas.ataque[stat.key as keyof typeof estatisticas.ataque]) || 0}
-                      onChange={(e) => handleStatChange('ataque', stat.key, e.target.value)}
+                      value={(estatisticas.corrida && estatisticas.corrida[stat.key as keyof typeof estatisticas.corrida]) || 0}
+                      onChange={(e) => handleStatChange('corrida', stat.key, e.target.value)}
+                      className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ESTATÍSTICAS DE RECEPÇÃO */}
+            <div>
+              <h2 className="text-xl font-bold mb-4">Estatísticas de Recepção</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { key: 'recepcoes', label: 'Recepções' },
+                  { key: 'alvos', label: 'Alvos' },
+                  { key: 'drops', label: 'Drops' },
+                  { key: 'jds_recepcao', label: 'Jardas de Recepção' },
+                  { key: 'jds_yac', label: 'Jardas Após Recepção (YAC)' },
+                  { key: 'tds_recepcao', label: 'Touchdowns de Recepção' },
+                  { key: 'recepcao_xp1', label: 'XP1 de Recepção' },
+                  { key: 'recepcao_xp2', label: 'XP2 de Recepção' }
+                ].map(stat => (
+                  <div key={stat.key} className="flex flex-col">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {stat.label}
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={(estatisticas.recepcao && estatisticas.recepcao[stat.key as keyof typeof estatisticas.recepcao]) || 0}
+                      onChange={(e) => handleStatChange('recepcao', stat.key, e.target.value)}
                       className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -243,26 +339,32 @@ export default function EditarJogadorPage() {
               </div>
             </div>
             
+            {/* ESTATÍSTICAS DE DEFESA */}
             <div>
               <h2 className="text-xl font-bold mb-4">Estatísticas de Defesa</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: 'sack', label: 'Sacks' },
-                  { key: 'pressao', label: 'Pressões' },
-                  { key: 'flag_retirada', label: 'Flag Retirada' },
-                  { key: 'flag_perdida', label: 'Flag Perdida' },
-                  { key: 'passe_desviado', label: 'Passes Desviados' },
-                  { key: 'interceptacao_forcada', label: 'Interceptações' },
-                  { key: 'td_defensivo', label: 'Touchdowns Defensivos' }
+                  { key: 'tck', label: 'Tackles' },
+                  { key: 'tfl', label: 'Tackles for Loss' },
+                  { key: 'pressao_pct', label: 'Percentual de Pressão' },
+                  { key: 'sacks', label: 'Sacks' },
+                  { key: 'tip', label: 'Passes Desviados' },
+                  { key: 'int', label: 'Interceptações' },
+                  { key: 'tds_defesa', label: 'Touchdowns Defensivos' },
+                  { key: 'defesa_xp2', label: 'XP2 Defensivos' },
+                  { key: 'sft', label: 'Safety' },
+                  { key: 'sft_1', label: 'Safety 1pt' },
+                  { key: 'blk', label: 'Bloqueios' },
+                  { key: 'jds_defesa', label: 'Jardas Defensivas' }
                 ].map(stat => (
                   <div key={stat.key} className="flex flex-col">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       {stat.label}
                     </label>
                     <input
-                      type="number"
-                      min="0"
-                      value={(estatisticas.defesa && estatisticas.defesa[stat.key as keyof typeof estatisticas.defesa]) || 0}
+                      type={stat.key === 'pressao_pct' ? 'text' : 'number'}
+                      min={stat.key === 'pressao_pct' ? undefined : "0"}
+                      value={(estatisticas.defesa && estatisticas.defesa[stat.key as keyof typeof estatisticas.defesa]) || (stat.key === 'pressao_pct' ? '' : 0)}
                       onChange={(e) => handleStatChange('defesa', stat.key, e.target.value)}
                       className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />

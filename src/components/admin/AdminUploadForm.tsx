@@ -1,3 +1,4 @@
+// src/components/admin/AdminUploadForm.tsx
 import React, { useState } from 'react';
 import { Upload, FileText, Check, AlertTriangle } from 'lucide-react';
 
@@ -9,7 +10,7 @@ const AdminUploadForm = () => {
   const [formData, setFormData] = useState({
     id_jogo: '',
     data_jogo: '',
-    tipo: 'times' // times, jogadores, estatisticas, reprocessar
+    tipo: 'times'
   });
   
   // Base URL da API - ajuste para o endereço correto do seu backend

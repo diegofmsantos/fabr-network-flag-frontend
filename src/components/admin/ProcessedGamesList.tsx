@@ -1,4 +1,4 @@
-// /src/components/admin/ProcessedGamesList.tsx
+// src/components/admin/ProcessedGamesList.tsx
 import React, { useState, useEffect } from 'react';
 import { ClipboardList, RefreshCw, AlertCircle } from 'lucide-react';
 
@@ -18,7 +18,9 @@ const ProcessedGamesList = () => {
             setLoading(true);
             setError(null);
 
-            const response = await fetch('/api/jogos-processados');
+            // Base URL da API
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
+            const response = await fetch(`${API_BASE_URL}/jogos-processados`);
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -57,7 +59,7 @@ const ProcessedGamesList = () => {
     };
 
     return (
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <div className="max-w-2xl mx-auto bg-[#1C1C24] p-6 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Jogos Processados</h2>
                 <button

@@ -51,21 +51,35 @@ export default function AdminPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">Upload de Times</h3>
               <p className="text-gray-600">
-                Colunas necessárias: <span className="font-mono bg-gray-100 px-1 rounded">nome</span>, <span className="font-mono bg-gray-100 px-1 rounded">sigla</span>, <span className="font-mono bg-gray-100 px-1 rounded">cor</span>, <span className="font-mono bg-gray-100 px-1 rounded">cidade</span>, <span className="font-mono bg-gray-100 px-1 rounded">bandeira_estado</span>, <span className="font-mono bg-gray-100 px-1 rounded">logo</span>. Opcionais: <span className="font-mono bg-gray-100 px-1 rounded">instagram</span>, <span className="font-mono bg-gray-100 px-1 rounded">instagram2</span>, <span className="font-mono bg-gray-100 px-1 rounded">temporada</span>.
+                Colunas necessárias: <span className="font-mono bg-gray-100 px-1 rounded">nome</span>, <span className="font-mono bg-gray-100 px-1 rounded">sigla</span>, <span className="font-mono bg-gray-100 px-1 rounded">cor</span>, <span className="font-mono bg-gray-100 px-1 rounded">cidade</span>, <span className="font-mono bg-gray-100 px-1 rounded">bandeira_estado</span>, <span className="font-mono bg-gray-100 px-1 rounded">logo</span>. 
+                Novos campos: <span className="font-mono bg-gray-100 px-1 rounded">regiao</span>, <span className="font-mono bg-gray-100 px-1 rounded">sexo</span>.
+                Opcionais: <span className="font-mono bg-gray-100 px-1 rounded">instagram</span>, <span className="font-mono bg-gray-100 px-1 rounded">instagram2</span>, <span className="font-mono bg-gray-100 px-1 rounded">temporada</span>.
               </p>
             </div>
             
             <div>
               <h3 className="text-lg font-semibold mb-2">Upload de Jogadores</h3>
               <p className="text-gray-600">
-                Colunas necessárias: <span className="font-mono bg-gray-100 px-1 rounded">nome</span>, <span className="font-mono bg-gray-100 px-1 rounded">time_nome</span>, <span className="font-mono bg-gray-100 px-1 rounded">idade</span>, <span className="font-mono bg-gray-100 px-1 rounded">altura</span>, <span className="font-mono bg-gray-100 px-1 rounded">peso</span>, <span className="font-mono bg-gray-100 px-1 rounded">cidade</span>, <span className="font-mono bg-gray-100 px-1 rounded">numero</span>, <span className="font-mono bg-gray-100 px-1 rounded">camisa</span>. Opcionais: <span className="font-mono bg-gray-100 px-1 rounded">instagram</span>, <span className="font-mono bg-gray-100 px-1 rounded">instagram2</span>, <span className="font-mono bg-gray-100 px-1 rounded">temporada</span>.
+                Colunas necessárias: <span className="font-mono bg-gray-100 px-1 rounded">nome</span>, <span className="font-mono bg-gray-100 px-1 rounded">time_nome</span>, <span className="font-mono bg-gray-100 px-1 rounded">numero</span>, <span className="font-mono bg-gray-100 px-1 rounded">camisa</span>. Opcionais: <span className="font-mono bg-gray-100 px-1 rounded">temporada</span>.
               </p>
             </div>
             
             <div>
               <h3 className="text-lg font-semibold mb-2">Upload de Estatísticas</h3>
               <p className="text-gray-600">
-                Colunas necessárias: <span className="font-mono bg-gray-100 px-1 rounded">jogador_id</span> ou <span className="font-mono bg-gray-100 px-1 rounded">jogador_nome</span> (com <span className="font-mono bg-gray-100 px-1 rounded">time_nome</span>). Estatísticas: qualquer uma das colunas <span className="font-mono bg-gray-100 px-1 rounded">passes_completos</span>, <span className="font-mono bg-gray-100 px-1 rounded">passes_tentados</span>, <span className="font-mono bg-gray-100 px-1 rounded">td_passado</span>, etc.
+                Colunas necessárias: <span className="font-mono bg-gray-100 px-1 rounded">jogador_id</span> ou <span className="font-mono bg-gray-100 px-1 rounded">jogador_nome</span> (com <span className="font-mono bg-gray-100 px-1 rounded">time_nome</span>). 
+              </p>
+              <p className="text-gray-600">
+                <strong>Passe:</strong> <span className="font-mono bg-gray-100 px-1 rounded">passes_completos</span>, <span className="font-mono bg-gray-100 px-1 rounded">passes_tentados</span>, <span className="font-mono bg-gray-100 px-1 rounded">passes_incompletos</span>, <span className="font-mono bg-gray-100 px-1 rounded">jds_passe</span>, <span className="font-mono bg-gray-100 px-1 rounded">tds_passe</span>, <span className="font-mono bg-gray-100 px-1 rounded">passe_xp1</span>, <span className="font-mono bg-gray-100 px-1 rounded">passe_xp2</span>, <span className="font-mono bg-gray-100 px-1 rounded">int_sofridas</span>, <span className="font-mono bg-gray-100 px-1 rounded">sacks_sofridos</span>, <span className="font-mono bg-gray-100 px-1 rounded">pressao_pct</span>
+              </p>
+              <p className="text-gray-600">
+                <strong>Corrida:</strong> <span className="font-mono bg-gray-100 px-1 rounded">corridas</span>, <span className="font-mono bg-gray-100 px-1 rounded">jds_corridas</span>, <span className="font-mono bg-gray-100 px-1 rounded">tds_corridos</span>, <span className="font-mono bg-gray-100 px-1 rounded">corrida_xp1</span>, <span className="font-mono bg-gray-100 px-1 rounded">corrida_xp2</span>
+              </p>
+              <p className="text-gray-600">
+                <strong>Recepção:</strong> <span className="font-mono bg-gray-100 px-1 rounded">recepcoes</span>, <span className="font-mono bg-gray-100 px-1 rounded">alvos</span>, <span className="font-mono bg-gray-100 px-1 rounded">drops</span>, <span className="font-mono bg-gray-100 px-1 rounded">jds_recepcao</span>, <span className="font-mono bg-gray-100 px-1 rounded">jds_yac</span>, <span className="font-mono bg-gray-100 px-1 rounded">tds_recepcao</span>, <span className="font-mono bg-gray-100 px-1 rounded">recepcao_xp1</span>, <span className="font-mono bg-gray-100 px-1 rounded">recepcao_xp2</span>
+              </p>
+              <p className="text-gray-600">
+                <strong>Defesa:</strong> <span className="font-mono bg-gray-100 px-1 rounded">tck</span>, <span className="font-mono bg-gray-100 px-1 rounded">tfl</span>, <span className="font-mono bg-gray-100 px-1 rounded">pressao_pct_def</span>, <span className="font-mono bg-gray-100 px-1 rounded">sacks</span>, <span className="font-mono bg-gray-100 px-1 rounded">tip</span>, <span className="font-mono bg-gray-100 px-1 rounded">int</span>, <span className="font-mono bg-gray-100 px-1 rounded">tds_defesa</span>, <span className="font-mono bg-gray-100 px-1 rounded">defesa_xp2</span>, <span className="font-mono bg-gray-100 px-1 rounded">sft</span>, <span className="font-mono bg-gray-100 px-1 rounded">sft_1</span>, <span className="font-mono bg-gray-100 px-1 rounded">blk</span>, <span className="font-mono bg-gray-100 px-1 rounded">jds_defesa</span>
               </p>
               <p className="text-gray-600 mt-2">
                 Sempre preencha o ID do Jogo (ex: jogo_001) e a Data do Jogo.
