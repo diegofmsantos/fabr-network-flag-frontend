@@ -13,10 +13,9 @@ import { useJogadores } from '@/hooks/queries'
 
 type Props = {
     currentTeam: Time
-    selectedSetor: string
 }
 
-export const Jogador = ({ currentTeam, selectedSetor }: Props) => {
+export const Jogador = ({ currentTeam }: Props) => {
     const [jogadoresFiltrados, setJogadoresFiltrados] = useState<JogadorType[]>([])
     const [loading, setLoading] = useState(true)
     const searchParams = useSearchParams()
@@ -113,7 +112,6 @@ export const Jogador = ({ currentTeam, selectedSetor }: Props) => {
                                 alt="Camisa"
                                 quality={100}
                                 className="w-16 h-20 md:w-20 md:h-24"
-                              
                             />
                         </div>
                         <div className="flex flex-col gap-3 md:flex-1">
@@ -122,19 +120,10 @@ export const Jogador = ({ currentTeam, selectedSetor }: Props) => {
                             </div>
                             <div className="flex justify-between gap-2 min-[400px]:gap-6 md:justify-start">
                                 <div className="flex flex-col items-center">
-                                    <div className="text-[10px] min-[375px]:text-xs">IDADE</div>
-                                    <div className="text-xs min-[400px]:text-base font-bold">{jogador.idade || 0}</div>
+                                    <div className="text-[10px] min-[375px]:text-xs">NUMERO</div>
+                                    <div className="text-xs min-[400px]:text-base font-bold">{jogador.numero || '-'}</div>
                                 </div>
-                                <div className="flex flex-col items-center">
-                                    <div className="text-[10px] min-[375px]:text-xs">ALTURA</div>
-                                    <div className="text-xs min-[400px]:text-base font-bold">
-                                        {jogador.altura ? jogador.altura.toFixed(2).replace('.', ',') : '0,00'}
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <div className="text-[10px] min-[375px]:text-xs">PESO</div>
-                                    <div className="text-xs min-[400px]:text-base font-bold">{jogador.peso || 0}</div>
-                                </div>
+                                {/* Removemos altura, peso, idade já que estes campos foram removidos no schema */}
                             </div>
                         </div>
                     </Link>

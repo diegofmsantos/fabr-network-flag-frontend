@@ -9,60 +9,77 @@ import { getStatMapping } from '@/utils/statMappings'
 import { TeamStatsList } from '@/components/Stats/TeamStatsList'
 import { StatsLayout } from '@/components/Stats/StatsLayout'
 
-// Definindo os grupos de estatísticas relevantes para flag football
+// Definindo os grupos de estatísticas atualizados para flag football
 const statGroups = [
   {
-    title: "Passando",
+    title: "Passe",
     groupLabel: "passe",
     stats: [
       { title: "Passes Tentados", urlParam: "passe-tentados" },
       { title: "Passes Completos", urlParam: "passe-completos" },
-      { title: "Percentual de Passe", urlParam: "passe-percentual" },
-      { title: "Touchdowns de Passe", urlParam: "passe-td" },
+      { title: "Passes Incompletos", urlParam: "passe-incompletos" },
+      { title: "Jardas", urlParam: "passe-jardas" },
+      { title: "Touchdowns", urlParam: "passe-td" },
+      { title: "Extra Point (1)", urlParam: "passe-xp1" },
+      { title: "Extra Point (2)", urlParam: "passe-xp2" },
       { title: "Interceptações Sofridas", urlParam: "passe-int" },
       { title: "Sacks Sofridos", urlParam: "passe-sacks" },
+      { title: "Percentual de Passe", urlParam: "passe-percentual" }
     ]
   },
   {
-    title: "Correndo",
+    title: "Corrida",
     groupLabel: "corrida",
     stats: [
       { title: "Corridas", urlParam: "corrida-total" },
-      { title: "Touchdowns Correndo", urlParam: "corrida-td" },
+      { title: "Jardas", urlParam: "corrida-jardas" },
+      { title: "Touchdowns", urlParam: "corrida-td" },
+      { title: "Extra Point (1)", urlParam: "corrida-xp1" },
+      { title: "Extra Point (2)", urlParam: "corrida-xp2" }
     ]
   },
   {
-    title: "Recebendo",
+    title: "Recepção",
     groupLabel: "recepcao",
     stats: [
       { title: "Recepções", urlParam: "recepcao-total" },
       { title: "Alvos", urlParam: "recepcao-alvo" },
-      { title: "Touchdowns Recebidos", urlParam: "recepcao-td" },
+      { title: "Drops", urlParam: "recepcao-drops" },
+      { title: "Jardas", urlParam: "recepcao-jardas" },
+      { title: "Jardas Após Recepção", urlParam: "recepcao-yac" },
+      { title: "Touchdowns", urlParam: "recepcao-td" },
+      { title: "Extra Point (1)", urlParam: "recepcao-xp1" },
+      { title: "Extra Point (2)", urlParam: "recepcao-xp2" }
     ]
   },
   {
     title: "Defesa",
     groupLabel: "defesa",
     stats: [
-      { title: "Flag Retirada", urlParam: "defesa-flag-retirada" },
-      { title: "Flag Perdida", urlParam: "defesa-flag-perdida" },
+      { title: "Tackles", urlParam: "defesa-tck" },
+      { title: "Tackles For Loss", urlParam: "defesa-tfl" },
       { title: "Sacks", urlParam: "defesa-sack" },
-      { title: "Pressão", urlParam: "defesa-pressao" },
-      { title: "Interceptações", urlParam: "defesa-interceptacao" },
-      { title: "Passes Desviados", urlParam: "defesa-desvio" },
+      { title: "Pressão (%)", urlParam: "defesa-pressao" },
+      { title: "Passes Desviados", urlParam: "defesa-tip" },
+      { title: "Interceptações", urlParam: "defesa-int" },
       { title: "Touchdowns", urlParam: "defesa-td" },
+      { title: "Extra Point (2)", urlParam: "defesa-xp2" },
+      { title: "Safeties", urlParam: "defesa-sft" },
+      { title: "Safety (1)", urlParam: "defesa-sft1" },
+      { title: "Bloqueios", urlParam: "defesa-blk" },
+      { title: "Jardas", urlParam: "defesa-jardas" }
     ]
   }
 ];
 
-// Função getStatGroup permanece a mesma
+// Função getStatGroup permanece com a mesma lógica, mas adaptada para os novos grupos
 const getStatGroup = (statParam: string): string => {
     for (const group of statGroups) {
         if (group.stats.some(stat => stat.urlParam === statParam)) {
             return group.title
         }
     }
-    return 'Passando'
+    return 'Passe' // Default para "Passe" em vez de "Passando"
 }
 
 // Componente Select em um componente separado com Suspense
@@ -76,7 +93,7 @@ const TeamStatSelect = React.memo(({ currentStat }: { currentStat: string }) => 
 
     return (
         <div className="mb-6 mx-4">
-            <h1 className="text-4xl font-extrabold italic mb-4 text-center uppercase">{currentGroup}</h1>
+            <h1 className="text-4xl font-bold mb-4 text-center uppercase">{currentGroup}</h1>
             <select
                 value={currentStat}
                 onChange={(e) => handleStatChange(e.target.value)}
@@ -101,7 +118,7 @@ TeamStatSelect.displayName = 'TeamStatSelect'
 // Componente de conteúdo separado
 function TeamStatsContent() {
     const searchParams = useSearchParams()
-    const statParam = searchParams.get('stat') || 'passe-tentados' 
+    const statParam = searchParams.get('stat') || 'passe-tentados' // Valor padrão alterado para passe-tentados
     const { players, times, loading } = useStats() 
     const getTeamInfo = useTeamInfo(times)
     const statMapping = getStatMapping(statParam)

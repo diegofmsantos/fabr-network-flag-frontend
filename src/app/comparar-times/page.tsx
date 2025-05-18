@@ -124,7 +124,63 @@ export default function CompararTimesPage() {
     const time2 = comparisonData.teams.time2;
 
     // Dados para o gráfico de ataque com a nova estrutura
-    const ataqueData = [
+    const passeData = [
+      {
+        name: "Passes Completos",
+        [time1.nome]: time1.estatisticas.ataque.passes_completos,
+        [time2.nome]: time2.estatisticas.ataque.passes_completos
+      },
+      {
+        name: "TDs de Passe",
+        [time1.nome]: time1.estatisticas.ataque.td_passado,
+        [time2.nome]: time2.estatisticas.ataque.td_passado
+      },
+      {
+        name: "Corridas",
+        [time1.nome]: time1.estatisticas.ataque.corrida,
+        [time2.nome]: time2.estatisticas.ataque.corrida
+      },
+      {
+        name: "Recepções",
+        [time1.nome]: time1.estatisticas.ataque.recepcao,
+        [time2.nome]: time2.estatisticas.ataque.recepcao
+      },
+      {
+        name: "TDs Recebidos",
+        [time1.nome]: time1.estatisticas.ataque.td_recebido,
+        [time2.nome]: time2.estatisticas.ataque.td_recebido
+      }
+    ];
+
+    const corridaData = [
+      {
+        name: "Passes Completos",
+        [time1.nome]: time1.estatisticas.ataque.passes_completos,
+        [time2.nome]: time2.estatisticas.ataque.passes_completos
+      },
+      {
+        name: "TDs de Passe",
+        [time1.nome]: time1.estatisticas.ataque.td_passado,
+        [time2.nome]: time2.estatisticas.ataque.td_passado
+      },
+      {
+        name: "Corridas",
+        [time1.nome]: time1.estatisticas.ataque.corrida,
+        [time2.nome]: time2.estatisticas.ataque.corrida
+      },
+      {
+        name: "Recepções",
+        [time1.nome]: time1.estatisticas.ataque.recepcao,
+        [time2.nome]: time2.estatisticas.ataque.recepcao
+      },
+      {
+        name: "TDs Recebidos",
+        [time1.nome]: time1.estatisticas.ataque.td_recebido,
+        [time2.nome]: time2.estatisticas.ataque.td_recebido
+      }
+    ];
+
+    const recepcaoData = [
       {
         name: "Passes Completos",
         [time1.nome]: time1.estatisticas.ataque.passes_completos,

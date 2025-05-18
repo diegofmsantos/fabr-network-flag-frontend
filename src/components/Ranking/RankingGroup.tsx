@@ -11,25 +11,48 @@ import { NoStats } from '../ui/NoStats'
 
 // Atualizado para refletir a nova estrutura de estatísticas do flag football
 export type StatKey =
+  // Passe
   | 'passes_completos'
   | 'passes_tentados'
-  | 'td_passado'
-  | 'interceptacoes_sofridas'
+  | 'passes_incompletos'
+  | 'jds_passe'
+  | 'td_passe'
+  | 'passe_xp1'
+  | 'passe_xp2'
+  | 'int_sofridas'
   | 'sacks_sofridos'
-  | 'corrida'
+  | 'pressao_pct'
+  // Corrida
+  | 'corridas'
+  | 'jds_corridas'
   | 'tds_corridos'
-  | 'recepcao'
-  | 'alvo'
-  | 'td_recebido'
-  | 'sack'
-  | 'pressao'
-  | 'flag_retirada'
-  | 'flag_perdida'
-  | 'interceptacao_forcada'
-  | 'passe_desviado'
-  | 'td_defensivo'
-  | 'passes_percentual';  // Estatística calculada
-
+  | 'corrida_xp1'
+  | 'corrida_xp2'
+  // Recepção
+  | 'recepcoes'
+  | 'alvos'
+  | 'drops'
+  | 'jds_recepcao'
+  | 'jds_yac'
+  | 'tds_recepcao'
+  | 'recepcao_xp1'
+  | 'recepcao_xp2'
+  // Defesa
+  | 'tck'
+  | 'tfl'
+  | 'pressao_pct_def'
+  | 'sacks'
+  | 'tip'
+  | 'int'
+  | 'tds_defesa'
+  | 'defesa_xp2'
+  | 'sft'
+  | 'sft_1'
+  | 'blk'
+  | 'jds_defesa'
+  // Estatísticas calculadas
+  | 'passes_percentual';
+  
 interface RankingGroupProps {
   title: string;
   stats: { key: StatKey; title: string }[]

@@ -135,34 +135,77 @@ export default function Page() {
         return '0';
     };
 
+    // Função para calcular percentuais e médias com segurança
+    const calculatePct = (numerator: number = 0, denominator: number = 0): string => {
+        if (denominator === 0) return '0%';
+        return `${Math.round((numerator / denominator) * 100)}%`;
+    }
+
+    const calculateAvg = (total: number = 0, attempts: number = 0): string => {
+        if (attempts === 0) return '0';
+        return (total / attempts).toFixed(1).replace('.', ',');
+    }
+
     // Caminhos para assets
     const logoPath = getLogoPath(currentTime);
 
-    // Objetos seguros para estatísticas
-    const ataque = currentJogador.estatisticas?.ataque || {};
-    const ataqueSafe = {
-        passes_completos: ataque.passes_completos || 0,
-        passes_tentados: ataque.passes_tentados || 0,
-        td_passado: ataque.td_passado || 0,
-        interceptacoes_sofridas: ataque.interceptacoes_sofridas || 0,
-        sacks_sofridos: ataque.sacks_sofridos || 0,
-        corrida: ataque.corrida || 0,
-        tds_corridos: ataque.tds_corridos || 0,
-        recepcao: ataque.recepcao || 0,
-        alvo: ataque.alvo || 0,
-        td_recebido: ataque.td_recebido || 0
+    // Objetos seguros para estatísticas com nova estrutura
+    const passe = currentJogador.estatisticas?.passe || {};
+    const passeSafe = {
+        passes_completos: passe.passes_completos || 0,
+        passes_tentados: passe.passes_tentados || 0,
+        passes_incompletos: passe.passes_incompletos || 0,
+        jds_passe: passe.jds_passe || 0,
+        tds_passe: passe.tds_passe || 0,
+        passe_xp1: passe.passe_xp1 || 0,
+        passe_xp2: passe.passe_xp2 || 0,
+        int_sofridas: passe.int_sofridas || 0,
+        sacks_sofridos: passe.sacks_sofridos || 0
+    };
+
+    const corrida = currentJogador.estatisticas?.corrida || {};
+    const corridaSafe = {
+        corridas: corrida.corridas || 0,
+        jds_corridas: corrida.jds_corridas || 0,
+        tds_corridos: corrida.tds_corridos || 0,
+        corrida_xp1: corrida.corrida_xp1 || 0,
+        corrida_xp2: corrida.corrida_xp2 || 0
+    };
+
+    const recepcao = currentJogador.estatisticas?.recepcao || {};
+    const recepcaoSafe = {
+        recepcoes: recepcao.recepcoes || 0,
+        alvos: recepcao.alvos || 0,
+        drops: recepcao.drops || 0,
+        jds_recepcao: recepcao.jds_recepcao || 0,
+        jds_yac: recepcao.jds_yac || 0,
+        tds_recepcao: recepcao.tds_recepcao || 0,
+        recepcao_xp1: recepcao.recepcao_xp1 || 0,
+        recepcao_xp2: recepcao.recepcao_xp2 || 0
     };
 
     const defesa = currentJogador.estatisticas?.defesa || {};
     const defesaSafe = {
-        sack: defesa.sack || 0,
-        pressao: defesa.pressao || 0,
-        flag_retirada: defesa.flag_retirada || 0,
-        flag_perdida: defesa.flag_perdida || 0,
-        passe_desviado: defesa.passe_desviado || 0,
-        interceptacao_forcada: defesa.interceptacao_forcada || 0,
-        td_defensivo: defesa.td_defensivo || 0
+        tck: defesa.tck || 0,
+        tfl: defesa.tfl || 0,
+        pressao_pct: defesa.pressao_pct || "0",
+        sacks: defesa.sacks || 0,
+        tip: defesa.tip || 0,
+        int: defesa.int || 0,
+        tds_defesa: defesa.tds_defesa || 0,
+        defesa_xp2: defesa.defesa_xp2 || 0,
+        sft: defesa.sft || 0,
+        sft_1: defesa.sft_1 || 0,
+        blk: defesa.blk || 0,
+        jds_defesa: defesa.jds_defesa || 0
     };
+
+    // Verificar se há estatísticas para exibir
+    const temEstatisticasPasse = Object.values(passeSafe).some(val => val > 0);
+    const temEstatisticasCorrida = Object.values(corridaSafe).some(val => val > 0);
+    const temEstatisticasRecepcao = Object.values(recepcaoSafe).some(val => val > 0);
+    const temEstatisticasDefesa = Object.values(defesaSafe).some(val =>
+        typeof val === 'number' ? val > 0 : val !== "0");
 
     return (
         <AnimatePresence>
@@ -239,165 +282,168 @@ export default function Page() {
                     exit={{ opacity: 0, x: -50 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="w-full bg-[#ECECEC] flex flex-col justify-center items-center">
-                        <div className="w-full flex justify-center">
-                            <SelectFilter
-                                label="TEMPORADA"
-                                value={selectedTemporada}
-                                onChange={(novaTemporada) => {
-                                    // Force a limpeza do cache e refetch
-                                    queryClient.invalidateQueries({ queryKey: queryKeys.jogadores(selectedTemporada) });
-                                    queryClient.invalidateQueries({ queryKey: queryKeys.times(selectedTemporada) });
+                 
 
-                                    console.log(`Alterando temporada para: ${novaTemporada}`);
-                                    setSelectedTemporada(novaTemporada);
-
-                                    // Constrói a URL com base no slug do time e jogador atual
-                                    const timeSlug = getTeamSlug(currentTime.nome || '');
-                                    const jogadorSlug = getPlayerSlug(currentJogador.nome || '');
-
-                                    router.replace(`/${timeSlug}/${jogadorSlug}?temporada=${novaTemporada}`);
-                                }}
-                                options={[
-                                    { label: '2024', value: '2024' },
-                                    { label: '2025', value: '2025' }
-                                ]}
-                            />
-                        </div>
-                    </div>
-                    <div className='-mt-4 lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                        <div className="border py-2 px-3 font-extrabold text-white text-xs w-16 flex justify-center items-center rounded-md mb-3"
-                            style={{ backgroundColor: currentTime?.cor }}>BIO</div>
-                        <div className="bg-white flex flex-col justify-center gap-4 p-4 rounded-lg">
-                            <div className="border-b border-bg-[#D9D9D9] flex justify-between">
-                                <div className='flex flex-col justify-center items-center'>
-                                    <div className="text-sm md:text-lg">IDADE</div>
-                                    <div className="text-[34px] font-extrabold italic mb-1">{currentJogador.idade || 0}</div>
-                                </div>
-                                <div className='flex flex-col justify-center items-center'>
-                                    <div className="text-sm md:text-lg">PESO</div>
-                                    <div className="text-[34px] font-extrabold italic mb-1">{currentJogador.peso || 0}</div>
-                                </div>
-                                <div className='flex flex-col justify-center items-center'>
-                                    <div className="text-sm md:text-lg">ALTURA</div>
-                                    <div className="text-[34px] font-extrabold italic mb-1">
-                                        {(currentJogador.altura || 0).toFixed(2).replace('.', ',')}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="border-b border-bg-[#D9D9D9] flex justify-start">
-                                <div className='flex-1 justify-start'>
-                                    <div className="text-sm md:text-lg">CIDADE NATAL</div>
-                                    <div className="text-xl font-extrabold italic mb-1">
-                                        {(currentJogador?.cidade || '').toLocaleUpperCase()}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex justify-start'>
-                                <div className='flex-1 justify-start'>
-                                    <div className="text-sm md:text-lg">INSTAGRAM</div>
-                                    <div className="text-lg font-extrabold italic underline text-blue-800">
-                                        <Link href={currentJogador.instagram || '#'} target='blank'>
-                                            {(currentJogador.instagram2 || '').toLocaleUpperCase()}
-                                        </Link>
-                                    </div>
-                                </div>
+                    {/* Estatísticas de Passe */}
+                    {temEstatisticasPasse && (
+                        <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
+                            <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
+                                style={{ backgroundColor: currentTime?.cor }}>STATS (PASSE)</div>
+                            <div className="bg-white flex flex-col justify-start gap-4 p-4 rounded-lg lg:p-6">
+                                <Stats
+                                    label1='PASSES(COMP/TENT)'
+                                    label2={`${passeSafe.passes_completos}/${passeSafe.passes_tentados}`}
+                                    label3='PASSES INCOMPL.'
+                                    label4={passeSafe.passes_incompletos}
+                                />
+                                <Stats
+                                    label1='PASSE %'
+                                    label2={calculatePct(passeSafe.passes_completos, passeSafe.passes_tentados)}
+                                    label3='JARDAS'
+                                    label4={passeSafe.jds_passe}
+                                />
+                                <Stats
+                                    label1='JARDAS AVG'
+                                    label2={calculateAvg(passeSafe.jds_passe, passeSafe.passes_tentados)}
+                                    label3='TOUCHDOWNS'
+                                    label4={passeSafe.tds_passe}
+                                />
+                                <Stats
+                                    label1='EXTRA POINT (1)'
+                                    label2={passeSafe.passe_xp1}
+                                    label3='EXTRA POINT (2)'
+                                    label4={passeSafe.passe_xp2}
+                                />
+                                <Stats
+                                    label1='INTERCEPTAÇÕES'
+                                    label2={passeSafe.int_sofridas}
+                                    label3='SACKS SOFRIDOS'
+                                    label4={passeSafe.sacks_sofridos}
+                                    noBorder
+                                />
                             </div>
                         </div>
-                    </div>
+                    )}
 
-                    {currentJogador.estatisticas?.ataque &&
-                        (
-                            ataqueSafe.passes_completos > 0 ||
-                            ataqueSafe.passes_tentados > 0 ||
-                            ataqueSafe.td_passado > 0 ||
-                            ataqueSafe.interceptacoes_sofridas > 0 ||
-                            ataqueSafe.sacks_sofridos > 0 ||
-                            ataqueSafe.corrida > 0 ||
-                            ataqueSafe.tds_corridos > 0 ||
-                            ataqueSafe.recepcao > 0 ||
-                            ataqueSafe.alvo > 0 ||
-                            ataqueSafe.td_recebido > 0
-                        ) && (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (ATAQUE)
-                                </div>
-                                <div className="bg-white flex flex-col justify-start gap-4 p-4 rounded-lg lg:p-6">
-                                    <Stats
-                                        label1='PASSES(COMP/TENT)'
-                                        label2={`${ataqueSafe.passes_completos}/${ataqueSafe.passes_tentados}`}
-                                        label3='PASSES(%)'
-                                        label4={ataqueSafe.passes_tentados > 0
-                                            ? ((ataqueSafe.passes_completos / ataqueSafe.passes_tentados) * 100)
-                                                .toFixed(0).replace('.', ',') + '%'
-                                            : '0%'}
-                                    />
-                                    <Stats
-                                        label1='TOUCHDOWNS(PASSE)'
-                                        label2={ataqueSafe.td_passado}
-                                        label3='INTERCEPTAÇÕES'
-                                        label4={ataqueSafe.interceptacoes_sofridas}
-                                    />
-                                    <Stats
-                                        label1='CORRIDAS'
-                                        label2={ataqueSafe.corrida}
-                                        label3='TDs CORRIDOS'
-                                        label4={ataqueSafe.tds_corridos}
-                                    />
-                                    <Stats
-                                        label1='RECEPÇÕES/ALVO'
-                                        label2={`${ataqueSafe.recepcao}/${ataqueSafe.alvo}`}
-                                        label3='TDs RECEBIDOS'
-                                        label4={ataqueSafe.td_recebido}
-                                        noBorder
-                                    />
-                                </div>
+                    {/* Estatísticas de Corrida */}
+                    {temEstatisticasCorrida && (
+                        <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
+                            <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
+                                style={{ backgroundColor: currentTime?.cor }}>STATS (CORRIDA)</div>
+                            <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
+                                <Stats
+                                    label1='CORRIDAS'
+                                    label2={corridaSafe.corridas}
+                                    label3='JARDAS'
+                                    label4={corridaSafe.jds_corridas}
+                                />
+                                <Stats
+                                    label1='JARDAS AVG'
+                                    label2={calculateAvg(corridaSafe.jds_corridas, corridaSafe.corridas)}
+                                    label3='TOUCHDOWNS'
+                                    label4={corridaSafe.tds_corridos}
+                                />
+                                <Stats
+                                    label1='EXTRA POINT (1)'
+                                    label2={corridaSafe.corrida_xp1}
+                                    label3='EXTRA POINT (2)'
+                                    label4={corridaSafe.corrida_xp2}
+                                    noBorder
+                                />
                             </div>
-                        )
-                    }
+                        </div>
+                    )}
 
-                    {currentJogador.estatisticas?.defesa &&
-                        (
-                            defesaSafe.flag_retirada > 0 ||
-                            defesaSafe.flag_perdida > 0 ||
-                            defesaSafe.sack > 0 ||
-                            defesaSafe.pressao > 0 ||
-                            defesaSafe.interceptacao_forcada > 0 ||
-                            defesaSafe.passe_desviado > 0 ||
-                            defesaSafe.td_defensivo > 0
-                        ) &&
-                        (
-                            <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
-                                <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                    style={{ backgroundColor: currentTime?.cor }}>STATS (DEFESA)</div>
-                                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
-                                    <Stats
-                                        label1='FLAG RETIRADA'
-                                        label2={defesaSafe.flag_retirada}
-                                        label3='FLAG PERDIDA'
-                                        label4={defesaSafe.flag_perdida}
-                                    />
-                                    <Stats
-                                        label1='SACKS'
-                                        label2={defesaSafe.sack}
-                                        label3='PRESSÃO'
-                                        label4={defesaSafe.pressao}
-                                    />
-                                    <Stats
-                                        label1='INTERCEPTAÇÕES'
-                                        label2={defesaSafe.interceptacao_forcada}
-                                        label3='PASSES DESVIADOS'
-                                        label4={defesaSafe.passe_desviado}
-                                    />
-                                    <Stats
-                                        label1='TOUCHDOWNS'
-                                        label2={defesaSafe.td_defensivo}
-                                        noBorder
-                                    />
-                                </div>
+                    {/* Estatísticas de Recepção */}
+                    {temEstatisticasRecepcao && (
+                        <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
+                            <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
+                                style={{ backgroundColor: currentTime?.cor }}>STATS (RECEPÇÃO)</div>
+                            <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
+                                <Stats
+                                    label1='RECEPÇÕES/ALVO'
+                                    label2={`${recepcaoSafe.recepcoes}/${recepcaoSafe.alvos}`}
+                                    label3='DROPS'
+                                    label4={recepcaoSafe.drops}
+                                />
+                                <Stats
+                                    label1='JARDAS'
+                                    label2={recepcaoSafe.jds_recepcao}
+                                    label3='JARDAS AVG'
+                                    label4={calculateAvg(recepcaoSafe.jds_recepcao, recepcaoSafe.alvos)}
+                                />
+                                <Stats
+                                    label1='JARDAS APÓS RECEPÇÃO'
+                                    label2={recepcaoSafe.jds_yac}
+                                    label3='TOUCHDOWNS'
+                                    label4={recepcaoSafe.tds_recepcao}
+                                />
+                                <Stats
+                                    label1='EXTRA POINT (1)'
+                                    label2={recepcaoSafe.recepcao_xp1}
+                                    label3='EXTRA POINT (2)'
+                                    label4={recepcaoSafe.recepcao_xp2}
+                                    noBorder
+                                />
                             </div>
-                        )}
+                        </div>
+                    )}
+
+                    {/* Estatísticas de Defesa */}
+                    {temEstatisticasDefesa && (
+                        <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
+                            <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
+                                style={{ backgroundColor: currentTime?.cor }}>STATS (DEFESA)</div>
+                            <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
+                                <Stats
+                                    label1='TACKLES'
+                                    label2={defesaSafe.tck}
+                                    label3='TACKLES FOR LOSS'
+                                    label4={defesaSafe.tfl}
+                                />
+                                <Stats
+                                    label1='PRESSÃO (%)'
+                                    label2={defesaSafe.pressao_pct}
+                                    label3='SACKS'
+                                    label4={defesaSafe.sacks}
+                                />
+                                <Stats
+                                    label1='PASSES DESVIADOS'
+                                    label2={defesaSafe.tip}
+                                    label3='INTERCEPTAÇÕES'
+                                    label4={defesaSafe.int}
+                                />
+                                <Stats
+                                    label1='TOUCHDOWNS'
+                                    label2={defesaSafe.tds_defesa}
+                                    label3='EXTRA POINT (2)'
+                                    label4={defesaSafe.defesa_xp2}
+                                />
+                                <Stats
+                                    label1='SAFETIES'
+                                    label2={defesaSafe.sft}
+                                    label3='SAFETY (1)'
+                                    label4={defesaSafe.sft_1}
+                                />
+                                <Stats
+                                    label1='BLOQUEIOS'
+                                    label2={defesaSafe.blk}
+                                    label3='JARDAS'
+                                    label4={defesaSafe.jds_defesa}
+                                    noBorder
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Mensagem se não tiver estatísticas */}
+                    {!temEstatisticasPasse && !temEstatisticasCorrida && !temEstatisticasRecepcao && !temEstatisticasDefesa && (
+                        <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
+                            <div className="bg-white flex flex-col justify-center items-center p-8 rounded-lg">
+                                <p className="text-lg font-semibold">Este jogador ainda não possui estatísticas registradas.</p>
+                            </div>
+                        </div>
+                    )}
                 </motion.div>
             </motion.div>
         </AnimatePresence>

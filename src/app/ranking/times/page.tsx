@@ -41,72 +41,124 @@ export default function TeamRankingPage() {
         fetchData()
     }, [])
 
+    // Função atualizada para calcular estatísticas de time usando a nova estrutura
     const calculateTeamStats = (players: Jogador[]): TeamStats[] => {
         const teamStatsMap = new Map<number, TeamStats>()
 
         const timeIds = [...new Set(players.map(player => player.timeId))];
 
-
+        // Inicializar estatísticas para cada time
         timeIds.forEach(id => {
+            if (!id) return; // Ignorar ids indefinidos
+
             teamStatsMap.set(id, {
                 timeId: id,
-                ataque: {
+                passe: {
                     passes_completos: 0,
                     passes_tentados: 0,
-                    td_passado: 0,
-                    interceptacoes_sofridas: 0,
+                    passes_incompletos: 0,
+                    jds_passe: 0,
+                    td_passe: 0,
+                    passe_xp1: 0,
+                    passe_xp2: 0,
+                    int_sofridas: 0,
                     sacks_sofridos: 0,
-                    corrida: 0,
+                    pressao_pct: "0"
+                },
+                corrida: {
+                    corridas: 0,
+                    jds_corridas: 0,
                     tds_corridos: 0,
-                    recepcao: 0,
-                    alvo: 0,
-                    td_recebido: 0
+                    corrida_xp1: 0,
+                    corrida_xp2: 0
+                },
+                recepcao: {
+                    recepcoes: 0,
+                    alvos: 0,
+                    drops: 0,
+                    jds_recepcao: 0,
+                    jds_yac: 0,
+                    tds_recepcao: 0,
+                    recepcao_xp1: 0,
+                    recepcao_xp2: 0
                 },
                 defesa: {
-                    sack: 0,
-                    pressao: 0,
-                    flag_retirada: 0,
-                    flag_perdida: 0,
-                    interceptacao_forcada: 0,
-                    passe_desviado: 0,
-                    td_defensivo: 0
+                    tck: 0,
+                    tfl: 0,
+                    pressao_pct: "0",
+                    sacks: 0,
+                    tip: 0,
+                    int: 0,
+                    tds_defesa: 0,
+                    defesa_xp2: 0,
+                    sft: 0,
+                    sft_1: 0,
+                    blk: 0,
+                    jds_defesa: 0
                 }
             });
         });
 
-        // Segundo passo: agregar as estatísticas de cada jogador ao seu time
+        // Agregar estatísticas de cada jogador ao seu time
         players.forEach(player => {
+            if (!player.timeId) return; // Ignorar jogadores sem time
+            
             let teamStats = teamStatsMap.get(player.timeId);
+            if (!teamStats) return; // Pular se o time não foi inicializado
 
-            if (!teamStats) {
-                console.warn(`Time não encontrado para jogador ${player.nome} (ID: ${player.id}), timeId: ${player.timeId}`);
-                return; // Pula este jogador
+            // Adicionar estatísticas de passe
+            if (player.estatisticas?.passe) {
+                const passe = player.estatisticas.passe;
+                teamStats.passe.passes_completos += passe.passes_completos || 0;
+                teamStats.passe.passes_tentados += passe.passes_tentados || 0;
+                teamStats.passe.passes_incompletos += passe.passes_incompletos || 0;
+                teamStats.passe.jds_passe += passe.jds_passe || 0;
+                teamStats.passe.td_passe += passe.tds_passe || 0;
+                teamStats.passe.passe_xp1 += passe.passe_xp1 || 0;
+                teamStats.passe.passe_xp2 += passe.passe_xp2 || 0;
+                teamStats.passe.int_sofridas += passe.int_sofridas || 0;
+                teamStats.passe.sacks_sofridos += passe.sacks_sofridos || 0;
+                // Não somamos pressao_pct, apenas usamos o último valor (se necessário)
             }
 
-            // Adiciona as estatísticas do jogador ao time
-            // Passe
-            if (player.estatisticas?.ataque) {
-                teamStats.ataque.passes_completos += player.estatisticas.ataque.passes_completos || 0;
-                teamStats.ataque.passes_tentados += player.estatisticas.ataque.passes_tentados || 0;
-                teamStats.ataque.td_passado += player.estatisticas.ataque.td_passado || 0;
-                teamStats.ataque.interceptacoes_sofridas += player.estatisticas.ataque.interceptacoes_sofridas || 0;
-                teamStats.ataque.sacks_sofridos += player.estatisticas.ataque.sacks_sofridos || 0;
-                teamStats.ataque.corrida += player.estatisticas.ataque.corrida || 0;
-                teamStats.ataque.tds_corridos += player.estatisticas.ataque.tds_corridos || 0;
-                teamStats.ataque.recepcao += player.estatisticas.ataque.recepcao || 0;
-                teamStats.ataque.alvo += player.estatisticas.ataque.alvo || 0;
-                teamStats.ataque.td_recebido += player.estatisticas.ataque.td_recebido || 0;
+            // Adicionar estatísticas de corrida
+            if (player.estatisticas?.corrida) {
+                const corrida = player.estatisticas.corrida;
+                teamStats.corrida.corridas += corrida.corridas || 0;
+                teamStats.corrida.jds_corridas += corrida.jds_corridas || 0;
+                teamStats.corrida.tds_corridos += corrida.tds_corridos || 0;
+                teamStats.corrida.corrida_xp1 += corrida.corrida_xp1 || 0;
+                teamStats.corrida.corrida_xp2 += corrida.corrida_xp2 || 0;
             }
 
-            // Defesa
+            // Adicionar estatísticas de recepção
+            if (player.estatisticas?.recepcao) {
+                const recepcao = player.estatisticas.recepcao;
+                teamStats.recepcao.recepcoes += recepcao.recepcoes || 0;
+                teamStats.recepcao.alvos += recepcao.alvos || 0;
+                teamStats.recepcao.drops += recepcao.drops || 0;
+                teamStats.recepcao.jds_recepcao += recepcao.jds_recepcao || 0;
+                teamStats.recepcao.jds_yac += recepcao.jds_yac || 0;
+                teamStats.recepcao.tds_recepcao += recepcao.tds_recepcao || 0;
+                teamStats.recepcao.recepcao_xp1 += recepcao.recepcao_xp1 || 0;
+                teamStats.recepcao.recepcao_xp2 += recepcao.recepcao_xp2 || 0;
+            }
+
+            // Adicionar estatísticas de defesa
             if (player.estatisticas?.defesa) {
-                teamStats.defesa.sack += player.estatisticas.defesa.sack || 0;
-                teamStats.defesa.pressao += player.estatisticas.defesa.pressao || 0;
-                teamStats.defesa.flag_retirada += player.estatisticas.defesa.flag_retirada || 0;
-                teamStats.defesa.flag_perdida += player.estatisticas.defesa.flag_perdida || 0;
-                teamStats.defesa.interceptacao_forcada += player.estatisticas.defesa.interceptacao_forcada || 0;
-                teamStats.defesa.passe_desviado += player.estatisticas.defesa.passe_desviado || 0;
-                teamStats.defesa.td_defensivo += player.estatisticas.defesa.td_defensivo || 0;
+                const defesa = player.estatisticas.defesa;
+                teamStats.defesa.tck += defesa.tck || 0;
+                teamStats.defesa.tfl += defesa.tfl || 0;
+                teamStats.defesa.sacks += defesa.sacks || 0;
+                teamStats.defesa.tip += defesa.tip || 0;
+                teamStats.defesa.int += defesa.int || 0;
+                teamStats.defesa.tds_defesa += defesa.tds_defesa || 0;
+                teamStats.defesa.defesa_xp2 += defesa.defesa_xp2 || 0;
+                teamStats.defesa.sft += defesa.sft || 0;
+                teamStats.defesa.sft_1 += defesa.sft_1 || 0;
+                teamStats.defesa.blk += defesa.blk || 0;
+                teamStats.defesa.jds_defesa += defesa.jds_defesa || 0;
+                // Não somamos pressao_pct, apenas usamos o último valor (se necessário)
             }
         });
 
@@ -116,27 +168,50 @@ export default function TeamRankingPage() {
     // Get the stats for the current category
     const getStatsByCategory = (category: string) => {
         switch (category) {
-            case "ataque":
+            case "passe":
                 return [
                     { key: "passes_tentados", title: "PASSES TENT." },
                     { key: "passes_completos", title: "PASSES COMP." },
-                    { key: "td_passado", title: "TOUCHDOWNS" },
-                    { key: "interceptacoes_sofridas", title: "INTERCEPTAÇÕES" },
-                    { key: "corrida", title: "CORRIDAS" },
-                    { key: "tds_corridos", title: "TDs CORRIDAS" },
-                    { key: "recepcao", title: "RECEPÇÕES" },
-                    { key: "alvo", title: "ALVOS" },
-                    { key: "td_recebido", title: "TDs RECEBIDOS" }
+                    { key: "passes_incompletos", title: "PASSES INCOMPL." },
+                    { key: "jds_passe", title: "JARDAS" },
+                    { key: "td_passe", title: "TOUCHDOWNS" },
+                    { key: "passe_xp1", title: "EXTRA POINT (1)" },
+                    { key: "passe_xp2", title: "EXTRA POINT (2)" },
+                    { key: "int_sofridas", title: "INTERCEPTAÇÕES" },
+                    { key: "sacks_sofridos", title: "SACKS SOFRIDOS" }
+                ];
+            case "corrida":
+                return [
+                    { key: "corridas", title: "CORRIDAS" },
+                    { key: "jds_corridas", title: "JARDAS" },
+                    { key: "tds_corridos", title: "TOUCHDOWNS" },
+                    { key: "corrida_xp1", title: "EXTRA POINT (1)" },
+                    { key: "corrida_xp2", title: "EXTRA POINT (2)" }
+                ];
+            case "recepcao":
+                return [
+                    { key: "recepcoes", title: "RECEPÇÕES" },
+                    { key: "alvos", title: "ALVOS" },
+                    { key: "drops", title: "DROPS" },
+                    { key: "jds_recepcao", title: "JARDAS" },
+                    { key: "jds_yac", title: "JARDAS APÓS RECEPÇÃO" },
+                    { key: "tds_recepcao", title: "TOUCHDOWNS" },
+                    { key: "recepcao_xp1", title: "EXTRA POINT (1)" },
+                    { key: "recepcao_xp2", title: "EXTRA POINT (2)" }
                 ];
             case "defesa":
                 return [
-                    { key: "flag_retirada", title: "FLAG RETIRADA" },
-                    { key: "flag_perdida", title: "FLAG PERDIDA" },
-                    { key: "sack", title: "SACKS" },
-                    { key: "pressao", title: "PRESSÃO" },
-                    { key: "interceptacao_forcada", title: "INTERCEPTAÇÕES" },
-                    { key: "passe_desviado", title: "PASSES DESV." },
-                    { key: "td_defensivo", title: "TOUCHDOWNS" }
+                    { key: "tck", title: "TACKLES" },
+                    { key: "tfl", title: "TACKLES FOR LOSS" },
+                    { key: "sacks", title: "SACKS" },
+                    { key: "tip", title: "PASSES DESVIADOS" },
+                    { key: "int", title: "INTERCEPTAÇÕES" },
+                    { key: "tds_defesa", title: "TOUCHDOWNS" },
+                    { key: "defesa_xp2", title: "EXTRA POINT (2)" },
+                    { key: "sft", title: "SAFETIES" },
+                    { key: "sft_1", title: "SAFETY (1)" },
+                    { key: "blk", title: "BLOQUEIOS" },
+                    { key: "jds_defesa", title: "JARDAS" }
                 ];
             default:
                 return [];
@@ -146,7 +221,9 @@ export default function TeamRankingPage() {
     // Get category title
     const getCategoryTitle = (category: string): string => {
         switch (category) {
-            case "ataque": return "ATAQUE"
+            case "passe": return "PASSE"
+            case "corrida": return "CORRIDA"
+            case "recepcao": return "RECEPÇÃO"
             case "defesa": return "DEFESA"
             default: return ""
         }
@@ -185,17 +262,44 @@ export default function TeamRankingPage() {
                 {/* Carrossel para telas menores (md-) */}
                 <div className="lg:hidden">
                     <TeamRankingGroup
-                        title="ATAQUE"
+                        title="PASSE"
                         stats={[
                             { key: "passes_tentados", title: "PASSES TENT." },
                             { key: "passes_completos", title: "PASSES COMP." },
-                            { key: "td_passado", title: "TOUCHDOWNS" },
-                            { key: "interceptacoes_sofridas", title: "INTERCEPTAÇÕES" },
-                            { key: "corrida", title: "CORRIDAS" },
-                            { key: "tds_corridos", title: "TDs CORRIDAS" },
-                            { key: "recepcao", title: "RECEPÇÕES" },
-                            { key: "alvo", title: "ALVOS" },
-                            { key: "td_recebido", title: "TDs RECEBIDOS" }
+                            { key: "passes_incompletos", title: "PASSES INCOMPL." },
+                            { key: "jds_passe", title: "JARDAS" },
+                            { key: "td_passe", title: "TOUCHDOWNS" },
+                            { key: "passe_xp1", title: "EXTRA POINT (1)" },
+                            { key: "passe_xp2", title: "EXTRA POINT (2)" },
+                            { key: "int_sofridas", title: "INTERCEPTAÇÕES" },
+                            { key: "sacks_sofridos", title: "SACKS SOFRIDOS" }
+                        ]}
+                        teamStats={teamStats}
+                    />
+
+                    <TeamRankingGroup
+                        title="CORRIDA"
+                        stats={[
+                            { key: "corridas", title: "CORRIDAS" },
+                            { key: "jds_corridas", title: "JARDAS" },
+                            { key: "tds_corridos", title: "TOUCHDOWNS" },
+                            { key: "corrida_xp1", title: "EXTRA POINT (1)" },
+                            { key: "corrida_xp2", title: "EXTRA POINT (2)" }
+                        ]}
+                        teamStats={teamStats}
+                    />
+                    
+                    <TeamRankingGroup
+                        title="RECEPÇÃO"
+                        stats={[
+                            { key: "recepcoes", title: "RECEPÇÕES" },
+                            { key: "alvos", title: "ALVOS" },
+                            { key: "drops", title: "DROPS" },
+                            { key: "jds_recepcao", title: "JARDAS" },
+                            { key: "jds_yac", title: "JARDAS APÓS RECEPÇÃO" },
+                            { key: "tds_recepcao", title: "TOUCHDOWNS" },
+                            { key: "recepcao_xp1", title: "EXTRA POINT (1)" },
+                            { key: "recepcao_xp2", title: "EXTRA POINT (2)" }
                         ]}
                         teamStats={teamStats}
                     />
@@ -203,13 +307,17 @@ export default function TeamRankingPage() {
                     <TeamRankingGroup
                         title="DEFESA"
                         stats={[
-                            { key: "flag_retirada", title: "FLAG RETIRADA" },
-                            { key: "flag_perdida", title: "FLAG PERDIDA" },
-                            { key: "sack", title: "SACKS" },
-                            { key: "pressao", title: "PRESSÃO" },
-                            { key: "interceptacao_forcada", title: "INTERCEPTAÇÕES" },
-                            { key: "passe_desviado", title: "PASSES DESV." },
-                            { key: "td_defensivo", title: "TOUCHDOWNS" }
+                            { key: "tck", title: "TACKLES" },
+                            { key: "tfl", title: "TACKLES FOR LOSS" },
+                            { key: "sacks", title: "SACKS" },
+                            { key: "tip", title: "PASSES DESVIADOS" },
+                            { key: "int", title: "INTERCEPTAÇÕES" },
+                            { key: "tds_defesa", title: "TOUCHDOWNS" },
+                            { key: "defesa_xp2", title: "EXTRA POINT (2)" },
+                            { key: "sft", title: "SAFETIES" },
+                            { key: "sft_1", title: "SAFETY (1)" },
+                            { key: "blk", title: "BLOQUEIOS" },
+                            { key: "jds_defesa", title: "JARDAS" }
                         ]}
                         teamStats={teamStats}
                     />

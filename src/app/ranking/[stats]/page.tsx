@@ -66,10 +66,11 @@ const StatsPage: React.FC = () => {
   ) => {
     const getStatsType = (category: CategoryKey): StatType => {
       // Mapeia as categorias em minúsculo para o formato correto
-      // Atualizado para incluir apenas as categorias de flag football
       const categoryMapping: Record<string, StatType> = {
-        'ataque': 'ATAQUE',
-        'defesa': 'DEFESA'
+        'passe': 'PASSE',
+        'corrida': 'CORRIDA',
+        'recepcao': 'RECEPÇÃO',
+        'defesa': 'DEFESA',
       };
 
       // Verifica primeiro pelo statParam para casos especiais

@@ -39,28 +39,53 @@ const SLIDER_SETTINGS = {
 }
 
 export const getCategoryFromKey = (key: string): string => {
-    const exactKeyMap: Record<string, string> = {
-        'passes_completos': 'ataque',
-        'passes_tentados': 'ataque',
-        'td_passado': 'ataque',
-        'interceptacoes_sofridas': 'ataque',
-        'sacks_sofridos': 'ataque',
-        'corrida': 'ataque',
-        'tds_corridos': 'ataque',
-        'recepcao': 'ataque',
-        'alvo': 'ataque',
-        'td_recebido': 'ataque',
+    const categoryMap: Record<string, string> = {
+        // Passe
+        'passes_completos': 'passe',
+        'passes_tentados': 'passe',
+        'passes_incompletos': 'passe',
+        'jds_passe': 'passe',
+        'td_passe': 'passe',
+        'passe_xp1': 'passe',
+        'passe_xp2': 'passe',
+        'int_sofridas': 'passe',
+        'sacks_sofridos': 'passe',
+        'pressao_pct': 'passe',
+        'passes_percentual': 'passe',
 
-        'sack': 'defesa',
-        'pressao': 'defesa',
-        'flag_retirada': 'defesa',
-        'flag_perdida': 'defesa',
-        'passe_desviado': 'defesa',
-        'interceptacao_forcada': 'defesa',
-        'td_defensivo': 'defesa'
-    }
+        // Corrida
+        'corridas': 'corrida',
+        'jds_corridas': 'corrida',
+        'tds_corridos': 'corrida',
+        'corrida_xp1': 'corrida',
+        'corrida_xp2': 'corrida',
 
-    return exactKeyMap[key] || 'ataque'
+        // Recepção
+        'recepcoes': 'recepcao',
+        'alvos': 'recepcao',
+        'drops': 'recepcao',
+        'jds_recepcao': 'recepcao',
+        'jds_yac': 'recepcao',
+        'tds_recepcao': 'recepcao',
+        'recepcao_xp1': 'recepcao',
+        'recepcao_xp2': 'recepcao',
+
+        // Defesa
+        'tck': 'defesa',
+        'tfl': 'defesa',
+        'pressao_pct_def': 'defesa',
+        'sacks': 'defesa',
+        'tip': 'defesa',
+        'int': 'defesa',
+        'tds_defesa': 'defesa',
+        'defesa_xp2': 'defesa',
+        'sft': 'defesa',
+        'sft_1': 'defesa',
+        'blk': 'defesa',
+        'jds_defesa': 'defesa'
+    };
+
+    return categoryMap[key] || 'passe'; // Retorna 'passe' como fallback
 }
 
 export const TeamRankingGroup: React.FC<TeamRankingGroupProps> = ({ title, stats, teamStats }) => {
@@ -82,37 +107,37 @@ export const TeamRankingGroup: React.FC<TeamRankingGroupProps> = ({ title, stats
         fetchTimes()
     }, [])
 
-    const calculateTeamStat = (teamStat: any, key: string): number | null => {
-        try {
-            const category = getCategoryFromKey(key);
-            
-            if (!teamStat[category] || !(key in teamStat[category]) && 
-                !['passes_percentual'].includes(key)) {
-                return null;
-            }
-
-            switch (key) {
-                case 'passes_percentual':
-                    return teamStat.passe.passes_tentados > 0
-                        ? (teamStat.passe.passes_completos / teamStat.passe.passes_tentados) * 100
-                        : null
-                default:
-                    return teamStat[category][key];
-            }
-        } catch (error) {
-            console.error(`Error calculating stat ${key}:`, error)
-            return null
+   const calculateTeamStat = (teamStat: any, key: string): number | null => {
+    try {
+        const category = getCategoryFromKey(key);
+        
+        if (!teamStat[category] || !(key in teamStat[category]) && 
+            !['passes_percentual'].includes(key)) {
+            return null;
         }
+
+        switch (key) {
+            case 'passes_percentual':
+                return teamStat.passe.passes_tentados > 0
+                    ? (teamStat.passe.passes_completos / teamStat.passe.passes_tentados) * 100
+                    : null;
+            default:
+                return teamStat[category][key];
+        }
+    } catch (error) {
+        console.error(`Error calculating stat ${key}:`, error);
+        return null;
     }
+}
 
     const normalizeValue = (value: number | null, key: string, title: string): string => {
         if (value === null) return 'N/A';
-        
+
         // Para porcentagens
         if (key.includes('percentual') || title.includes('(%)')) {
             return `${Math.round(value)}%`;
         }
-        
+
         return Math.round(value).toLocaleString('pt-BR');
     }
 
@@ -123,10 +148,10 @@ export const TeamRankingGroup: React.FC<TeamRankingGroupProps> = ({ title, stats
             cor: team?.cor || '#CCCCCC',
         }
     }
-    
+
     const normalizeForFilePath = (input: string): string => {
         if (!input) return '';
-        
+
         return input
             .toLowerCase()
             .replace(/\s+/g, "-")

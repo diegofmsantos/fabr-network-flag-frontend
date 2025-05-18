@@ -17,7 +17,7 @@ export default function Page() {
     const [players, setPlayers] = useState<Jogador[]>([])
     const [times, setTimes] = useState<Time[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedCategory, setSelectedCategory] = useState("ataque")
+    const [selectedCategory, setSelectedCategory] = useState("passe") // Alterado para "passe" em vez de "ataque"
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,9 +40,11 @@ export default function Page() {
 
     const getCategoryTitle = (category: string): string => {
         switch (category) {
-            case "ataque": return "ATAQUE"
+            case "passe": return "PASSE"
+            case "corrida": return "CORRIDA"
+            case "recepcao": return "RECEPÇÃO"
             case "defesa": return "DEFESA"
-            default: return "ataque"
+            default: return "PASSE"
         }
     }
 
@@ -77,6 +79,18 @@ export default function Page() {
                 const teamInfo = times.find(t => t.id === player.timeId) || {};
                 const value = calculateStat(player, stat.key);
 
+                // Função para normalizar o caminho do arquivo
+                const normalizeForFilePath = (input: string): string => {
+                    if (!input) return '';
+                
+                    return input
+                        .toLowerCase()
+                        .replace(/\s+/g, '-')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9-]/g, '');
+                };
+
                 return {
                     id: player.id,
                     name: player.nome,
@@ -84,15 +98,16 @@ export default function Page() {
                     value: value !== null ? String(value) : 'N/A',
                     camisa: player.camisa,
                     teamColor: index === 0 ? teamInfo.cor : undefined,
-                    teamLogo: `/assets/times/logos/${teamInfo.logo || 'default-logo.png'}`,
+                    teamLogo: `/assets/times/logos/${normalizeForFilePath(teamInfo.nome || '')}.png`,
                     isFirst: index === 0
                 };
             });
 
-            return {
-                title: stat.title,
-                key: stat.key,
-                players: formattedPlayers
+             return {
+              title: stat.title,
+              category: categoryTitle,
+              key: stat.key,
+              players: formattedPlayers  // Pode ser vazio
             };
         });
     };
@@ -119,19 +134,45 @@ export default function Page() {
                 {/* Visualização em carrossel apenas para telas menores */}
                 <div className="lg:hidden">
                     <RankingGroup
-                        title="ATAQUE"
+                        title="PASSE"
                         stats={[
-                            { key: "passes_percentual", title: "PASSES(%)" },
-                            { key: "td_passado", title: "TOUCHDOWNS" },
                             { key: "passes_completos", title: "PASSES COMP." },
                             { key: "passes_tentados", title: "PASSES TENT." },
-                            { key: "interceptacoes_sofridas", title: "INTERCEPTAÇÕES" },
-                            { key: "sacks_sofridos", title: "SACKS" },
-                            { key: "corrida", title: "CORRIDAS" },
-                            { key: "tds_corridos", title: "TDs CORRIDAS" },
-                            { key: "recepcao", title: "RECEPÇÕES" },
-                            { key: "alvo", title: "ALVOS" },
-                            { key: "td_recebido", title: "TDs RECEBIDOS" }
+                            { key: "passes_incompletos", title: "PASSES INCOMPL." },
+                            { key: "jds_passe", title: "JARDAS" },
+                            { key: "td_passe", title: "TOUCHDOWNS" },
+                            { key: "passe_xp1", title: "EXTRA POINT (1)" },
+                            { key: "passe_xp2", title: "EXTRA POINT (2)" },
+                            { key: "int_sofridas", title: "INTERCEPTAÇÕES" },
+                            { key: "sacks_sofridos", title: "SACKS SOFRIDOS" },
+                            { key: "passes_percentual", title: "PASSES (%)" }
+                        ]}
+                        players={players}
+                    />
+
+                    <RankingGroup
+                        title="CORRIDA"
+                        stats={[
+                            { key: "corridas", title: "CORRIDAS" },
+                            { key: "jds_corridas", title: "JARDAS" },
+                            { key: "tds_corridos", title: "TOUCHDOWNS" },
+                            { key: "corrida_xp1", title: "EXTRA POINT (1)" },
+                            { key: "corrida_xp2", title: "EXTRA POINT (2)" }
+                        ]}
+                        players={players}
+                    />
+                    
+                    <RankingGroup
+                        title="RECEPÇÃO"
+                        stats={[
+                            { key: "recepcoes", title: "RECEPÇÕES" },
+                            { key: "alvos", title: "ALVOS" },
+                            { key: "drops", title: "DROPS" },
+                            { key: "jds_recepcao", title: "JARDAS" },
+                            { key: "jds_yac", title: "JARDAS APÓS RECEPÇÃO" },
+                            { key: "tds_recepcao", title: "TOUCHDOWNS" },
+                            { key: "recepcao_xp1", title: "EXTRA POINT (1)" },
+                            { key: "recepcao_xp2", title: "EXTRA POINT (2)" }
                         ]}
                         players={players}
                     />
@@ -139,13 +180,18 @@ export default function Page() {
                     <RankingGroup
                         title="DEFESA"
                         stats={[
-                            { key: "flag_retirada", title: "FLAG RETIRADA" },
-                            { key: "flag_perdida", title: "FLAG PERDIDA" },
-                            { key: "sack", title: "SACKS" },
-                            { key: "pressao", title: "PRESSÃO" },
-                            { key: "interceptacao_forcada", title: "INTERCEPTAÇÕES" },
-                            { key: "passe_desviado", title: "PASSES DESV." },
-                            { key: "td_defensivo", title: "TOUCHDOWNS" }
+                            { key: "tck", title: "TACKLES" },
+                            { key: "tfl", title: "TACKLES FOR LOSS" },
+                            { key: "sacks", title: "SACKS" },
+                            { key: "pressao_pct", title: "PRESSÃO (%)" },
+                            { key: "tip", title: "PASSES DESVIADOS" },
+                            { key: "int", title: "INTERCEPTAÇÕES" },
+                            { key: "tds_defesa", title: "TOUCHDOWNS" },
+                            { key: "defesa_xp2", title: "EXTRA POINT (2)" },
+                            { key: "sft", title: "SAFETIES" },
+                            { key: "sft_1", title: "SAFETY (1)" },
+                            { key: "blk", title: "BLOQUEIOS" },
+                            { key: "jds_defesa", title: "JARDAS" }
                         ]}
                         players={players}
                     />

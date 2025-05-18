@@ -9,7 +9,6 @@ type Props = {
 }
 
 export const CurrentTime = ({ currentTeam }: Props) => {
-
     const bandeiraspath = `/assets/bandeiras/${currentTeam.bandeira_estado}`;
 
     return (
@@ -33,6 +32,19 @@ export const CurrentTime = ({ currentTeam }: Props) => {
                             </div>
                         </div>
                     </div>
+                    {/* Novos campos: Região e Sexo */}
+                    <div className="border-b border-[#D9D9D9]">
+                        <div className="text-sm">REGIÃO</div>
+                        <div className="text-lg font-extrabold italic">
+                            {currentTeam.regiao?.toUpperCase() ?? 'Região não disponível'}
+                        </div>
+                    </div>
+                    <div className="border-b border-[#D9D9D9]">
+                        <div className="text-sm">CATEGORIA</div>
+                        <div className="text-lg font-extrabold italic">
+                            {currentTeam.sexo?.toLocaleUpperCase()}
+                        </div>
+                    </div>
                     <div>
                         <div className="text-sm">INSTAGRAM</div>
                         <div className="text-lg font-extrabold italic underline text-blue-800">
@@ -43,22 +55,6 @@ export const CurrentTime = ({ currentTeam }: Props) => {
                             ) : (
                                 'Instagram não disponível'
                             )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div
-                    className="border py-2 px-3 font-extrabold text-white text-xs w-16 flex justify-center items-center rounded-md mb-3"
-                    style={{ backgroundColor: currentTeam.cor ?? '#000' }}
-                >
-                    STAFF
-                </div>
-                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
-                    <div className="border-b border-[#D9D9D9]">
-                        <div className="text-sm">HEAD COACH</div>
-                        <div className="text-lg font-extrabold italic">
-                            {currentTeam.head_coach?.toUpperCase() ?? 'Não disponível'}
                         </div>
                     </div>
                 </div>

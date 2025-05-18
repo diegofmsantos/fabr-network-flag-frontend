@@ -142,18 +142,61 @@ export const calculateStat = (player: Jogador, key: StatKey): string | number | 
     try {
         switch (key) {
             case 'passes_percentual':
-                return player.estatisticas?.ataque?.passes_tentados > 0
-                    ? Math.round((player.estatisticas?.ataque.passes_completos / player.estatisticas?.ataque.passes_tentados) * 100)
-                    : null
+                return player.estatisticas?.passe?.passes_tentados > 0
+                    ? Math.round((player.estatisticas.passe.passes_completos / player.estatisticas.passe.passes_tentados) * 100)
+                    : null;
             default:
-                const category = getStatCategory(key)
-                if (!player.estatisticas[category]) return null
-                const stats = player.estatisticas[category]
-                return stats[key as keyof typeof stats] as number
+                const categoryMap: Record<string, keyof Jogador["estatisticas"]> = {
+                    // Mapeamento de chaves para categorias
+                    'passes_completos': 'passe',
+                    'passes_tentados': 'passe',
+                    'passes_incompletos': 'passe',
+                    'jds_passe': 'passe',
+                    'td_passe': 'passe',
+                    'passe_xp1': 'passe',
+                    'passe_xp2': 'passe',
+                    'int_sofridas': 'passe',
+                    'sacks_sofridos': 'passe',
+                    'pressao_pct': 'passe',
+                    
+                    'corridas': 'corrida',
+                    'jds_corridas': 'corrida',
+                    'tds_corridos': 'corrida',
+                    'corrida_xp1': 'corrida',
+                    'corrida_xp2': 'corrida',
+                    
+                    'recepcoes': 'recepcao',
+                    'alvos': 'recepcao',
+                    'drops': 'recepcao',
+                    'jds_recepcao': 'recepcao',
+                    'jds_yac': 'recepcao',
+                    'tds_recepcao': 'recepcao',
+                    'recepcao_xp1': 'recepcao',
+                    'recepcao_xp2': 'recepcao',
+                    
+                    'tck': 'defesa',
+                    'tfl': 'defesa',
+                    'pressao_pct_def': 'defesa',
+                    'sacks': 'defesa',
+                    'tip': 'defesa',
+                    'int': 'defesa',
+                    'tds_defesa': 'defesa',
+                    'defesa_xp2': 'defesa',
+                    'sft': 'defesa',
+                    'sft_1': 'defesa',
+                    'blk': 'defesa',
+                    'jds_defesa': 'defesa'
+                };
+                
+                const category = categoryMap[key];
+                if (!category || !player.estatisticas?.[category]) return null;
+                
+                // @ts-ignore - podemos usar index signature aqui porque sabemos que a chave existe
+                return player.estatisticas[category][key];
         }
     } catch (error) {
-        console.error(`Error calculating statistic ${key}:`, error)
-        return null
+        console.error(`Error calculating statistic ${key}:`, error);
+        return null;
     }
 }
 
