@@ -1,4 +1,3 @@
-// src/components/Ranking/TeamRankingGroup.tsx
 import React, { useState, useEffect } from 'react'
 import Slider from 'react-slick'
 import { Time } from '@/types/time'

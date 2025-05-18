@@ -21,7 +21,7 @@ interface RankedTeam {
     id: number
     nome: string
     cor?: string
-    capacete?: string
+    logo?: string // Substituído capacete por logo para flag football
   }
   value: number
 }
@@ -36,82 +36,36 @@ export const TeamStatsList: React.FC<TeamStatsListProps> = ({ players, times, st
       let total = 0
       let divisor = 0
 
-      if (statMapping.key === 'fumble_de_passador') {
-        teamPlayers.forEach(player => {
-          total += player.estatisticas.passe.fumble_de_passador
-        })
-        return total > 0 ? total : null
-      }
-
-      if (statMapping.key === 'jardas_punt_media') {
-        teamPlayers.forEach(player => {
-          total += player.estatisticas.punter.jardas_de_punt
-          divisor += player.estatisticas.punter.punts
-        })
-        return divisor > 0 ? total / divisor : null
-      }
-
+      // Verifica se estamos trabalhando com estatísticas baseadas em percentual
       if (statMapping.isCalculated) {
         switch (statMapping.key) {
           case 'passes_percentual':
             teamPlayers.forEach(player => {
-              total += player.estatisticas.passe.passes_completos
-              divisor += player.estatisticas.passe.passes_tentados
+              if (player.estatisticas?.passe) {
+                total += player.estatisticas.passe.passes_completos || 0
+                divisor += player.estatisticas.passe.passes_tentados || 0
+              }
             })
             return divisor > 0 ? (total / divisor) * 100 : null
 
-          case 'jardas_media':
-            teamPlayers.forEach(player => {
-              total += player.estatisticas.passe.jardas_de_passe
-              divisor += player.estatisticas.passe.passes_tentados
-            })
-            return divisor > 0 ? total / divisor : null
-
-          case 'jardas_corridas_media':
-            teamPlayers.forEach(player => {
-              total += player.estatisticas.corrida.jardas_corridas
-              divisor += player.estatisticas.corrida.corridas
-            })
-            return divisor > 0 ? total / divisor : null
-
-          case 'jardas_recebidas_media':
-            teamPlayers.forEach(player => {
-              total += player.estatisticas.recepcao.jardas_recebidas
-              divisor += player.estatisticas.recepcao.alvo
-            })
-            return divisor > 0 ? total / divisor : null
-
-          case 'jardas_retornadas_media':
-            teamPlayers.forEach(player => {
-              total += player.estatisticas.retorno.jardas_retornadas
-              divisor += player.estatisticas.retorno.retornos
-            })
-            return divisor > 0 ? total / divisor : null
-
-          case 'field_goals':
-            teamPlayers.forEach(player => {
-              total += player.estatisticas.kicker.fg_bons
-              divisor += player.estatisticas.kicker.tentativas_de_fg
-            })
-            return divisor > 0 ? (total / divisor) * 100 : null
-
-          case 'extra_points':
-            teamPlayers.forEach(player => {
-              total += player.estatisticas.kicker.xp_bons
-              divisor += player.estatisticas.kicker.tentativas_de_xp
-            })
-            return divisor > 0 ? (total / divisor) * 100 : null
+          // Outras estatísticas calculadas podem ser adicionadas aqui
+          default:
+            return null
         }
       }
 
-      teamPlayers.forEach(player => { // @ts-ignore
-        const value = player.estatisticas[category]?.[statMapping.key]
-        if (typeof value === 'number') {
-          total += value
+      // Para estatísticas simples (não calculadas)
+      teamPlayers.forEach(player => {
+        if (player.estatisticas?.[category]) {
+          // @ts-ignore - Sabemos que a chave pode existir
+          const value = player.estatisticas[category][statMapping.key]
+          if (typeof value === 'number') {
+            total += value
+          }
         }
       })
 
-      return total || null
+      return total > 0 ? total : null
     } catch (error) {
       console.error(`Error calculating stat:`, error)
       return null
@@ -147,10 +101,7 @@ export const TeamStatsList: React.FC<TeamStatsListProps> = ({ players, times, st
       return b.value - a.value
     })
 
-
-
   const TeamListItem: React.FC<{ team: RankedTeam; index: number }> = ({ team, index }) => {
-
     return (
       <div className="bg-[#ECECEC] max-w-[1200px] mx-auto">
         <Link
@@ -190,10 +141,10 @@ export const TeamStatsList: React.FC<TeamStatsListProps> = ({ players, times, st
                   </div>
                   <div className="relative w-[200px] h-[200px]">
                     <Image
-                      src={`/assets/times/capacetes/${team.time.capacete}`}
+                      src={`/assets/times/logos/${team.time.logo}`}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      alt={`Capacete do ${team.time.nome}`}
+                      alt={`Logo do ${team.time.nome}`}
                       className="object-contain"
                       priority
                       quality={100}

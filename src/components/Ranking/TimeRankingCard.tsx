@@ -29,16 +29,16 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
         return !isNaN(value) && value > 0;
     });
 
-     if (validTeams.length === 0) {
-    return (
-      <div className="ranking-card-container px-3">
-        <h3 className="inline-block text-sm font-bold mb-2 bg-black text-white p-2 rounded-xl">{title}</h3>
-        <div className="bg-white p-4 rounded-md text-center text-gray-500">
-          Sem dados disponíveis para esta estatística
-        </div>
-      </div>
-    );
-  }
+    if (validTeams.length === 0) {
+        return (
+            <div className="ranking-card-container px-3">
+                <h3 className="inline-block text-sm font-bold mb-2 bg-black text-white p-2 rounded-xl">{title}</h3>
+                <div className="bg-white p-4 rounded-md text-center text-gray-500">
+                    Sem dados disponíveis para esta estatística
+                </div>
+            </div>
+        );
+    }
 
     const normalizeForFilePath = (input: string): string => {
         return input
@@ -84,16 +84,16 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
     const getViewMoreUrl = (category: string, title: string): string => {
         // Normalizar a categoria para remover acentos e caracteres especiais
         const categoryLower = normalizeForFilePath(category.toLowerCase());
-    
+
         const normalizedTitle = title.toUpperCase().replace(/\s+/g, ' ').trim();
-    
+
         for (const [urlParam, mapping] of Object.entries(statMappings)) {
             if (urlParam.startsWith(categoryLower) &&
                 mapping.title.toUpperCase() === normalizedTitle) {
                 return `/ranking/times/stats?stat=${urlParam}`;
             }
         }
-    
+
         const statKey = normalizeForFilePath(title);
         return `/ranking/times/stats?stat=${categoryLower}-${statKey}`;
     }

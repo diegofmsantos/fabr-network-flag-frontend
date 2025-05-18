@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from 'react'
@@ -45,17 +46,6 @@ export function RankingLayout({ children, initialFilter }: RankingLayoutProps) {
                     <RankingFilters
                         currentFilter={initialFilter}
                         onFilterChange={handleFilterChange}
-                    />
-                </div>
-                <div className="w-full mt-8 flex justify-center">
-                    <SelectFilter
-                        label="TEMPORADA"
-                        value={season}
-                        onChange={handleSeasonChange}
-                        options={[
-                            { label: '2024', value: '2024' },
-                            { label: '2025', value: '2025' }
-                        ]}
                     />
                 </div>
                 {children}
