@@ -8,7 +8,7 @@ import { createSlug, findPlayerBySlug, getPlayerSlug, getTeamSlug } from '@/util
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { queryKeys } from './queryKeys'
 
-// Funções de fetch
+// Funções de fetch com suporte aos novos campos e estrutura
 const fetchTimes = async (temporada: string = '2025'): Promise<Time[]> => {
     console.log(`Buscando times da temporada: ${temporada}`);
     try {
@@ -33,7 +33,7 @@ const fetchJogadores = async (temporada: string = '2025'): Promise<Jogador[]> =>
     }
 }
 
-// Hook para obter a temporada dos parâmetros da URL
+// Hook para obter a temporada atual com validação
 export function useTemporada(explicitTemporada?: string) {
     const searchParams = useSearchParams();
     let temporada = explicitTemporada || searchParams?.get('temporada') || '2025';
@@ -41,14 +41,14 @@ export function useTemporada(explicitTemporada?: string) {
     // Validar que temporada é '2024' ou '2025'
     if (temporada !== '2024' && temporada !== '2025') {
         console.warn(`Temporada inválida: ${temporada}, usando 2025`);
-        temporada = '2025'; // Default seguro para flag football
+        temporada = '2025'; // Default para flag football
     }
 
     console.log('useTemporada atual:', temporada);
     return temporada;
 }
 
-// Hooks básicos
+// Hook para buscar jogadores com a nova estrutura
 export function useJogadores(temporada?: string) {
     const currentTemporada = useTemporada(temporada);
 
@@ -62,6 +62,7 @@ export function useJogadores(temporada?: string) {
     })
 }
 
+// Hook para buscar times com a nova estrutura
 export function useTimes(temporada?: string) {
     const currentTemporada = useTemporada(temporada);
 
@@ -75,7 +76,7 @@ export function useTimes(temporada?: string) {
     })
 }
 
-// Hook para obter um time específico
+// Hook para obter um time específico, ajustado para incluir os novos campos (regiao e sexo)
 export function useTeam(teamName: string | undefined, explicitTemporada?: string) {
     const temporada = useTemporada(explicitTemporada);
     const router = useRouter();
@@ -115,7 +116,7 @@ export function useTeam(teamName: string | undefined, explicitTemporada?: string
 
             console.log(`Time ${teamName} não encontrado diretamente na temporada ${temporada}, buscando correspondências...`);
 
-            // Se não encontrou com os mapeamentos específicos, busca por cidade e estado
+            // Busca correspondências entre temporadas por cidade e estado
             if (temporada === '2025') {
                 // Busca os times da temporada 2024
                 const timesAnteriores = await fetchTimes('2024');
@@ -211,6 +212,7 @@ export function useTeam(teamName: string | undefined, explicitTemporada?: string
     });
 }
 
+// Hook para buscar detalhes do jogador, atualizado para a nova estrutura
 export function usePlayerDetails(
     timeSlug: string | undefined,
     jogadorSlug: string | undefined,
@@ -324,7 +326,7 @@ export function usePlayerDetails(
     });
 }
 
-// Função de prefetch melhorada
+// Função de prefetch melhorada para carregar dados de times e jogadores
 export const prefetchQueries = async (queryClient: any, temporada: string = '2025') => {
     console.log(`Pré-carregando dados para temporada: ${temporada}`);
 

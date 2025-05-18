@@ -17,11 +17,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
   // Verifica a rota atual e define o item ativo
   if (pathname?.includes('/ranking')) {
     setActiveItem('ranking');
-  } else if (pathname?.includes('/noticia')) {
-    setActiveItem('noticias');
-  } else if (pathname?.includes('/mercado')) {
-    setActiveItem('mercado');
-  } else if (pathname?.includes('/comparar-times')) {
+  }
+   else if (pathname?.includes('/comparar-times')) {
     setActiveItem('comparar');
   } else {
     setActiveItem('equipes');

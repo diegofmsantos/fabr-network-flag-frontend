@@ -118,93 +118,95 @@ export default function CompararTimesPage() {
   
   // Preparar dados para gráficos quando houver dados de comparação
   const prepareChartData = () => {
-    if (!comparisonData) return { ataqueData: [], defesaData: [] };
+    if (!comparisonData) return { passeData: [], corridaData: [], recepcaoData: [], defesaData: [] };
 
     const time1 = comparisonData.teams.time1;
     const time2 = comparisonData.teams.time2;
 
-    // Dados para o gráfico de ataque com a nova estrutura
+    // Dados para o gráfico de passe
     const passeData = [
       {
         name: "Passes Completos",
-        [time1.nome]: time1.estatisticas.ataque.passes_completos,
-        [time2.nome]: time2.estatisticas.ataque.passes_completos
+        [time1.nome]: time1.estatisticas.passe?.passes_completos || 0,
+        [time2.nome]: time2.estatisticas.passe?.passes_completos || 0
+      },
+      {
+        name: "Passes Tentados",
+        [time1.nome]: time1.estatisticas.passe?.passes_tentados || 0,
+        [time2.nome]: time2.estatisticas.passe?.passes_tentados || 0
       },
       {
         name: "TDs de Passe",
-        [time1.nome]: time1.estatisticas.ataque.td_passado,
-        [time2.nome]: time2.estatisticas.ataque.td_passado
+        [time1.nome]: time1.estatisticas.passe?.tds_passe || 0,
+        [time2.nome]: time2.estatisticas.passe?.tds_passe || 0
       },
       {
-        name: "Corridas",
-        [time1.nome]: time1.estatisticas.ataque.corrida,
-        [time2.nome]: time2.estatisticas.ataque.corrida
+        name: "Interceptações",
+        [time1.nome]: time1.estatisticas.passe?.int_sofridas || 0,
+        [time2.nome]: time2.estatisticas.passe?.int_sofridas || 0
       },
       {
-        name: "Recepções",
-        [time1.nome]: time1.estatisticas.ataque.recepcao,
-        [time2.nome]: time2.estatisticas.ataque.recepcao
-      },
-      {
-        name: "TDs Recebidos",
-        [time1.nome]: time1.estatisticas.ataque.td_recebido,
-        [time2.nome]: time2.estatisticas.ataque.td_recebido
+        name: "Sacks Sofridos",
+        [time1.nome]: time1.estatisticas.passe?.sacks_sofridos || 0,
+        [time2.nome]: time2.estatisticas.passe?.sacks_sofridos || 0
       }
     ];
 
+    // Dados para o gráfico de corrida
     const corridaData = [
       {
-        name: "Passes Completos",
-        [time1.nome]: time1.estatisticas.ataque.passes_completos,
-        [time2.nome]: time2.estatisticas.ataque.passes_completos
-      },
-      {
-        name: "TDs de Passe",
-        [time1.nome]: time1.estatisticas.ataque.td_passado,
-        [time2.nome]: time2.estatisticas.ataque.td_passado
-      },
-      {
         name: "Corridas",
-        [time1.nome]: time1.estatisticas.ataque.corrida,
-        [time2.nome]: time2.estatisticas.ataque.corrida
+        [time1.nome]: time1.estatisticas.corrida?.corridas || 0,
+        [time2.nome]: time2.estatisticas.corrida?.corridas || 0
       },
       {
-        name: "Recepções",
-        [time1.nome]: time1.estatisticas.ataque.recepcao,
-        [time2.nome]: time2.estatisticas.ataque.recepcao
+        name: "Jardas",
+        [time1.nome]: time1.estatisticas.corrida?.jds_corridas || 0,
+        [time2.nome]: time2.estatisticas.corrida?.jds_corridas || 0
       },
       {
-        name: "TDs Recebidos",
-        [time1.nome]: time1.estatisticas.ataque.td_recebido,
-        [time2.nome]: time2.estatisticas.ataque.td_recebido
+        name: "TDs Corrida",
+        [time1.nome]: time1.estatisticas.corrida?.tds_corridos || 0,
+        [time2.nome]: time2.estatisticas.corrida?.tds_corridos || 0
+      },
+      {
+        name: "Extra Point (1)",
+        [time1.nome]: time1.estatisticas.corrida?.corrida_xp1 || 0,
+        [time2.nome]: time2.estatisticas.corrida?.corrida_xp1 || 0
+      },
+      {
+        name: "Extra Point (2)",
+        [time1.nome]: time1.estatisticas.corrida?.corrida_xp2 || 0,
+        [time2.nome]: time2.estatisticas.corrida?.corrida_xp2 || 0
       }
     ];
 
+    // Dados para o gráfico de recepção
     const recepcaoData = [
       {
-        name: "Passes Completos",
-        [time1.nome]: time1.estatisticas.ataque.passes_completos,
-        [time2.nome]: time2.estatisticas.ataque.passes_completos
-      },
-      {
-        name: "TDs de Passe",
-        [time1.nome]: time1.estatisticas.ataque.td_passado,
-        [time2.nome]: time2.estatisticas.ataque.td_passado
-      },
-      {
-        name: "Corridas",
-        [time1.nome]: time1.estatisticas.ataque.corrida,
-        [time2.nome]: time2.estatisticas.ataque.corrida
-      },
-      {
         name: "Recepções",
-        [time1.nome]: time1.estatisticas.ataque.recepcao,
-        [time2.nome]: time2.estatisticas.ataque.recepcao
+        [time1.nome]: time1.estatisticas.recepcao?.recepcoes || 0,
+        [time2.nome]: time2.estatisticas.recepcao?.recepcoes || 0
       },
       {
-        name: "TDs Recebidos",
-        [time1.nome]: time1.estatisticas.ataque.td_recebido,
-        [time2.nome]: time2.estatisticas.ataque.td_recebido
+        name: "Alvos",
+        [time1.nome]: time1.estatisticas.recepcao?.alvos || 0,
+        [time2.nome]: time2.estatisticas.recepcao?.alvos || 0
+      },
+      {
+        name: "Jardas",
+        [time1.nome]: time1.estatisticas.recepcao?.jds_recepcao || 0,
+        [time2.nome]: time2.estatisticas.recepcao?.jds_recepcao || 0
+      },
+      {
+        name: "TDs Recepção",
+        [time1.nome]: time1.estatisticas.recepcao?.tds_recepcao || 0,
+        [time2.nome]: time2.estatisticas.recepcao?.tds_recepcao || 0
+      },
+      {
+        name: "Drops",
+        [time1.nome]: time1.estatisticas.recepcao?.drops || 0,
+        [time2.nome]: time2.estatisticas.recepcao?.drops || 0
       }
     ];
 
@@ -212,35 +214,38 @@ export default function CompararTimesPage() {
     const defesaData = [
       {
         name: "Flag Retirada",
-        [time1.nome]: time1.estatisticas.defesa.flag_retirada,
-        [time2.nome]: time2.estatisticas.defesa.flag_retirada
+        [time1.nome]: time1.estatisticas.defesa?.flag_retirada || 0,
+        [time2.nome]: time2.estatisticas.defesa?.flag_retirada || 0
       },
       {
         name: "Sacks",
-        [time1.nome]: time1.estatisticas.defesa.sack,
-        [time2.nome]: time2.estatisticas.defesa.sack
+        [time1.nome]: time1.estatisticas.defesa?.sack || 0,
+        [time2.nome]: time2.estatisticas.defesa?.sack || 0
       },
       {
         name: "Pressão",
-        [time1.nome]: time1.estatisticas.defesa.pressao,
-        [time2.nome]: time2.estatisticas.defesa.pressao
+        [time1.nome]: time1.estatisticas.defesa?.pressao || 0,
+        [time2.nome]: time2.estatisticas.defesa?.pressao || 0
       },
       {
         name: "Interceptações",
-        [time1.nome]: time1.estatisticas.defesa.interceptacao_forcada,
-        [time2.nome]: time2.estatisticas.defesa.interceptacao_forcada
+        [time1.nome]: time1.estatisticas.defesa?.interceptacao_forcada || 0,
+        [time2.nome]: time2.estatisticas.defesa?.interceptacao_forcada || 0
       },
       {
         name: "Passes Desviados",
-        [time1.nome]: time1.estatisticas.defesa.passe_desviado,
-        [time2.nome]: time2.estatisticas.defesa.passe_desviado
+        [time1.nome]: time1.estatisticas.defesa?.passe_desviado || 0,
+        [time2.nome]: time2.estatisticas.defesa?.passe_desviado || 0
       }
     ];
 
-    return { ataqueData, defesaData };
+    return { passeData, corridaData, recepcaoData, defesaData };
   };
   
-  const { ataqueData, defesaData } = comparisonData ? prepareChartData() : { ataqueData: [], defesaData: [] };
+  const { passeData, corridaData, recepcaoData, defesaData } = comparisonData ? prepareChartData() : 
+    { passeData: [], corridaData: [], recepcaoData: [], defesaData: [] };
+
+  const [activeChartCategory, setActiveChartCategory] = useState<'passe' | 'corrida' | 'recepcao' | 'defesa'>('passe');
 
   if (loadingTimes) {
     return (
@@ -368,54 +373,93 @@ export default function CompararTimesPage() {
           {/* Conteúdo baseado na aba selecionada */}
           {activeTab === 'estatisticas' ? (
             <>
-              {/* Seção de Estatísticas de Ataque */}
+              {/* Seção de Estatísticas de Passe */}
               <div className="mt-4">
-                <h2 className="text-2xl font-bold mb-4 bg-black text-white p-2 inline-block rounded-md">ATAQUE</h2>
+                <h2 className="text-2xl font-bold mb-4 bg-black text-white p-2 inline-block rounded-md">PASSE</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <StatComparisonCard 
                     title="PASSES" 
-                    stat1={`${comparisonData.teams.time1.estatisticas.ataque.passes_completos}/${comparisonData.teams.time1.estatisticas.ataque.passes_tentados}`}
-                    stat2={`${comparisonData.teams.time2.estatisticas.ataque.passes_completos}/${comparisonData.teams.time2.estatisticas.ataque.passes_tentados}`}
+                    stat1={`${comparisonData.teams.time1.estatisticas.passe?.passes_completos || 0}/${comparisonData.teams.time1.estatisticas.passe?.passes_tentados || 0}`}
+                    stat2={`${comparisonData.teams.time2.estatisticas.passe?.passes_completos || 0}/${comparisonData.teams.time2.estatisticas.passe?.passes_tentados || 0}`}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
+                  {/* Calcular percentual de passes */}
                   <StatComparisonCard 
                     title="PERCENTUAL DE PASSES" 
-                    stat1={`${Math.round(comparisonData.teams.time1.estatisticas.ataque.passes_percentual)}%`}
-                    stat2={`${Math.round(comparisonData.teams.time2.estatisticas.ataque.passes_percentual)}%`}
+                    stat1={`${Math.round((comparisonData.teams.time1.estatisticas.passe?.passes_completos || 0) / 
+                              Math.max(1, (comparisonData.teams.time1.estatisticas.passe?.passes_tentados || 1)) * 100)}%`}
+                    stat2={`${Math.round((comparisonData.teams.time2.estatisticas.passe?.passes_completos || 0) / 
+                              Math.max(1, (comparisonData.teams.time2.estatisticas.passe?.passes_tentados || 1)) * 100)}%`}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="TOUCHDOWNS (PASSE)" 
-                    stat1={comparisonData.teams.time1.estatisticas.ataque.td_passado.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.ataque.td_passado.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.passe?.tds_passe || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.passe?.tds_passe || 0).toString()}
+                    color1={comparisonData.teams.time1.cor}
+                    color2={comparisonData.teams.time2.cor}
+                  />
+                  
+                  <StatComparisonCard 
+                    title="INTERCEPTAÇÕES SOFRIDAS" 
+                    stat1={(comparisonData.teams.time1.estatisticas.passe?.int_sofridas || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.passe?.int_sofridas || 0).toString()}
+                    color1={comparisonData.teams.time1.cor}
+                    color2={comparisonData.teams.time2.cor}
+                  />
+                </div>
+              </div>
+              
+              {/* Seção de Estatísticas de Corrida */}
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold mb-4 bg-black text-white p-2 inline-block rounded-md">CORRIDA</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <StatComparisonCard 
+                    title="CORRIDAS" 
+                    stat1={(comparisonData.teams.time1.estatisticas.corrida?.corridas || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.corrida?.corridas || 0).toString()}
+                    color1={comparisonData.teams.time1.cor}
+                    color2={comparisonData.teams.time2.cor}
+                  />
+                  
+                  <StatComparisonCard 
+                    title="JARDAS CORRIDA" 
+                    stat1={(comparisonData.teams.time1.estatisticas.corrida?.jds_corridas || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.corrida?.jds_corridas || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="TOUCHDOWNS (CORRIDA)" 
-                    stat1={comparisonData.teams.time1.estatisticas.ataque.tds_corridos.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.ataque.tds_corridos.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.corrida?.tds_corridos || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.corrida?.tds_corridos || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
-                  
-                  <StatComparisonCard 
-                    title="CORRIDAS" 
-                    stat1={comparisonData.teams.time1.estatisticas.ataque.corrida.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.ataque.corrida.toString()}
-                    color1={comparisonData.teams.time1.cor}
-                    color2={comparisonData.teams.time2.cor}
-                  />
-                  
+                </div>
+              </div>
+
+              {/* Seção de Estatísticas de Recepção */}
+              <div className="mt-8">
+                <h2 className="text-2xl font-bold mb-4 bg-black text-white p-2 inline-block rounded-md">RECEPÇÃO</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <StatComparisonCard 
                     title="RECEPÇÕES/ALVOS" 
-                    stat1={`${comparisonData.teams.time1.estatisticas.ataque.recepcao}/${comparisonData.teams.time1.estatisticas.ataque.alvo}`}
-                    stat2={`${comparisonData.teams.time2.estatisticas.ataque.recepcao}/${comparisonData.teams.time2.estatisticas.ataque.alvo}`}
+                    stat1={`${comparisonData.teams.time1.estatisticas.recepcao?.recepcoes || 0}/${comparisonData.teams.time1.estatisticas.recepcao?.alvos || 0}`}
+                    stat2={`${comparisonData.teams.time2.estatisticas.recepcao?.recepcoes || 0}/${comparisonData.teams.time2.estatisticas.recepcao?.alvos || 0}`}
+                    color1={comparisonData.teams.time1.cor}
+                    color2={comparisonData.teams.time2.cor}
+                  />
+                  
+                  <StatComparisonCard 
+                    title="TOUCHDOWNS (RECEPÇÃO)" 
+                    stat1={(comparisonData.teams.time1.estatisticas.recepcao?.tds_recepcao || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.recepcao?.tds_recepcao || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
@@ -428,48 +472,48 @@ export default function CompararTimesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <StatComparisonCard 
                     title="FLAG RETIRADA" 
-                    stat1={comparisonData.teams.time1.estatisticas.defesa.flag_retirada.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.defesa.flag_retirada.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.defesa?.flag_retirada || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.defesa?.flag_retirada || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="PRESSÃO" 
-                    stat1={comparisonData.teams.time1.estatisticas.defesa.pressao.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.defesa.pressao.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.defesa?.pressao || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.defesa?.pressao || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="SACKS" 
-                    stat1={comparisonData.teams.time1.estatisticas.defesa.sack.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.defesa.sack.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.defesa?.sack || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.defesa?.sack || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="INTERCEPTAÇÕES" 
-                    stat1={comparisonData.teams.time1.estatisticas.defesa.interceptacao_forcada.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.defesa.interceptacao_forcada.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.defesa?.interceptacao_forcada || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.defesa?.interceptacao_forcada || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="PASSES DESVIADOS" 
-                    stat1={comparisonData.teams.time1.estatisticas.defesa.passe_desviado.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.defesa.passe_desviado.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.defesa?.passe_desviado || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.defesa?.passe_desviado || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
                   
                   <StatComparisonCard 
                     title="TOUCHDOWNS DEFENSIVOS" 
-                    stat1={comparisonData.teams.time1.estatisticas.defesa.td_defensivo.toString()}
-                    stat2={comparisonData.teams.time2.estatisticas.defesa.td_defensivo.toString()}
+                    stat1={(comparisonData.teams.time1.estatisticas.defesa?.td_defensivo || 0).toString()}
+                    stat2={(comparisonData.teams.time2.estatisticas.defesa?.td_defensivo || 0).toString()}
                     color1={comparisonData.teams.time1.cor}
                     color2={comparisonData.teams.time2.cor}
                   />
@@ -479,69 +523,74 @@ export default function CompararTimesPage() {
           ) : (
             // Visualização de gráficos
             <div className="mt-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Gráfico de Ataque */}
-                <div className="bg-white p-4 rounded-lg shadow-md">
-                  <h3 className="text-lg font-bold mb-4">Comparativo Ofensivo</h3>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={ataqueData}
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar 
-                          dataKey={comparisonData.teams.time1.nome} 
-                          fill={comparisonData.teams.time1.cor} 
-                        />
-                        <Bar 
-                          dataKey={comparisonData.teams.time2.nome} 
-                          fill={comparisonData.teams.time2.cor} 
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+              {/* Selector para escolher categoria do gráfico */}
+              <div className="mb-6">
+                <div className="flex justify-center space-x-2">
+                  <button 
+                    className={`px-4 py-2 font-bold rounded-md ${activeChartCategory === 'passe' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    onClick={() => setActiveChartCategory('passe')}
+                  >
+                    Passe
+                  </button>
+                  <button 
+                    className={`px-4 py-2 font-bold rounded-md ${activeChartCategory === 'corrida' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    onClick={() => setActiveChartCategory('corrida')}
+                  >
+                    Corrida
+                  </button>
+                  <button 
+                    className={`px-4 py-2 font-bold rounded-md ${activeChartCategory === 'recepcao' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    onClick={() => setActiveChartCategory('recepcao')}
+                  >
+                    Recepção
+                  </button>
+                  <button 
+                    className={`px-4 py-2 font-bold rounded-md ${activeChartCategory === 'defesa' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    onClick={() => setActiveChartCategory('defesa')}
+                  >
+                    Defesa
+                  </button>
                 </div>
-                
-                {/* Gráfico de Defesa */}
-                <div className="bg-white p-4 rounded-lg shadow-md">
-                  <h3 className="text-lg font-bold mb-4">Comparativo Defensivo</h3>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={defesaData}
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar 
-                          dataKey={comparisonData.teams.time1.nome} 
-                          fill={comparisonData.teams.time1.cor} 
-                        />
-                        <Bar 
-                          dataKey={comparisonData.teams.time2.nome} 
-                          fill={comparisonData.teams.time2.cor} 
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+              </div>
+
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-lg font-bold mb-4">{
+                  activeChartCategory === 'passe' ? 'Comparativo de Passe' :
+                  activeChartCategory === 'corrida' ? 'Comparativo de Corrida' :
+                  activeChartCategory === 'recepcao' ? 'Comparativo de Recepção' :
+                  'Comparativo Defensivo'
+                }</h3>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={
+                        activeChartCategory === 'passe' ? passeData :
+                        activeChartCategory === 'corrida' ? corridaData :
+                        activeChartCategory === 'recepcao' ? recepcaoData :
+                        defesaData
+                      }
+                      margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5,
+                      }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar 
+                        dataKey={comparisonData.teams.time1.nome} 
+                        fill={comparisonData.teams.time1.cor} 
+                      />
+                      <Bar 
+                        dataKey={comparisonData.teams.time2.nome} 
+                        fill={comparisonData.teams.time2.cor} 
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
               
@@ -556,19 +605,19 @@ export default function CompararTimesPage() {
                     <ul className="mt-2 space-y-1">
                       <li className="flex justify-between">
                         <span>Passes Completos:</span>
-                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.ataque.passes_completos}</span>
+                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.passe?.passes_completos || 0}</span>
                       </li>
                       <li className="flex justify-between">
                         <span>TDs de Passe:</span>
-                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.ataque.td_passado}</span>
+                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.passe?.tds_passe || 0}</span>
                       </li>
                       <li className="flex justify-between">
                         <span>Flag Retirada:</span>
-                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.defesa.flag_retirada}</span>
+                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.defesa?.flag_retirada || 0}</span>
                       </li>
                       <li className="flex justify-between">
                         <span>Interceptações:</span>
-                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.defesa.interceptacao_forcada}</span>
+                        <span className="font-bold">{comparisonData.teams.time1.estatisticas.defesa?.interceptacao_forcada || 0}</span>
                       </li>
                     </ul>
                   </div>
@@ -580,19 +629,19 @@ export default function CompararTimesPage() {
                     <ul className="mt-2 space-y-1">
                       <li className="flex justify-between">
                         <span>Passes Completos:</span>
-                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.ataque.passes_completos}</span>
+                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.passe?.passes_completos || 0}</span>
                       </li>
                       <li className="flex justify-between">
                         <span>TDs de Passe:</span>
-                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.ataque.td_passado}</span>
+                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.passe?.tds_passe || 0}</span>
                       </li>
                       <li className="flex justify-between">
                         <span>Flag Retirada:</span>
-                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.defesa.flag_retirada}</span>
+                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.defesa?.flag_retirada || 0}</span>
                       </li>
                       <li className="flex justify-between">
                         <span>Interceptações:</span>
-                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.defesa.interceptacao_forcada}</span>
+                        <span className="font-bold">{comparisonData.teams.time2.estatisticas.defesa?.interceptacao_forcada || 0}</span>
                       </li>
                     </ul>
                   </div>

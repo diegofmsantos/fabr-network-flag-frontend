@@ -45,7 +45,7 @@ export const Tab: React.FC<TabProps> = ({ className = '' }) => {
           </div>
         </Link>
 
-         <Link href="/ranking">
+         <Link href="/comparar-times">
           <div className={`flex flex-col items-center ${isRankingRoute ? "text-[#63E300]" : "text-gray-400"}`}>
             <Image
               src={isRankingRoute ? "/assets/ranking2.png" : "/assets/ranking.png"}

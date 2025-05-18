@@ -16,7 +16,7 @@ export type StatKey =
   | 'passes_tentados'
   | 'passes_incompletos'
   | 'jds_passe'
-  | 'td_passe'
+  | 'tds_passe'
   | 'passe_xp1'
   | 'passe_xp2'
   | 'int_sofridas'
