@@ -14,56 +14,62 @@ export interface StatResult {
     tier: number
 }
 
-type PasseStats = Jogador['estatisticas']['passe'],
-type CorridaStats = Jogador['estatisticas']['corrida']
-type RecepcaoStats = Jogador['estatisticas']['recepcao']
-type DefesaStats = Jogador['estatisticas']['defesa']
-
-// Função para calcular o total de estatísticas defensivas
-const calculateDefenseTotal = (stats: DefesaStats): number => {
-    return (stats.flag_retirada || 0) +
-        (stats.flag_perdida || 0) +
-        (stats.sack || 0) +
-        (stats.pressao || 0) +
-        (stats.interceptacao_forcada || 0) +
-        (stats.passe_desviado || 0) +
-        (stats.td_defensivo || 0);
-}
-
-// Função para verificar requisitos mínimos por categoria
+/**
+ * Função para verificar requisitos mínimos por categoria
+ */
 const checkCategoryMinimum = (category: CategoryKey, stats: any): boolean => {
     const thresholds = CATEGORY_THRESHOLDS[category];
     if (!thresholds) return true; // Se não houver threshold, permitir
-    
+
     switch (category) {
         case 'passe':
-            // Para flag football, considerar qualquer atividade ofensiva
-            const hasPasseActivity = (stats as PasseStats).passes_tentados > 0 || 
-                                   (stats as CorridaStats).corrida > 0 || 
-                                   (stats as RecepcaoStats).recepcao > 0;
-            return hasPasseActivity;
+            return stats && (stats.passes_tentados > 0 || stats.passes_completos > 0 || stats.tds_passe > 0);
+        case 'corrida':
+            return stats && (stats.corridas > 0 || stats.jds_corridas > 0 || stats.tds_corridos > 0);
+        case 'recepcao':
+            return stats && (stats.recepcoes > 0 || stats.alvos > 0 || stats.tds_recepcao > 0);
         case 'defesa':
-            return calculateDefenseTotal(stats as DefesaStats) >= thresholds.tier3;
+            return stats && (
+                stats.tck > 0 || stats.tip > 0 || stats.int > 0 || stats.sacks > 0 ||
+                stats.flag_retirada > 0 || stats.flag_perdida > 0 || stats.pressao > 0 ||
+                stats.tds_defesa > 0
+            );
         default:
             return true;
     }
 }
 
-// Função para calcular estatísticas derivadas
+/**
+ * Função para calcular estatísticas derivadas
+ */
 const calculateDerivedStat = (stats: any, key: string): number | null => {
     switch (key) {
         case 'passes_percentual':
             return stats.passes_tentados > 0
                 ? (stats.passes_completos / stats.passes_tentados) * 100
                 : null
+        case 'jds_corridas_media':
+            return stats.corridas > 0
+                ? stats.jds_corridas / stats.corridas
+                : null
+        case 'jds_recepcao_media':
+            return stats.recepcoes > 0
+                ? stats.jds_recepcao / stats.recepcoes
+                : null
         default:
             return null
     }
 }
 
-// Função principal de cálculo
+/**
+ * Função principal de cálculo
+ */
 export const calculateStatValue = (player: Jogador, mapping: StatConfig): StatResult => {
     try {
+        if (!player.estatisticas) {
+            return { value: null, tier: 3 }
+        }
+
         const category = mapping.category
         const stats = player.estatisticas[category]
 
@@ -88,12 +94,13 @@ export const calculateStatValue = (player: Jogador, mapping: StatConfig): StatRe
         return { value, tier }
     } catch (error) {
         console.error('Error calculating stat value:', error)
-        
         return { value: null, tier: 3 }
     }
 }
 
-// Função para formatar valores de estatística
+/**
+ * Função para formatar valores de estatística
+ */
 export const formatStatValue = (statResult: StatResult, stat: StatConfig): string => {
     if (statResult.value === null) return 'N/A'
 
@@ -101,13 +108,18 @@ export const formatStatValue = (statResult: StatResult, stat: StatConfig): strin
         if (stat.key.includes('percentual')) {
             return `${Math.round(statResult.value)}%`
         }
+        if (stat.key.includes('media')) {
+            return statResult.value.toFixed(1)
+        }
         return statResult.value.toFixed(1)
     }
 
     return Math.round(statResult.value).toString()
 };
 
-// Função para comparar valores de estatística
+/**
+ * Função para comparar valores de estatística
+ */
 export const compareStatValues = (a: StatResult, b: StatResult): number => {
     if (a.value === null && b.value === null) return 0
     if (a.value === null) return 1
@@ -115,13 +127,15 @@ export const compareStatValues = (a: StatResult, b: StatResult): number => {
     return b.value - a.value
 }
 
-// Exportamos uma função para obter o mapeamento de estatísticas
+/**
+ * Exportamos uma função para obter o mapeamento de estatísticas
+ */
 export const getStatMapping = (statParam: string | null): StatConfig => {
     if (!statParam) {
         return {
             key: 'not_found',
             title: 'Estatística não encontrada',
-            category: 'ataque'
+            category: 'passe'
         }
     }
 
@@ -134,87 +148,152 @@ export const getStatMapping = (statParam: string | null): StatConfig => {
     return {
         key: 'not_found',
         title: 'Estatística não encontrada',
-        category: 'ataque'
+        category: 'passe'
     }
 }
 
+/**
+ * Cálculo de estatística específica para um jogador
+ */
 export const calculateStat = (player: Jogador, key: StatKey): string | number | null => {
     try {
+        if (!player.estatisticas) return null;
+
+        // Estatísticas calculadas
         switch (key) {
             case 'passes_percentual':
                 return player.estatisticas?.passe?.passes_tentados > 0
                     ? Math.round((player.estatisticas.passe.passes_completos / player.estatisticas.passe.passes_tentados) * 100)
                     : null;
-            default:
-                const categoryMap: Record<string, keyof Jogador["estatisticas"]> = {
-                    // Mapeamento de chaves para categorias
-                    'passes_completos': 'passe',
-                    'passes_tentados': 'passe',
-                    'passes_incompletos': 'passe',
-                    'jds_passe': 'passe',
-                    'td_passe': 'passe',
-                    'passe_xp1': 'passe',
-                    'passe_xp2': 'passe',
-                    'int_sofridas': 'passe',
-                    'sacks_sofridos': 'passe',
-                    'pressao_pct': 'passe',
-                    
-                    'corridas': 'corrida',
-                    'jds_corridas': 'corrida',
-                    'tds_corridos': 'corrida',
-                    'corrida_xp1': 'corrida',
-                    'corrida_xp2': 'corrida',
-                    
-                    'recepcoes': 'recepcao',
-                    'alvos': 'recepcao',
-                    'drops': 'recepcao',
-                    'jds_recepcao': 'recepcao',
-                    'jds_yac': 'recepcao',
-                    'tds_recepcao': 'recepcao',
-                    'recepcao_xp1': 'recepcao',
-                    'recepcao_xp2': 'recepcao',
-                    
-                    'tck': 'defesa',
-                    'tfl': 'defesa',
-                    'pressao_pct_def': 'defesa',
-                    'sacks': 'defesa',
-                    'tip': 'defesa',
-                    'int': 'defesa',
-                    'tds_defesa': 'defesa',
-                    'defesa_xp2': 'defesa',
-                    'sft': 'defesa',
-                    'sft_1': 'defesa',
-                    'blk': 'defesa',
-                    'jds_defesa': 'defesa'
-                };
-                
-                const category = categoryMap[key];
-                if (!category || !player.estatisticas?.[category]) return null;
-                
-                // @ts-ignore - podemos usar index signature aqui porque sabemos que a chave existe
-                return player.estatisticas[category][key];
+            case 'jds_corridas_media':
+                return player.estatisticas?.corrida?.corridas > 0
+                    ? Number((player.estatisticas.corrida.jds_corridas / player.estatisticas.corrida.corridas).toFixed(1))
+                    : null;
+            case 'jds_recepcao_media':
+                return player.estatisticas?.recepcao?.recepcoes > 0
+                    ? Number((player.estatisticas.recepcao.jds_recepcao / player.estatisticas.recepcao.recepcoes).toFixed(1))
+                    : null;
         }
+
+        // Mapeamento de chaves para categorias
+        const categoryMap: Record<string, CategoryKey> = {
+            // Passe
+            'passes_completos': 'passe',
+            'passes_tentados': 'passe',
+            'passes_incompletos': 'passe',
+            'jds_passe': 'passe',
+            'tds_passe': 'passe',
+            'passe_xp1': 'passe',
+            'passe_xp2': 'passe',
+            'int_sofridas': 'passe',
+            'sacks_sofridos': 'passe',
+            'pressao_pct': 'passe',
+
+            // Corrida
+            'corridas': 'corrida',
+            'jds_corridas': 'corrida',
+            'tds_corridos': 'corrida',
+            'corrida_xp1': 'corrida',
+            'corrida_xp2': 'corrida',
+
+            // Recepção
+            'recepcoes': 'recepcao',
+            'alvos': 'recepcao',
+            'drops': 'recepcao',
+            'jds_recepcao': 'recepcao',
+            'jds_yac': 'recepcao',
+            'tds_recepcao': 'recepcao',
+            'recepcao_xp1': 'recepcao',
+            'recepcao_xp2': 'recepcao',
+
+            // Defesa
+            'tck': 'defesa',
+            'tfl': 'defesa',
+            'flag_retirada': 'defesa',
+            'flag_perdida': 'defesa',
+            'sacks': 'defesa',
+            'pressao': 'defesa',
+            'tip': 'defesa',
+            'int': 'defesa',
+            'tds_defesa': 'defesa',
+            'defesa_xp2': 'defesa',
+            'sft': 'defesa',
+            'sft_1': 'defesa',
+            'blk': 'defesa',
+            'jds_defesa': 'defesa',
+
+            // Também mapear versões antigas para compatibilidade
+            'td_passado': 'passe',
+            'corrida': 'corrida',
+            'recepcao': 'recepcao',
+            'alvo': 'recepcao',
+            'td_recebido': 'recepcao',
+            'interceptacao_forcada': 'defesa',
+            'passe_desviado': 'defesa',
+            'td_defensivo': 'defesa'
+        } 
+
+        const category = categoryMap[key as string];
+        if (!category || !player.estatisticas?.[category]) return null;
+
+        // Para chaves antigas, mapeie para as novas
+        const keyMapping: Record<string, string> = {
+            'td_passado': 'tds_passe',
+            'corrida': 'jds_corridas',
+            'recepcao': 'recepcoes',
+            'alvo': 'alvos',
+            'td_recebido': 'tds_recepcao',
+            'interceptacao_forcada': 'int',
+            'passe_desviado': 'tip',
+            'td_defensivo': 'tds_defesa'
+        };
+
+        const mappedKey = keyMapping[key as string] || key;
+
+        // @ts-ignore - podemos usar index signature aqui porque sabemos que a chave existe
+        return player.estatisticas[category][mappedKey];
     } catch (error) {
         console.error(`Error calculating statistic ${key}:`, error);
         return null;
     }
 }
 
+/**
+ * Verifica requisitos mínimos por categoria
+ */
 export const meetsMinimumRequirements = (player: Jogador, category: string): boolean => {
+    if (!player.estatisticas) return false;
+
     try {
         switch (category) {
             case 'DEFESA':
                 const defStats = player.estatisticas.defesa;
                 if (!defStats) return false;
-                const defTotal = calculateDefenseTotal(defStats);
-                return defTotal > 0;
-            case 'ATAQUE':
-                const passeStats = player.estatisticas.ataque;
+                return Object.values(defStats).some(val =>
+                    typeof val === 'number' && val > 0);
+
+            case 'PASSE':
+                const passeStats = player.estatisticas.passe;
                 if (!passeStats) return false;
-                // Para flag football, considerar qualquer atividade ofensiva
-                return (passeStats.passes_tentados || 0) > 0 || 
-                       (passeStats.corrida || 0) > 0 || 
-                       (passeStats.recepcao || 0) > 0;
+                return Object.values(passeStats).some(val =>
+                    typeof val === 'number' && val > 0);
+
+            case 'CORRIDA':
+                const corridaStats = player.estatisticas.corrida;
+                if (!corridaStats) return false;
+                return Object.values(corridaStats).some(val =>
+                    typeof val === 'number' && val > 0);
+
+            case 'RECEPÇÃO':
+                const recepcaoStats = player.estatisticas.recepcao;
+                if (!recepcaoStats) return false;
+                return Object.values(recepcaoStats).some(val =>
+                    typeof val === 'number' && val > 0);
+
+            // Para compatibilidade com a estrutura antiga
+            case 'ATAQUE':
+                return meetsMinimumRequirements(player, 'PASSE');
+
             default:
                 return true;
         }
@@ -224,6 +303,9 @@ export const meetsMinimumRequirements = (player: Jogador, category: string): boo
     }
 }
 
+/**
+ * Determina se o jogador deve ser incluído na estatística
+ */
 export const shouldIncludePlayer = (player: Jogador, key: StatKey, category: string): boolean => {
     try {
         if (!meetsMinimumRequirements(player, category)) {
@@ -239,6 +321,9 @@ export const shouldIncludePlayer = (player: Jogador, key: StatKey, category: str
     }
 }
 
+/**
+ * Compara valores para ordenação
+ */
 export const compareValues = (a: string | number | null, b: string | number | null): number => {
     if (a === null && b === null) return 0
     if (a === null) return 1
@@ -248,85 +333,160 @@ export const compareValues = (a: string | number | null, b: string | number | nu
     return Number(b) - Number(a)
 }
 
-export const getStatCategory = (key: StatKey): keyof Jogador['estatisticas'] => {
-    // Todas as estatísticas de passe, corrida e recepção estão agora em 'passe'
-    const ataqueKeys = [
-        'passes_percentual', 'passes_completos', 'passes_tentados', 'td_passado',
-        'interceptacoes_sofridas', 'sacks_sofridos', 'corrida', 'tds_corridos',
-        'recepcao', 'alvo', 'td_recebido'
-    ];
-    
-    const defesaKeys = [
-        'flag_retirada', 'flag_perdida', 'sack', 'pressao',
-        'interceptacao_forcada', 'passe_desviado', 'td_defensivo'
-    ];
-    
-    if (ataqueKeys.includes(key)) return 'ataque'
-    if (defesaKeys.includes(key)) return 'defesa'
-    
-    throw new Error(`Chave de estatística desconhecida: ${key}`)
-}
-
+/**
+ * Mapeamento de estatísticas com suas configurações
+ */
 export const statMappings: { [key: string]: StatConfig } = {
-    // PASSE (incluindo estatísticas de ataque)
+    // PASSE
     'passe-tentados': {
         key: 'passes_tentados',
         title: 'Passes Tentados',
-        category: 'ataque'
+        category: 'passe'
     },
     'passe-completos': {
         key: 'passes_completos',
         title: 'Passes Completos',
-        category: 'ataque'
+        category: 'passe'
+    },
+    'passe-incompletos': {
+        key: 'passes_incompletos',
+        title: 'Passes Incompletos',
+        category: 'passe'
+    },
+    'passe-jardas': {
+        key: 'jds_passe',
+        title: 'Jardas de Passe',
+        category: 'passe'
     },
     'passe-percentual': {
         key: 'passes_percentual',
         title: 'Passes Completos (%)',
-        category: 'ataque',
+        category: 'passe',
         isCalculated: true
     },
     'passe-td': {
-        key: 'td_passado',
+        key: 'tds_passe',
         title: 'Touchdowns (Passe)',
-        category: 'ataque'
+        category: 'passe'
+    },
+    'passe-xp1': {
+        key: 'passe_xp1',
+        title: 'Extra Point 1 (Passe)',
+        category: 'passe'
+    },
+    'passe-xp2': {
+        key: 'passe_xp2',
+        title: 'Extra Point 2 (Passe)',
+        category: 'passe'
     },
     'passe-int': {
-        key: 'interceptacoes_sofridas',
+        key: 'int_sofridas',
         title: 'Interceptações Sofridas',
-        category: 'ataque'
+        category: 'passe'
     },
     'passe-sacks': {
         key: 'sacks_sofridos',
         title: 'Sacks Sofridos',
-        category: 'ataque'
+        category: 'passe'
     },
+    'passe-pressao': {
+        key: 'pressao_pct',
+        title: 'Pressão (%)',
+        category: 'passe'
+    },
+
+    // CORRIDA
     'corrida-total': {
-        key: 'corrida',
+        key: 'corridas',
         title: 'Corridas',
-        category: 'ataque'
+        category: 'corrida'
+    },
+    'corrida-jardas': {
+        key: 'jds_corridas',
+        title: 'Jardas de Corrida',
+        category: 'corrida'
     },
     'corrida-td': {
         key: 'tds_corridos',
         title: 'Touchdowns (Corrida)',
-        category: 'ataque'
+        category: 'corrida'
     },
+    'corrida-xp1': {
+        key: 'corrida_xp1',
+        title: 'Extra Point 1 (Corrida)',
+        category: 'corrida'
+    },
+    'corrida-xp2': {
+        key: 'corrida_xp2',
+        title: 'Extra Point 2 (Corrida)',
+        category: 'corrida'
+    },
+    'corrida-media': {
+        key: 'jds_corridas_media',
+        title: 'Média de Jardas por Corrida',
+        category: 'corrida',
+        isCalculated: true
+    },
+
+    // RECEPÇÃO
     'recepcao-total': {
-        key: 'recepcao',
+        key: 'recepcoes',
         title: 'Recepções',
-        category: 'ataque'
+        category: 'recepcao'
     },
     'recepcao-alvo': {
-        key: 'alvo',
+        key: 'alvos',
         title: 'Alvos',
-        category: 'ataque'
+        category: 'recepcao'
+    },
+    'recepcao-drops': {
+        key: 'drops',
+        title: 'Drops',
+        category: 'recepcao'
+    },
+    'recepcao-jardas': {
+        key: 'jds_recepcao',
+        title: 'Jardas de Recepção',
+        category: 'recepcao'
+    },
+    'recepcao-yac': {
+        key: 'jds_yac',
+        title: 'Jardas Após Recepção',
+        category: 'recepcao'
     },
     'recepcao-td': {
-        key: 'td_recebido',
+        key: 'tds_recepcao',
         title: 'Touchdowns (Recepção)',
-        category: 'ataque'
+        category: 'recepcao'
+    },
+    'recepcao-xp1': {
+        key: 'recepcao_xp1',
+        title: 'Extra Point 1 (Recepção)',
+        category: 'recepcao'
+    },
+    'recepcao-xp2': {
+        key: 'recepcao_xp2',
+        title: 'Extra Point 2 (Recepção)',
+        category: 'recepcao'
+    },
+    'recepcao-media': {
+        key: 'jds_recepcao_media',
+        title: 'Média de Jardas por Recepção',
+        category: 'recepcao',
+        isCalculated: true
     },
 
     // DEFESA
+    'defesa-tck': {
+        key: 'tck',
+        title: 'Tackles',
+        category: 'defesa'
+    },
+    'defesa-tfl': {
+        key: 'tfl',
+        title: 'Tackles For Loss',
+        category: 'defesa'
+    },
     'defesa-flag-retirada': {
         key: 'flag_retirada',
         title: 'Flag Retirada',
@@ -338,7 +498,7 @@ export const statMappings: { [key: string]: StatConfig } = {
         category: 'defesa'
     },
     'defesa-sack': {
-        key: 'sack',
+        key: 'sacks',
         title: 'Sacks',
         category: 'defesa'
     },
@@ -347,19 +507,44 @@ export const statMappings: { [key: string]: StatConfig } = {
         title: 'Pressão',
         category: 'defesa'
     },
-    'defesa-interceptacao': {
-        key: 'interceptacao_forcada',
-        title: 'Interceptações',
-        category: 'defesa'
-    },
     'defesa-desvio': {
-        key: 'passe_desviado',
+        key: 'tip',
         title: 'Passes Desviados',
         category: 'defesa'
     },
+    'defesa-interceptacao': {
+        key: 'int',
+        title: 'Interceptações',
+        category: 'defesa'
+    },
     'defesa-td': {
-        key: 'td_defensivo',
+        key: 'tds_defesa',
         title: 'Touchdowns',
+        category: 'defesa'
+    },
+    'defesa-xp2': {
+        key: 'defesa_xp2',
+        title: 'Extra Point 2',
+        category: 'defesa'
+    },
+    'defesa-sft': {
+        key: 'sft',
+        title: 'Safeties',
+        category: 'defesa'
+    },
+    'defesa-sft1': {
+        key: 'sft_1',
+        title: 'Safety 1',
+        category: 'defesa'
+    },
+    'defesa-blk': {
+        key: 'blk',
+        title: 'Bloqueios',
+        category: 'defesa'
+    },
+    'defesa-jardas': {
+        key: 'jds_defesa',
+        title: 'Jardas',
         category: 'defesa'
     }
 }

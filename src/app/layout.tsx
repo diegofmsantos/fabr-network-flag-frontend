@@ -66,10 +66,10 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/assets/favicon.png" type="image/x-icon" />
       </head>
       <body className="bg-[#ECECEC]">
-        <header className="w-full h-20 bg-[#272731] flex justify-center items-center px-2 fixed z-50 xl:hidden">
+        <header className="w-full h-20 bg-[#18187c] flex justify-center items-center px-2 fixed z-50 xl:hidden">
           <Link href="/" className="w-40 h-16 flex justify-center items-center sm:w-44 sm:h-18 md:w-48 md:h-20">
             <Image
-              src="/assets/logo-fabr-color.png"
+              src="/assets/flag-brasileiro.png"
               alt="Fabr Network Logo"
               width={190}
               height={95}

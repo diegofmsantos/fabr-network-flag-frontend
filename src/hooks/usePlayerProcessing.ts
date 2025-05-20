@@ -35,8 +35,6 @@ export function createProcessedPlayer(player: Jogador, statMapping: StatConfig, 
     'corrida': 'corrida',
     'recepcao': 'recepcao',
     'defesa': 'defesa',
-    // Mapeamentos para compatibilidade com a estrutura antiga
-    'ataque': 'passe'
   };
   
   // Obter a categoria mapeada ou usar a original se for uma das novas categorias

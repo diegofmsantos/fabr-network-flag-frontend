@@ -30,6 +30,8 @@ export const processPlayerStats = (
 ): ProcessedStatCard[] => {
   // Normaliza o caminho do arquivo
   const normalizeForFilePath = (input: string): string => {
+    if (!input) return '';
+    
     return input
       .toLowerCase()
       .replace(/\s+/g, "-")
@@ -46,6 +48,21 @@ export const processPlayerStats = (
       cor: team?.cor || "#CCCCCC",
     };
   };
+
+  // Mapeia categorias para corresponder à nova estrutura
+  const getCategoryMapping = (categoryTitle: string): string => {
+    const categoryMap: Record<string, string> = {
+      'PASSE': 'passe',
+      'CORRIDA': 'corrida',
+      'RECEPÇÃO': 'recepcao',
+      'DEFESA': 'defesa',
+    };
+    
+    return categoryMap[categoryTitle] || 'passe';
+  };
+
+  // Categoria mapeada para a nova estrutura
+  const mappedCategory = getCategoryMapping(categoryTitle);
 
   return stats.map((stat) => {
     const filteredPlayers = players
@@ -73,21 +90,36 @@ export const processPlayerStats = (
         const teamInfo = getTeamInfo(player.timeId);
         const value = calculateStat(player, stat.key);
 
-        // Normaliza o valor para exibição (adaptado para flag football)
+        // Normaliza o valor para exibição com a nova estrutura
         const normalizeValue = (value: string | number | null, statKey: StatKey): string => {
           if (value === null) return "N/A";
           
           if (typeof value === "string") return value;
           
-          // Para flag football, apenas percentuais de passes são relevantes
-          const percentageStats = ["passes_percentual"];
+          // Estatísticas de percentual para flag football
+          const percentageStats = [
+            "passes_percentual", 
+            "pressao_pct", 
+            "pressao_pct_def"
+          ];
           
-          if (percentageStats.includes(statKey)) {
+          if (percentageStats.includes(statKey as string)) {
             return `${Math.round(value)}%`;
           }
           
+          // Estatísticas de médias podem ter 1 casa decimal
+          const avgStats = [
+            "jds_passe_media", 
+            "jds_corridas_media", 
+            "jds_recepcao_media"
+          ];
+          
+          if (avgStats.includes(statKey as string)) {
+            return value.toFixed(1);
+          }
+          
           // Para todos os outros valores (números inteiros)
-          return Math.round(value).toString();
+          return Math.round(value).toLocaleString('pt-BR');
         };
 
         return {
