@@ -12,13 +12,13 @@ export const Loading = () => {
                 ariaLabel="vortex-loading"
                 wrapperStyle={{}}
                 wrapperClass="vortex-wrapper"
-                color="#63E300" 
+                color="#FFE500" 
             />
 
             {/* Imagem no centro do spinner */}
             <div className="absolute w-28 h-28 flex justify-center items-center">
                 <Image
-                    src="/assets/logo-fabr-color.png"
+                    src="/assets/logo-flag.png"
                     alt="Custom Image"
                     width={112} 
                     height={112}

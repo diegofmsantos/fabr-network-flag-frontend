@@ -268,7 +268,7 @@ export default function Page() {
                                         width={200}
                                         height={250}
                                         quality={100}
-                                        className="w-28 h-60 ml-auto xl:w-32 xl:h-64"
+                                        className="w-28 h-60 ml-auto xl:w-[100px] xl:h-[260px]"
                                         priority
                                     />
                                 </div>

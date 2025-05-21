@@ -92,7 +92,7 @@ export const Jogador = ({ currentTeam }: Props) => {
                     <Link
                         href={`/${getTeamSlug(currentTeam.nome)}/${getPlayerSlug(jogador.nome)}?temporada=${temporada}`}
                         key={jogador.id}
-                        className="flex h-20 min-h-[4rem] w-full justify-between items-center p-0 rounded-md border border-gray-200 
+                        className="flex h-16 min-h-[4rem] w-full justify-between items-center p-0 rounded-md border border-gray-200 
                         text-sm bg-white my-1 relative overflow-visible md:justify-center md:items-center"
                         style={{
                             transition: "background-color 0.3s",
@@ -105,17 +105,17 @@ export const Jogador = ({ currentTeam }: Props) => {
                         }
                     >
                         {/* Camisa posicionada na lateral esquerda */}
-                        <div className="absolute h-[115%] w-20 left-[25px] top-[-15%] overflow-hidden z-0">
+                        <div className="absolute h-[160%] w-20 left-[25px] top-[-60%] overflow-hidden z-0">
                             <Image
                                 src={camisaPath}
-                                width={250}
-                                height={250}
+                                width={100}
+                                height={100}
                                 alt="Camisa"
                                 quality={100}
                                 className="object-cover"
                                 style={{
                                     objectPosition: 'left center',
-                                    transform: 'scale(1.0)',
+                                    transform: 'scale(0.7)',
                                     transformOrigin: 'left center'
                                 }}
                             />

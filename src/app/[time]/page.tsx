@@ -16,7 +16,6 @@ import ShareButton from "@/components/ui/buttonShare"
 import { createSlug } from "@/utils/formatUrl"
 import { useTeam } from "@/hooks/queries"
 import { TimeNaoEncontrado } from "@/components/ui/TimeNaoEncontrado"
-import { BarChart2 } from "lucide-react"
 
 export default function Page() {
     const params = useParams()
@@ -140,23 +139,21 @@ export default function Page() {
                             {currentTeam.nome?.toLocaleUpperCase() || "Time Indefinido"}
                         </div>
 
-                        {/* Capacete removido - isso parece ser uma adaptação que já foi feita */}
-
                         <div className="w-40 h-40 -mt-6">
                             <Image
                                 src={`/assets/times/logos/${currentTeam.logo || "default-logo.png"}`}
                                 alt="logo do time"
-                                width={160}
-                                height={160}
+                                width={190}
+                                height={190}
                                 quality={100}
-                                style={{ width: '160px', height: '160px', objectFit: 'contain' }}
+                                style={{ width: '190px', height: '190px', objectFit: 'contain' }}
                                 priority
                             />
                         </div>
                     </motion.div>
 
                     <motion.div className="flex justify-between gap-8 mt-4 md:mt-8" style={{ opacity }}>
-                        <ButtonTime label="BIO" onClick={handleShowBio} isSelected={selectedButton === "bio"} />
+                        <ButtonTime label="TIME" onClick={handleShowBio} isSelected={selectedButton === "bio"} />
                         <ButtonTime label="JOGADORES" onClick={handleShowJogadores} isSelected={selectedButton === "jogadores"} />
                     </motion.div>
                 </motion.div>
