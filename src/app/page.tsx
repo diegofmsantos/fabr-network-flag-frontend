@@ -25,7 +25,7 @@ export default async function Page() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="text-[#1414E] z-20 pb-8 bg-[#ECECEC] lg:mr-40 xl:w-2/3 xl:mx-auto">
+      <div className="text-[#1414E] z-20 pb-24 bg-[#ECECEC] lg:mr-40 xl:w-2/3 xl:mx-auto">
         <Lista temporadaDefault="2025" />
       </div>
     </HydrationBoundary>

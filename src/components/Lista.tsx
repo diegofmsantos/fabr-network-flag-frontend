@@ -273,8 +273,8 @@ export const Lista = ({ temporadaDefault = '2025' }: ListaProps) => {
                                                                     }`}
                                                                 style={{ backgroundColor: item.cor ?? "#000" }}
                                                             ></div>
-                                                            <div className="relative text-center font-extrabold italic z-10 min-[320px]:text-[28px] min-[400px]:text-[31px] md:text-[40px]">
-                                                                <div className="tracking-[-3px]">{item.sigla ?? "N/A"}</div>
+                                                            <div className="relative text-center font-extrabold italic z-10 min-[320px]:text-[22px] min-[400px]:text-[24px] md:text-[40px]">
+                                                                <div className="tracking-[-2px]">{item.sigla ?? "N/A"}</div>
                                                                 <div className="flex flex-col justify-center items-center gap-2 min-h-28 p-2 min-[400px]:-mt-3">
                                                                     <Image
                                                                         src={`/assets/times/logos/${item.logo}`}

@@ -143,18 +143,7 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
                                             <p className="text-[25px] font-bold">{index + 1}</p>
                                             <div className='flex flex-col gap-2'>
                                                 <h4 className="font-extrabold italic leading-4 text-xl uppercase">{team.name}</h4>
-                                                <Image
-                                                    src={teamLogoPath}
-                                                    width={100}
-                                                    height={100}
-                                                    alt={`Logo do time ${team.name}`}
-                                                    className="w-24 h-24"
-                                                    onError={(e) => {
-                                                        console.error(`Error loading team logo for: ${team.name}`);
-                                                        const target = e.target as HTMLImageElement;
-                                                        target.src = '/assets/times/logos/default-logo.png';
-                                                    }}
-                                                />
+                                               
                                                 <span className="font-extrabold italic text-4xl mt-2">
                                                     {formatValue(team.value, title)}
                                                 </span>

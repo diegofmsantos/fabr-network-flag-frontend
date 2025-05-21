@@ -23,7 +23,7 @@ export const StatCategoryButtons: React.FC<StatCategoryButtonsProps> = ({
           key={category.key}
           className={`py-3 px-4 rounded-md text-center font-bold italic uppercase text-lg tracking-[-1px] transition-all ${
             selectedCategory === category.key
-              ? 'bg-[#63E300] text-black'
+              ? 'bg-[#FFE500] text-black'
               : 'bg-[#373740] text-white hover:bg-gray-700'
           }`}
           onClick={() => onSelectCategory(category.key)}

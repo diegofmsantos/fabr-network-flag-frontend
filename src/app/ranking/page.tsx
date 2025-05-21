@@ -17,7 +17,7 @@ export default function Page() {
     const [players, setPlayers] = useState<Jogador[]>([])
     const [times, setTimes] = useState<Time[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedCategory, setSelectedCategory] = useState("passe") // Alterado para "passe" em vez de "ataque"
+    const [selectedCategory, setSelectedCategory] = useState("passe") 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -140,7 +140,7 @@ export default function Page() {
                             { key: "passes_tentados", title: "PASSES TENT." },
                             { key: "passes_incompletos", title: "PASSES INCOMPL." },
                             { key: "jds_passe", title: "JARDAS" },
-                            { key: "td_passe", title: "TOUCHDOWNS" },
+                            { key: "tds_passe", title: "TOUCHDOWNS" },
                             { key: "passe_xp1", title: "EXTRA POINT (1)" },
                             { key: "passe_xp2", title: "EXTRA POINT (2)" },
                             { key: "int_sofridas", title: "INTERCEPTAÇÕES" },

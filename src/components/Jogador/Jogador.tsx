@@ -62,13 +62,13 @@ export const Jogador = ({ currentTeam }: Props) => {
         if (!currentTeam?.nome || !jogador?.camisa) {
             return '/assets/times/camisas/camisa-teste-flag.png';
         }
-        
+
         // Normaliza o nome do time para o formato usado nas pastas
         const timeNormalizado = currentTeam.nome.toLowerCase()
             .replace(/\s+/g, '-')
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "");
-            
+
         // Retorna o caminho correto da camisa
         return `/assets/times/camisas/${timeNormalizado}/${jogador.camisa}`;
     }
@@ -92,38 +92,45 @@ export const Jogador = ({ currentTeam }: Props) => {
                     <Link
                         href={`/${getTeamSlug(currentTeam.nome)}/${getPlayerSlug(jogador.nome)}?temporada=${temporada}`}
                         key={jogador.id}
-                        className="flex h-24 justify-between items-center p-2 rounded-md border text-sm bg-white min-[425px]:p-4
-                            md:text-base md:justify-center md:h-28 xl:text-lg lg:max-w-[800px] transition duration-300"
+                        className="flex h-20 min-h-[4rem] w-full justify-between items-center p-0 rounded-md border border-gray-200 
+                        text-sm bg-white my-1 relative overflow-visible md:justify-center md:items-center"
                         style={{
                             transition: "background-color 0.3s",
                         }}
                         onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor = `${currentTeam.cor}50`)
+                            (e.currentTarget.style.backgroundColor = `${currentTeam.cor}10`)
                         }
                         onMouseLeave={(e) =>
                             (e.currentTarget.style.backgroundColor = "#FFF")
                         }
                     >
-                        <div className="min-w-20 md:flex-1 md:flex md:justify-center">
+                        {/* Camisa posicionada na lateral esquerda */}
+                        <div className="absolute h-[115%] w-20 left-[25px] top-[-15%] overflow-hidden z-0">
                             <Image
                                 src={camisaPath}
-                                width={100}
-                                height={100}
+                                width={250}
+                                height={250}
                                 alt="Camisa"
                                 quality={100}
-                                className="w-16 h-20 md:w-20 md:h-24"
+                                className="object-cover"
+                                style={{
+                                    objectPosition: 'left center',
+                                    transform: 'scale(1.0)',
+                                    transformOrigin: 'left center'
+                                }}
                             />
                         </div>
-                        <div className="flex flex-col gap-3 md:flex-1">
-                            <div className="flex items-center gap-2">
-                                <div className="text-sm min-[375px]:text-[17px] min-[425px]:text-[20px] font-extrabold italic md:text-xl">{jogador.nome}</div>
-                            </div>
-                            <div className="flex justify-between gap-2 min-[400px]:gap-6 md:justify-start">
-                                <div className="flex flex-col items-center">
-                                    <div className="text-[10px] min-[375px]:text-xs">NUMERO</div>
-                                    <div className="text-xs min-[400px]:text-base font-bold">{jogador.numero || '-'}</div>
-                                </div>
-                                {/* Removemos altura, peso, idade já que estes campos foram removidos no schema */}
+
+                        {/* Conteúdo do card com margem à esquerda para não sobrepor a camisa */}
+                        <div className="flex-1 py-3 px-2 ml-20 flex justify-between items-center w-full">
+                            {/* Nome do jogador */}
+                            <div className="font-extrabold italic text-[17px] ml-10">{jogador.nome}</div>
+
+                            {/* Seta direita */}
+                            <div className="flex items-center justify-center w-8 h-8">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
                             </div>
                         </div>
                     </Link>

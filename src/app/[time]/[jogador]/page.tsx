@@ -237,13 +237,15 @@ export default function Page() {
                         />
                         <motion.div style={{ opacity }} className="w-full max-w-[1200px]">
                             <div className='text-white text-center font-bold text-xs uppercase mb-4'>{currentTime?.nome || ''}</div>
-                            <div className='max-w-[800px] flex justify-center items-end gap-1 min-[375px]:gap-3 md:w-screen md:justify-around 
-                            md:items-center md:px-20 xl:max-w-[650px] xl:pl-8 xl:pr-20'>
-                                <div className='flex-1 flex-col items-start xl:flex-2'>
+                            <div className='max-w-[800px] flex justify-between px-4 items-center gap-1 min-[375px]:gap-3 md:w-screen md:justify-around 
+                            md:items-center md:px-20 xl:max-w-[650px] xl:pr-10'>
+                                <div className='flex-2 flex-col justify-center items-center xl:flex-2'>
                                     <div className='text-[28px] text-white font-extrabold italic leading-[35px] tracking-[-2px] min-[375px]:text-[27px] 
                                     min-[425px]:text-[30px] md:text-[40px] lg:text-5xl xl:text-4xl'>
                                         {(currentJogador.nome || '').toLocaleUpperCase()}
                                     </div>
+                                    <div className="text-[28px] text-gray-400 font-extrabold italic leading-[35px] tracking-[-2px] min-[375px]:text-[27px] 
+                                    min-[425px]:text-[30px] md:text-[40px] lg:text-5xl xl:text-4xl"># {currentJogador.numero}</div>
                                     <div className='-mt-5'>
                                         <Image
                                             src={logoPath}
@@ -266,7 +268,7 @@ export default function Page() {
                                         width={200}
                                         height={250}
                                         quality={100}
-                                        className="w-48 h-60 ml-auto"
+                                        className="w-28 h-60 ml-auto xl:w-32 xl:h-64"
                                         priority
                                     />
                                 </div>
@@ -282,7 +284,7 @@ export default function Page() {
                     exit={{ opacity: 0, x: -50 }}
                     transition={{ duration: 0.5 }}
                 >
-                 
+
 
                     {/* Estatísticas de Passe */}
                     {temEstatisticasPasse && (

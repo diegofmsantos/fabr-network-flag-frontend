@@ -8,8 +8,8 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/statMappings'
 import { NoStats } from '../ui/NoStats'
+import { Loading } from '../ui/Loading'
 
-// Atualizado para refletir a nova estrutura de estatísticas do flag football
 export type StatKey =
   // Passe
   | 'passes_completos'
@@ -143,7 +143,7 @@ export const RankingGroup: React.FC<RankingGroupProps> = ({ title, stats, player
   });
 
   if (loading) {
-    return <div className="mb-6 pl-4 py-8">Carregando estatísticas...</div>;
+    return <div className="mb-6 pl-4 py-8"><Loading /></div>;
   }
 
   // Se não há jogadores válidos para nenhuma estatística, mostra mensagem

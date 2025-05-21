@@ -120,12 +120,6 @@ export default function Page() {
                     buttonStyle="absolute"
                     className="lg:right-32 xl:right-[420px] 2xl:right-[570px]"
                 />
-                <Link
-                    href={`/comparar-times?time1=${currentTeam.id}&temporada=${temporada}`}
-                    className="absolute top-3 right-16 rounded-lg text-xs text-white p-2 flex justify-center items-center lg:right-48 xl:right-[450px] 2xl:right-[600px]"
-                >
-                    <BarChart2 className="w-6 h-6" />
-                </Link>
                 <motion.div
                     className="max-w-[800px] p-4 mx-auto w-full h-full flex flex-col justify-center items-center rounded-b-xl xl:w-[650px] 2xl:w-[800px] "
                     style={{ backgroundColor: currentTeam.cor || "#000" }}
@@ -170,7 +164,7 @@ export default function Page() {
 
             {selectedButton === "jogadores" && (
                 <motion.div
-                    className="flex flex-col mx-auto pt-[400px] xl:mb-8 2xl:pt-[350px] 2xl:pl-[125px]"
+                    className="flex flex-col mx-auto pt-[350px] xl:mb-8 2xl:pt-[350px] 2xl:pl-[125px]"
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}

@@ -14,7 +14,7 @@ export const Button = ({ label, isSelected, onClick, children }: Props) => {
         <button
             onClick={onClick}
             className={`w-full h-full flex flex-col justify-center items-center text-xs font-bold 
-                ${isSelected ? 'bg-[#96E301] text-gray-600' : 'bg-white text-black'}`}
+                ${isSelected ? 'bg-[#FFE500] text-gray-600' : 'bg-white text-black'}`}
         >
             {children}
             {label}

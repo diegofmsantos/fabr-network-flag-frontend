@@ -6,6 +6,7 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import { NoStats } from '../ui/NoStats'
 import { TeamRankingCard } from './TimeRankingCard'
+import { Loading } from '../ui/Loading'
 
 interface TeamRankingGroupProps {
     title: string
@@ -160,7 +161,7 @@ export const TeamRankingGroup: React.FC<TeamRankingGroupProps> = ({ title, stats
     }
 
     if (isLoading) {
-        return <div className="p-4">Carregando estatísticas de times...</div>
+        return <div className="p-4"><Loading /></div>
     }
 
     return (
