@@ -30,7 +30,7 @@ export const PlayerStatSelect: React.FC<PlayerStatSelectProps> = ({ currentStat 
 
     return (
         <div className="mb-6">
-            <h1 className="text-4xl font-extrabold italic mb-4 text-center tracking-[-2px] uppercase">{currentGroup}</h1>
+            <h1 className="text-3xl font-extrabold italic mb-4 text-center tracking-[-2px] uppercase">{currentGroup}</h1>
             <select
                 value={selectedStat}
                 onChange={(e) => handleStatChange(e.target.value)}

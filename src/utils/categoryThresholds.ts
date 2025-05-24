@@ -60,22 +60,16 @@ export const getTierTitle = (category: CategoryKey, tier: number): string => {
     }
 }
 
-/**
- * Determina o tier de um jogador com base no seu valor estatístico e categoria
- */
 export const getTierForValue = (value: number, category: CategoryKey): number => {
-    const thresholds = CATEGORY_THRESHOLDS[effectiveCategory] || CATEGORY_THRESHOLDS.passe;
+    const thresholds = CATEGORY_THRESHOLDS[category] || CATEGORY_THRESHOLDS.passe;
 
     if (value >= thresholds.tier1) return 1;
     if (value >= thresholds.tier2.min) return 2;
     return 3;
 }
 
-/**
- * Verifica se um valor está dentro do intervalo de um tier específico
- */
 export const isInTierRange = (value: number, category: CategoryKey, tier: number): boolean => {
-    const thresholds = CATEGORY_THRESHOLDS[effectiveCategory] || CATEGORY_THRESHOLDS.passe;
+    const thresholds = CATEGORY_THRESHOLDS[category] || CATEGORY_THRESHOLDS.passe;
 
     switch (tier) {
         case 1:

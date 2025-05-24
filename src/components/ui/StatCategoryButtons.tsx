@@ -17,14 +17,14 @@ export const StatCategoryButtons: React.FC<StatCategoryButtonsProps> = ({
   ];
 
   return (
-    <div className="hidden lg:grid grid-cols-4 gap-2 mb-6">
+    <div className="hidden lg:grid grid-cols-4 gap-2 xl:my-6">
       {categories.map((category) => (
         <button
           key={category.key}
           className={`py-3 px-4 rounded-md text-center font-bold italic uppercase text-lg tracking-[-1px] transition-all ${
             selectedCategory === category.key
-              ? 'bg-[#18187c] text-[#FFE500]'
-              : 'bg-[#373740] text-white hover:bg-gray-700'
+              ? 'bg-[#FFE500] text-[#18187c] border border-[#18187c]'
+              : 'bg-[#18187c] text-[#FFE500] hover:scale-105'
           }`}
           onClick={() => onSelectCategory(category.key)}
         >

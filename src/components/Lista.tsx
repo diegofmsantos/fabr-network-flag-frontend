@@ -193,7 +193,7 @@ export const Lista = ({ temporadaDefault = '2025' }: ListaProps) => {
                                 <motion.div 
                                     variants={regionVariants}
                                     onClick={() => handleRegionSelect(regiao.id)}
-                                    className="bg-white rounded-lg p-4 flex items-center gap-4 cursor-pointer
+                                    className="bg-white rounded-lg p-4 flex items-center gap-4 cursor-pointer 
                                                 hover:shadow-md transition-all duration-300 border-l-4"
                                     style={{ 
                                         borderLeftColor: regiao.color,

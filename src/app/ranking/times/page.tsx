@@ -244,7 +244,7 @@ export default function TeamRankingPage() {
         <RankingLayout initialFilter="times">
             <div className="pb-12 bg-[#ECECEC] ">
                 {/* Botões de categoria para telas grandes (lg+) */}
-                <div className="pt-4 px-6 xl:max-w-5xl xl:px-12 max-w-7xl mx-auto xl:ml-20">
+                <div className="px-6 xl:max-w-5xl xl:px-12 max-w-7xl mx-auto xl:ml-20">
                     <StatCategoryButtons
                         selectedCategory={selectedCategory}
                         onSelectCategory={setSelectedCategory}

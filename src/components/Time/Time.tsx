@@ -15,7 +15,7 @@ export const CurrentTime = ({ currentTeam }: Props) => {
         <div className="p-4 mb-6 flex flex-col gap-8 lg:p-0 lg:mt-20 xl:max-w-[650px] xl:min-w-[650px] xl:m-auto xl:p-0 2xl:w-[800px] 2xl:min-w-[800px] 2xl:ml-20">
             <div>
               
-                <div className="bg-white flex flex-col gap-4 p-4 rounded-lg ">
+                <div className="bg-white flex flex-col gap-6 p-4 rounded-lg ">
                     <div className="border-b border-[#D9D9D9]">
                         <div className="text-sm">CIDADE</div>
                         <div className="flex items-center gap-3">

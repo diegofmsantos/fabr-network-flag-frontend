@@ -81,7 +81,7 @@ const StatsPage: React.FC = () => {
       }
 
       // Se não encontrou pelo statParam, usa a categoria direta
-      return categoryMapping[category] || 'ATAQUE'
+      return categoryMapping[category] || 'PASSE'
     }
 
     return (

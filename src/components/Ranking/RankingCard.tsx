@@ -97,7 +97,7 @@ export const RankingCard: React.FC<RankingCardProps> = ({ title, category, playe
   }
 
   return (
-    <div className="ranking-card-container px-3">
+    <div className="ranking-card-container px-3 hover:scale-105 duration-500">
       <h3 className="inline-block text-sm font-bold mb-2 bg-black text-white p-2 rounded-xl">{title}</h3>
       <ul className="flex flex-col text-white h-full">
         {players.map((player, index) => {

@@ -256,23 +256,11 @@ export default function CompararTimesPage() {
     <div className="min-h-screen bg-[#ECECEC] pt-24 px-4 pb-16 max-w-[1200px] mx-auto xl:pt-10 xl:ml-[600px]">
       <div className="flex items-center mb-6">
         <Link href="/" className="mr-4">
-          <button className="rounded-full text-xs text-[#63E300] p-2 w-8 h-8 flex justify-center items-center bg-gray-400/40 z-50">
+          <button className="rounded-full text-xs text-[#18187c] p-2 w-8 h-8 flex justify-center items-center bg-gray-400/40 z-50">
             <ArrowLeft size={20} />
           </button>
         </Link>
         <h1 className="text-5xl font-extrabold italic tracking-[-2px]">COMPARAR TIMES</h1>
-      </div>
-
-      <div className="w-full mt-4">
-        <SelectFilter
-          label="TEMPORADA"
-          value={temporada}
-          onChange={handleTemporadaChange}
-          options={[
-            { label: '2024', value: '2024' },
-            { label: '2025', value: '2025' }
-          ]}
-        />
       </div>
 
       {/* Seleção de times */}

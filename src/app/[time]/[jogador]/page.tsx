@@ -5,20 +5,17 @@ import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faAngleLeft } from "@fortawesome/free-solid-svg-icons"
-import Link from "next/link"
 import { Stats } from "@/components/Stats/Stats"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { useEffect, useState } from "react"
 import { JogadorSkeleton } from "@/components/ui/JogadorSkeleton"
 import { Loading } from "@/components/ui/Loading"
-import { SelectFilter } from "@/components/SelectFilter"
 import PlayerNameHeader from "@/components/Jogador/PlayerNameHeader"
 import { SemJogador } from "@/components/SemJogador"
 import { getPlayerSlug, getTeamSlug } from "@/utils/formatUrl"
 import ShareButton from "@/components/ui/buttonShare"
 import { usePlayerDetails, useJogadores } from '@/hooks/queries'
 import { useQueryClient } from "@tanstack/react-query"
-import { queryKeys } from "@/hooks/queryKeys"
 import { Time } from "@/types/time"
 import { Jogador } from "@/types/jogador"
 
@@ -160,7 +157,8 @@ export default function Page() {
         passe_xp1: passe.passe_xp1 || 0,
         passe_xp2: passe.passe_xp2 || 0,
         int_sofridas: passe.int_sofridas || 0,
-        sacks_sofridos: passe.sacks_sofridos || 0
+        sacks_sofridos: passe.sacks_sofridos || 0,
+        pressao_pct: passe.pressao_pct || 0
     };
 
     const corrida = currentJogador.estatisticas?.corrida || {};
@@ -201,7 +199,9 @@ export default function Page() {
     };
 
     // Verificar se há estatísticas para exibir
-    const temEstatisticasPasse = Object.values(passeSafe).some(val => val > 0);
+    const temEstatisticasPasse = Object.values(passeSafe).some(val =>
+        typeof val === 'number' ? val > 0 : false
+    );
     const temEstatisticasCorrida = Object.values(corridaSafe).some(val => val > 0);
     const temEstatisticasRecepcao = Object.values(recepcaoSafe).some(val => val > 0);
     const temEstatisticasDefesa = Object.values(defesaSafe).some(val =>
@@ -290,37 +290,43 @@ export default function Page() {
                     {temEstatisticasPasse && (
                         <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
                             <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                style={{ backgroundColor: currentTime?.cor }}>STATS (PASSE)</div>
+                                style={{ backgroundColor: currentTime?.cor }}>PASSANDO</div>
                             <div className="bg-white flex flex-col justify-start gap-4 p-4 rounded-lg lg:p-6">
                                 <Stats
-                                    label1='PASSES(COMP/TENT)'
+                                    label1='COMPLETOS/TENTADOS'
                                     label2={`${passeSafe.passes_completos}/${passeSafe.passes_tentados}`}
-                                    label3='PASSES INCOMPL.'
+                                    label3='INCOMPLETOS'
                                     label4={passeSafe.passes_incompletos}
                                 />
                                 <Stats
-                                    label1='PASSE %'
+                                    label1='COMPLETOS(%)'
                                     label2={calculatePct(passeSafe.passes_completos, passeSafe.passes_tentados)}
                                     label3='JARDAS'
                                     label4={passeSafe.jds_passe}
                                 />
                                 <Stats
-                                    label1='JARDAS AVG'
+                                    label1='JARDAS (AVG)'
                                     label2={calculateAvg(passeSafe.jds_passe, passeSafe.passes_tentados)}
                                     label3='TOUCHDOWNS'
                                     label4={passeSafe.tds_passe}
                                 />
                                 <Stats
-                                    label1='EXTRA POINT (1)'
+                                    label1='CONVERSÃO(1-PT)'
                                     label2={passeSafe.passe_xp1}
-                                    label3='EXTRA POINT (2)'
+                                    label3='CONVERSÃO(2-PT)'
                                     label4={passeSafe.passe_xp2}
                                 />
                                 <Stats
                                     label1='INTERCEPTAÇÕES'
                                     label2={passeSafe.int_sofridas}
-                                    label3='SACKS SOFRIDOS'
+                                    label3='SACKS'
                                     label4={passeSafe.sacks_sofridos}
+                                />
+                                <Stats
+                                    label1='PRESSÕES(%)'
+                                    label2={passeSafe.pressao_pct}
+                                    label3='PONTOS'
+                                    label4={(passeSafe.tds_passe * 6 + passeSafe.passe_xp1 + passeSafe.passe_xp1)}
                                     noBorder
                                 />
                             </div>
@@ -331,7 +337,7 @@ export default function Page() {
                     {temEstatisticasCorrida && (
                         <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
                             <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                style={{ backgroundColor: currentTime?.cor }}>STATS (CORRIDA)</div>
+                                style={{ backgroundColor: currentTime?.cor }}>CORRENDO</div>
                             <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
                                 <Stats
                                     label1='CORRIDAS'
@@ -340,16 +346,20 @@ export default function Page() {
                                     label4={corridaSafe.jds_corridas}
                                 />
                                 <Stats
-                                    label1='JARDAS AVG'
+                                    label1='JARDAS (AVG)'
                                     label2={calculateAvg(corridaSafe.jds_corridas, corridaSafe.corridas)}
                                     label3='TOUCHDOWNS'
                                     label4={corridaSafe.tds_corridos}
                                 />
                                 <Stats
-                                    label1='EXTRA POINT (1)'
+                                    label1='CONVERSÃO(1-PT)'
                                     label2={corridaSafe.corrida_xp1}
-                                    label3='EXTRA POINT (2)'
+                                    label3='CONVERSÃO(2-PT)'
                                     label4={corridaSafe.corrida_xp2}
+                                />
+                                <Stats
+                                    label1='PONTOS'
+                                    label2={(corridaSafe.tds_corridos * 6 + corridaSafe.corrida_xp1 + corridaSafe.corrida_xp1)}
                                     noBorder
                                 />
                             </div>
@@ -360,31 +370,37 @@ export default function Page() {
                     {temEstatisticasRecepcao && (
                         <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
                             <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                style={{ backgroundColor: currentTime?.cor }}>STATS (RECEPÇÃO)</div>
+                                style={{ backgroundColor: currentTime?.cor }}>RECEBENDO</div>
                             <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
                                 <Stats
-                                    label1='RECEPÇÕES/ALVO'
+                                    label1='RECEPÇÕES/ALVOS'
                                     label2={`${recepcaoSafe.recepcoes}/${recepcaoSafe.alvos}`}
                                     label3='DROPS'
                                     label4={recepcaoSafe.drops}
                                 />
                                 <Stats
-                                    label1='JARDAS'
-                                    label2={recepcaoSafe.jds_recepcao}
-                                    label3='JARDAS AVG'
-                                    label4={calculateAvg(recepcaoSafe.jds_recepcao, recepcaoSafe.alvos)}
+                                    label1='RECEPÇÕES(%)'
+                                    label2={calculatePct(recepcaoSafe.recepcoes, recepcaoSafe.alvos)}
+                                    label3='JARDAS TOTAIS'
+                                    label4={recepcaoSafe.jds_recepcao}
                                 />
                                 <Stats
-                                    label1='JARDAS APÓS RECEPÇÃO'
-                                    label2={recepcaoSafe.jds_yac}
-                                    label3='TOUCHDOWNS'
-                                    label4={recepcaoSafe.tds_recepcao}
+                                    label1='JARDAS (AVG)'
+                                    label2={calculateAvg(recepcaoSafe.jds_recepcao, recepcaoSafe.alvos)}
+                                    label3='JARDAS (YAC)'
+                                    label4={recepcaoSafe.jds_yac}
                                 />
                                 <Stats
-                                    label1='EXTRA POINT (1)'
-                                    label2={recepcaoSafe.recepcao_xp1}
-                                    label3='EXTRA POINT (2)'
-                                    label4={recepcaoSafe.recepcao_xp2}
+                                    label1='TOUCHDOWNS'
+                                    label2={recepcaoSafe.tds_recepcao}
+                                    label3='CONVERSÃO(1-PT)'
+                                    label4={recepcaoSafe.recepcao_xp1}
+                                />
+                                <Stats
+                                    label1='CONVERSÃO(2-PT)'
+                                    label2={recepcaoSafe.recepcao_xp2}
+                                    label3='PONTOS'
+                                    label4={(recepcaoSafe.tds_recepcao * 6 + recepcaoSafe.recepcao_xp1 + recepcaoSafe.recepcao_xp1)}
                                     noBorder
                                 />
                             </div>
@@ -395,7 +411,7 @@ export default function Page() {
                     {temEstatisticasDefesa && (
                         <div className='lg:max-w-[800px] lg:min-w-[800px] lg:m-auto xl:min-w-[650px] 2xl:min-w-[800px]'>
                             <div className="border py-2 px-3 font-extrabold text-white text-xs w-36 flex justify-center items-center rounded-md mb-3"
-                                style={{ backgroundColor: currentTime?.cor }}>STATS (DEFESA)</div>
+                                style={{ backgroundColor: currentTime?.cor }}>DEFENDENDO</div>
                             <div className="bg-white flex flex-col gap-4 p-4 rounded-lg">
                                 <Stats
                                     label1='TACKLES'
@@ -404,10 +420,10 @@ export default function Page() {
                                     label4={defesaSafe.tfl}
                                 />
                                 <Stats
-                                    label1='PRESSÃO (%)'
-                                    label2={defesaSafe.pressao_pct}
-                                    label3='SACKS'
-                                    label4={defesaSafe.sacks}
+                                    label1='SACKS'
+                                    label2={defesaSafe.sacks}
+                                    label3='BLOQUEIOS'
+                                    label4={defesaSafe.blk}
                                 />
                                 <Stats
                                     label1='PASSES DESVIADOS'
@@ -418,20 +434,20 @@ export default function Page() {
                                 <Stats
                                     label1='TOUCHDOWNS'
                                     label2={defesaSafe.tds_defesa}
-                                    label3='EXTRA POINT (2)'
-                                    label4={defesaSafe.defesa_xp2}
-                                />
-                                <Stats
-                                    label1='SAFETIES'
-                                    label2={defesaSafe.sft}
-                                    label3='SAFETY (1)'
-                                    label4={defesaSafe.sft_1}
-                                />
-                                <Stats
-                                    label1='BLOQUEIOS'
-                                    label2={defesaSafe.blk}
                                     label3='JARDAS'
                                     label4={defesaSafe.jds_defesa}
+                                />
+                                <Stats
+                                    label1='SAFETY(1-PT)'
+                                    label2={defesaSafe.sft_1}
+                                    label3='SAFETY(2-PT)'
+                                    label4={defesaSafe.sft}
+                                />
+                                <Stats
+                                    label1='RETORNO(2-PT)'
+                                    label2={defesaSafe.defesa_xp2}
+                                    label3='PRESSÃO(%)'
+                                    label4={defesaSafe.pressao_pct}
                                     noBorder
                                 />
                             </div>

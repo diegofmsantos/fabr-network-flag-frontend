@@ -128,7 +128,7 @@ export default function Page() {
                             pathname: "/",
                             query: { temporada: temporada }
                         }}
-                        className="absolute top-2 left-3 rounded-xl text-xs text-white py-1 px-2 lg:left-32 xl:left-[420px] 2xl:left-[570px]"
+                        className="absolute top-2 left-3 bg-black/20 rounded-xl text-xs text-white py-1 px-2 lg:left-32 xl:left-[420px] 2xl:left-[570px]"
                     >
                         {currentTeam.sigla || "N/A"}
                         <FontAwesomeIcon icon={faAngleDown} className="ml-1" />
@@ -176,7 +176,7 @@ export default function Page() {
 
             {selectedButton === "bio" && (
                 <motion.div
-                    className="flex flex-col max-w-[800px] mx-auto w-full pt-[410px] lg:pt-[350px] xl:w-[650px] xl:pl-12 xl:pt-[420px] 2xl:pt-[360px] 2xl:w-[800px] 2xl:pl-0"
+                    className="flex flex-col max-w-[800px] mx-auto w-full pt-[350px] lg:pt-[350px] xl:w-[650px] xl:pl-12 xl:pt-[420px] 2xl:pt-[360px] 2xl:w-[800px] 2xl:pl-0"
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -50 }}
