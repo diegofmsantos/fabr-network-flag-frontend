@@ -1,7 +1,8 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { statMappings } from '@/utils/statMappings'
+import { statMappings } from '@/utils/mappings/statMappings'
+import { normalizeForFilePath } from '@/utils/utils'
 
 interface TeamCardProps {
     id: number
@@ -38,15 +39,6 @@ export const TeamRankingCard: React.FC<TeamRankingCardProps> = ({ title, categor
                 </div>
             </div>
         );
-    }
-
-    const normalizeForFilePath = (input: string): string => {
-        return input
-            .toLowerCase()
-            .replace(/\s+/g, "-")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9-]/g, "");
     }
 
     const formatValue = (value: string | number, title: string): string => {

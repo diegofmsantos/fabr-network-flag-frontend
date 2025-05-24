@@ -1,6 +1,6 @@
 // src/hooks/usePlayerProcessing.ts
 import { Jogador } from '@/types/jogador'
-import { StatConfig } from '@/utils/statMappings'
+import { StatConfig } from '@/utils/mappings/statMappings'
 import { TeamInfo } from './useTeamInfo'
 import { ProcessedPlayer } from '@/types/processedPlayer'
 import { StatsCalculator } from '@/utils/statsCalculator'

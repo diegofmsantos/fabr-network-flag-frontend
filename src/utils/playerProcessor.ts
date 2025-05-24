@@ -1,5 +1,5 @@
 import { Jogador } from '@/types/jogador'
-import { StatConfig } from './statMappings'
+import { StatConfig } from './mappings/statMappings'
 import { TeamInfo } from '@/hooks/useTeamInfo'
 import { ProcessedPlayer } from '@/types/processedPlayer'
 import { CategoryKey } from './categoryThresholds'

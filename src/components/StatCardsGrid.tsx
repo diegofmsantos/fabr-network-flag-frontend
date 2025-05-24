@@ -2,8 +2,9 @@ import React from 'react';
 import { StatKey } from '@/components/Ranking/RankingGroup';
 import { Jogador } from '@/types/jogador';
 import { Time } from '@/types/time';
-import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/statMappings';
+import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/mappings/statMappings';
 import { RankingCard } from '@/components/Ranking/RankingCard';
+import { normalizeForFilePath } from '@/utils/utils';
 
 interface PlayerCardProps {
   id: number;
@@ -34,9 +35,9 @@ export const prepareStatsForCards = (
   currentStats: Array<{ key: StatKey; title: string }>,
   categoryTitle: string
 ): StatCardProps[] => {
- 
 
-   return currentStats.map(stat => {
+
+  return currentStats.map(stat => {
     const filteredPlayers = players
       .filter(player => shouldIncludePlayer(player, stat.key, categoryTitle))
       .sort((a, b) => {
@@ -46,34 +47,29 @@ export const prepareStatsForCards = (
       })
       .slice(0, 5);
 
-    const normalizeForFilePath = (input: string): string => {
-      if (!input) return '';
-
-      return input
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9-]/g, '');
-    };
+   
 
     const formattedPlayers = filteredPlayers.map((player, index) => {
-      const teamInfo = times.find(t => t.id === player.timeId) || {};
+      const teamInfo = times.find(t => t.id === player.timeId);
       const value = calculateStat(player, stat.key);
 
+      // Garantir propriedades seguras para o time
+      const teamName = teamInfo?.nome || 'Time Desconhecido';
+      const teamColor = teamInfo?.cor;
+
       return {
-        id: player.id,
-        name: player.nome,
-        team: teamInfo.nome || 'Time Desconhecido',
+        id: player.id, // Agora TypeScript sabe que é number
+        name: player.nome, // Agora TypeScript sabe que é string
+        team: teamName,
         value: value !== null ? String(value) : 'N/A',
-        camisa: player.camisa,
-        teamColor: index === 0 ? teamInfo.cor : undefined,
-        teamLogo: `/assets/times/logos/${normalizeForFilePath(teamInfo.nome || '')}.png`,
+        camisa: player.camisa, // Agora TypeScript sabe que é string
+        teamColor: index === 0 ? teamColor : undefined,
+        teamLogo: `/assets/times/logos/${normalizeForFilePath(teamName)}.png`,
         isFirst: index === 0
       };
     });
 
-     return {
+    return {
       title: stat.title,
       category: categoryTitle,
       key: stat.key,
@@ -84,7 +80,7 @@ export const prepareStatsForCards = (
 
 export const StatCardsGrid: React.FC<StatCardsGridProps> = ({ stats, category }) => {
   // Não exibe nada se não houver estatísticas
- if (!stats || stats.length === 0) {
+  if (!stats || stats.length === 0) {
     return (
       <div className="lg:py-6 text-center text-gray-500">
         Nenhuma estatística disponível para esta categoria.

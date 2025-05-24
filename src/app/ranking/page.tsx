@@ -1,3 +1,4 @@
+// src/app/ranking/page.tsx
 "use client"
 
 import { getJogadores, getTimes } from "@/api/api"
@@ -10,8 +11,10 @@ import { RankingGroup } from "@/components/Ranking/RankingGroup"
 import { StatCardsGrid } from "@/components/StatCardsGrid"
 import { StatCategoryButtons } from "@/components/ui/StatCategoryButtons"
 import { StatKey } from '@/components/Ranking/RankingGroup';
-import { calculateStat, compareValues, shouldIncludePlayer } from "@/utils/statMappings"
 import { getStatsByCategory } from "@/utils/getCategoryLabel"
+import { normalizeForFilePath } from "@/utils/utils"
+import { shouldIncludePlayer } from "@/utils/validations/statValidatioons"
+import { calculateStat, compareValues } from "@/utils/calculations/statCalculations"
 
 export default function Page() {
     const [players, setPlayers] = useState<Jogador[]>([])
@@ -37,7 +40,6 @@ export default function Page() {
         fetchData()
     }, [])
 
-
     const getCategoryTitle = (category: string): string => {
         switch (category) {
             case "passe": return "PASSE"
@@ -56,7 +58,7 @@ export default function Page() {
     const currentStats = getStatsByCategory(selectedCategory)
     const categoryTitle = getCategoryTitle(selectedCategory)
 
-    // Função simplificada que retorna objetos no formato que o RankingCard espera
+    // Função corrigida que retorna objetos no formato que o RankingCard espera
     const prepareStatsForCards = (
         players: Jogador[],
         times: Time[],
@@ -64,9 +66,13 @@ export default function Page() {
         categoryTitle: string
     ) => {
         return currentStats.map(stat => {
-            // Filtra jogadores para esta estatística
+            // Filtra jogadores para esta estatística E garante que têm dados válidos
             const filteredPlayers = players
-                .filter(player => shouldIncludePlayer(player, stat.key, categoryTitle))
+                .filter((player): player is Required<Pick<Jogador, 'id' | 'nome' | 'timeId' | 'camisa'>> & Jogador => {
+                    // Verifica se o jogador tem dados essenciais válidos (sem inventar função nova)
+                    return !!(player.id && player.nome && player.timeId && player.camisa && 
+                            shouldIncludePlayer(player, stat.key, categoryTitle));
+                })
                 .sort((a, b) => {
                     const aValue = calculateStat(a, stat.key);
                     const bValue = calculateStat(b, stat.key);
@@ -76,29 +82,21 @@ export default function Page() {
 
             // Monta os jogadores no formato que RankingCard espera
             const formattedPlayers = filteredPlayers.map((player, index) => {
-                const teamInfo = times.find(t => t.id === player.timeId) || {};
+                const teamInfo = times.find(t => t.id === player.timeId);
                 const value = calculateStat(player, stat.key);
 
-                // Função para normalizar o caminho do arquivo
-                const normalizeForFilePath = (input: string): string => {
-                    if (!input) return '';
-                
-                    return input
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/[^a-z0-9-]/g, '');
-                };
+                // Garantir propriedades seguras para o time
+                const teamName = teamInfo?.nome || 'Time Desconhecido';
+                const teamColor = teamInfo?.cor;
 
                 return {
                     id: player.id,
                     name: player.nome,
-                    team: teamInfo.nome || 'Time Desconhecido',
+                    team: teamName,
                     value: value !== null ? String(value) : 'N/A',
                     camisa: player.camisa,
-                    teamColor: index === 0 ? teamInfo.cor : undefined,
-                    teamLogo: `/assets/times/logos/${normalizeForFilePath(teamInfo.nome || '')}.png`,
+                    teamColor: index === 0 ? teamColor : undefined,
+                    teamLogo: `/assets/times/logos/${normalizeForFilePath(teamName)}.png`,
                     isFirst: index === 0
                 };
             });
@@ -107,7 +105,7 @@ export default function Page() {
               title: stat.title,
               category: categoryTitle,
               key: stat.key,
-              players: formattedPlayers  // Pode ser vazio
+              players: formattedPlayers
             };
         });
     };

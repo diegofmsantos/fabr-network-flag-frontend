@@ -1,4 +1,5 @@
-import { statMappings } from "@/utils/statMappings"
+import { statMappings } from "@/utils/mappings/statMappings"
+import { normalizeForFilePath } from "@/utils/utils"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -22,15 +23,6 @@ interface RankingCardProps {
 }
 
 export const RankingCard: React.FC<RankingCardProps> = ({ title, category, players, stat }) => {
-
-  const normalizeForFilePath = (input: string): string => {
-    return input
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9-]/g, "");
-  }
 
   const getShirtPath = (team: string, camisa: string): string => {
     const normalizedTeam = normalizeForFilePath(team);

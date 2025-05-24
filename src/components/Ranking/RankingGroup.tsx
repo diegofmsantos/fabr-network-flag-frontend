@@ -6,9 +6,10 @@ import { getTimes } from '@/api/api'
 import { RankingCard } from './RankingCard'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/statMappings'
 import { NoStats } from '../ui/NoStats'
 import { Loading } from '../ui/Loading'
+import { shouldIncludePlayer } from '@/utils/validations/statValidatioons'
+import { calculateStat, compareValues } from '@/utils/calculations/statCalculations'
 
 export type StatKey =
   // Passe
@@ -51,7 +52,9 @@ export type StatKey =
   | 'blk'
   | 'jds_defesa'
   // Estatísticas calculadas
-  | 'passes_percentual';
+  | 'passes_percentual'
+  | 'jds_corridas_media'
+  | 'jds_recepcao_media';
   
 interface RankingGroupProps {
   title: string;

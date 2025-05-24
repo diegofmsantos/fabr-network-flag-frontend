@@ -7,7 +7,6 @@ import { useTimes } from '@/hooks/queries';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, RefreshCw, BarChart2 } from 'lucide-react';
-import { normalizeForFilePath } from '@/utils/formatUrl';
 import {
   BarChart,
   Bar,
@@ -20,6 +19,7 @@ import {
 } from 'recharts';
 import { SelectFilter } from '@/components/SelectFilter';
 import { Loading } from '@/components/ui/Loading';
+import { normalizeForFilePath } from '@/utils/utils';
 
 export default function CompararTimesPage() {
   const router = useRouter();

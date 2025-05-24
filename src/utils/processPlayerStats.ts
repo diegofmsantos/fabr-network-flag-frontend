@@ -1,6 +1,6 @@
 import { Jogador } from "@/types/jogador";
 import { Time } from "@/types/time";
-import { calculateStat, compareValues, shouldIncludePlayer } from "@/utils/statMappings";
+import { calculateStat, compareValues, shouldIncludePlayer } from "@/utils/mappings/statMappings";
 import { StatKey } from "@/components/Ranking/RankingGroup";
 
 // Tipo para os cards de estatísticas processados

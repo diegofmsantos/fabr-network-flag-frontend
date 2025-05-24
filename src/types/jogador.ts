@@ -1,4 +1,4 @@
-export type Estatisticas = {
+export interface Estatisticas {
   passe?: {
     passes_completos?: number
     passes_tentados?: number
@@ -44,13 +44,13 @@ export type Estatisticas = {
   }
 }
 
-export type Jogador = {
-  id?: number
-  nome?: string
+export interface Jogador {
+  id: number
+  nome: string
   time?: string
   time_nome?: string 
-  timeId?: number
-  numero?: number
-  camisa?: string
+  timeId: number
+  numero: number
+  camisa: string
   estatisticas?: Estatisticas
 }

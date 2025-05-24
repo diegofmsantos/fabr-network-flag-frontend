@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Loading } from '@/components/ui/Loading'
 import { useStats } from '@/hooks/useStats'
 import { useTeamInfo } from '@/hooks/useTeamInfo'
-import { getStatMapping } from '@/utils/statMappings'
+import { getStatMapping } from '@/utils/mappings/statMappings'
 import { TeamStatsList } from '@/components/Stats/TeamStatsList'
 import { StatsLayout } from '@/components/Stats/StatsLayout'
 

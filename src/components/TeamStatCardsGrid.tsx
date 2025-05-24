@@ -1,6 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { Time } from '@/types/time';
 import { TeamRankingCard } from '@/components/Ranking/TimeRankingCard';
 import { getCategoryFromKey } from '@/components/Ranking/TimeRankingGroup';
