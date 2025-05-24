@@ -2,9 +2,10 @@ import React from 'react';
 import { StatKey } from '@/components/Ranking/RankingGroup';
 import { Jogador } from '@/types/jogador';
 import { Time } from '@/types/time';
-import { calculateStat, compareValues, shouldIncludePlayer } from '@/utils/mappings/statMappings';
 import { RankingCard } from '@/components/Ranking/RankingCard';
 import { normalizeForFilePath } from '@/utils/utils';
+import { shouldIncludePlayer } from '@/utils/validations/statValidatioons';
+import { calculateStat, compareValues } from '@/utils/calculations/statCalculations';
 
 interface PlayerCardProps {
   id: number;
